@@ -117,7 +117,7 @@ export const EnergyModule: React.FC = () => {
         'Use Silicon Carbide (SiC) MOSFET inverters to reduce electrical switching losses by 40%.',
         'Optimize engine cowl air intake duct geometry to reduce cooling drag losses.'
       ],
-      potentialGain: 'Increase net propulsive conversion efficiency from 28.0% to 32.5% (+16% improvement).',
+      potentialGain: 'Increase net propulsive conversion efficiency from 28.0% to 32.5% (+16% projected improvement) [OPTIMIZATION TARGET].',
       tradeOffs: 'Slightly higher dry equipment weight (+14 kg for turbocompound turbine).'
     },
     recommendation: {

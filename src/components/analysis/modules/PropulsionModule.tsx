@@ -3,6 +3,7 @@ import { BaseModuleFrame } from './BaseModuleFrame';
 import { CalculationCard } from '../common/CalculationCard';
 import { Standard10SectionAnalysis, StandardSectionData } from '../common/Standard10SectionAnalysis';
 import { useMissionAnalysisStore } from '../../../store/useMissionAnalysis';
+import { generateEngineeringRecommendations } from '../../../analysis/recommendationEngine';
 import { COMP_ENGINE_RATED_KW } from '../../../physics/garunSpec';
 import { PROP_ETA_ASSUMPTION } from '../../../physics/physicsConstants';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, AreaChart, Area } from 'recharts';
@@ -25,6 +26,7 @@ export const PropulsionModule: React.FC = () => {
   const propEfficiency = PROP_ETA_ASSUMPTION;
 
   const missingSensors = analysisResult.missingInputs;
+  const propRec = generateEngineeringRecommendations(analysisResult).find(r => r.moduleId === 'propulsion');
 
   // Chart Data Preparation
   const chartData = frames.map((f) => ({
@@ -112,7 +114,7 @@ export const PropulsionModule: React.FC = () => {
         'Dynamically adjust variable propeller blade pitch to maximize prop efficiency η_prop from 82% to 85% during cruise.',
         'Utilize regenerative battery charging during high-altitude descent to recover kinetic energy.'
       ],
-      potentialGain: 'Reduce overall propulsion energy losses by 4.5% (~2.2 kg fuel savings per flight hour).',
+      potentialGain: 'Reduce overall propulsion energy losses by 4.5% (~2.2 kg fuel savings per flight hour) [OPTIMIZATION TARGET].',
       tradeOffs: 'Slightly higher propeller blade actuator wear from dynamic pitch adjustments.'
     },
     recommendation: {
@@ -122,7 +124,14 @@ export const PropulsionModule: React.FC = () => {
         'Verify high-voltage inverter coolant loop flow rate before every long-range flight.'
       ],
       pilotGuidance: 'Avoid operating engine below 25 kW for extended durations to prevent soot buildup and high BSFC.',
-      engineeringAction: 'Inspect generator coupling spline and check inverter DC bus capacitance.'
+      engineeringAction: 'Inspect generator coupling spline and check inverter DC bus capacitance.',
+      structuredDiagnostic: propRec ? {
+        finding: propRec.finding,
+        cause: propRec.cause,
+        impact: propRec.impact,
+        recommendation: propRec.recommendation,
+        expectedEffect: propRec.expectedEffect
+      } : undefined
     },
     limitations: {
       modelAssumptions: [

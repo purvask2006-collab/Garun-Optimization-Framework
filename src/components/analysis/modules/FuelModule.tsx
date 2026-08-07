@@ -3,6 +3,7 @@ import { BaseModuleFrame } from './BaseModuleFrame';
 import { CalculationCard } from '../common/CalculationCard';
 import { Standard10SectionAnalysis, StandardSectionData } from '../common/Standard10SectionAnalysis';
 import { useMissionAnalysisStore } from '../../../store/useMissionAnalysis';
+import { generateEngineeringRecommendations } from '../../../analysis/recommendationEngine';
 import { NormalizedFrame, TimelineSegment } from '../../../analysis/types';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, AreaChart, Area } from 'recharts';
 
@@ -22,6 +23,7 @@ export const FuelModule: React.FC = () => {
   const avgFuelPerHourKg = summary.totalDurationHr > 0 ? totalFuelKg / summary.totalDurationHr : fuelFlowKgHr;
 
   const missingSensors = analysisResult.missingInputs;
+  const fuelRec = generateEngineeringRecommendations(analysisResult).find(r => r.moduleId === 'fuel');
 
   // Chart Data Preparation
   const chartData = frames.map((f: NormalizedFrame) => ({
@@ -109,7 +111,7 @@ export const FuelModule: React.FC = () => {
         'Operate turboshaft closer to peak SFC load point (50 kW) and top up high-voltage battery.',
         'Reduce loiter airspeed from 220 km/h to 190 km/h for minimum power required airspeed.'
       ],
-      potentialGain: 'Save 1.2 to 1.8 kg/h fuel (~12-15% reduction in total mission fuel burn).',
+      potentialGain: 'Save 1.2 to 1.8 kg/h fuel (~12-15% projected reduction in total mission fuel burn) [OPTIMIZATION TARGET].',
       tradeOffs: 'Slightly longer flight duration to cover distance, requiring active thermal management.'
     },
     recommendation: {
@@ -119,7 +121,14 @@ export const FuelModule: React.FC = () => {
         'Monitor ECU fuel rail pressure transducer for early filter clogging indications.'
       ],
       pilotGuidance: 'Keep cruise throttle setting aligned with 45-50 kW engine power for optimal SFC.',
-      engineeringAction: 'Inspect fuel filter elements and calibrate turbine flowmeter at next 50-hour inspection.'
+      engineeringAction: 'Inspect fuel filter elements and calibrate turbine flowmeter at next 50-hour inspection.',
+      structuredDiagnostic: fuelRec ? {
+        finding: fuelRec.finding,
+        cause: fuelRec.cause,
+        impact: fuelRec.impact,
+        recommendation: fuelRec.recommendation,
+        expectedEffect: fuelRec.expectedEffect
+      } : undefined
     },
     limitations: {
       modelAssumptions: [

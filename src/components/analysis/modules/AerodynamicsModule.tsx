@@ -117,7 +117,7 @@ export const AerodynamicsModule: React.FC = () => {
         'Retract landing gear and flap actuators completely to eliminate auxiliary parasite drag (~ΔCD = +0.004).',
         'Maintain laminar flow clean wing surface; inspect leading edges for bug accumulation or erosion.'
       ],
-      potentialGain: 'Increase L/D ratio from 16.1 to 16.8, saving ~3.8% in propulsive power required.',
+      potentialGain: 'Increase L/D ratio from 16.1 to 16.8, saving ~3.8% in propulsive power required [OPTIMIZATION TARGET].',
       tradeOffs: 'Slightly reduced cruise groundspeed (-8 km/h), extending total transit time by 3.2 minutes.'
     },
     recommendation: {

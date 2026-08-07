@@ -82,6 +82,13 @@ export interface StandardSectionData {
     actionItems: string[];
     pilotGuidance?: string;
     engineeringAction?: string;
+    structuredDiagnostic?: {
+      finding: string;
+      cause: string;
+      impact: string;
+      recommendation: string;
+      expectedEffect: string;
+    };
   };
   // 10. LIMITATIONS
   limitations: {
@@ -620,6 +627,43 @@ export const Standard10SectionAnalysis: React.FC<Standard10SectionProps> = ({
 
           {expandedSections.RECOMMENDATION && (
             <div className="space-y-2 text-[10px] font-mono-data">
+              {/* Structured 5-Part Diagnostic Recommendation */}
+              {sectionData.recommendation.structuredDiagnostic && (
+                <div className="bg-[#0A0F1E] border border-[#1F2D45] rounded-lg p-3 space-y-2 font-sans-ui text-xs">
+                  <div className="text-[10px] font-mono-data font-bold text-[#00E87A] uppercase tracking-wider border-b border-[#1F2D45] pb-1 flex items-center justify-between">
+                    <span>STRUCTURED ENGINEERING DIAGNOSTIC & RECOMMENDATION</span>
+                    <span className="text-[#00A8FF]">DATA-DRIVEN MODEL OUTPUT</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2 pt-1 font-sans-ui text-[11px]">
+                    <div className="bg-[#111827] border border-[#1F2D45] p-2 rounded flex flex-col justify-between">
+                      <span className="text-[9px] font-mono-data font-bold text-[#00A8FF] block uppercase mb-1">## FINDING</span>
+                      <p className="text-[#C5D1E8] text-[10.5px] leading-snug">{sectionData.recommendation.structuredDiagnostic.finding}</p>
+                    </div>
+
+                    <div className="bg-[#111827] border border-[#1F2D45] p-2 rounded flex flex-col justify-between">
+                      <span className="text-[9px] font-mono-data font-bold text-[#FFB800] block uppercase mb-1">## CAUSE</span>
+                      <p className="text-[#C5D1E8] text-[10.5px] leading-snug">{sectionData.recommendation.structuredDiagnostic.cause}</p>
+                    </div>
+
+                    <div className="bg-[#111827] border border-[#1F2D45] p-2 rounded flex flex-col justify-between">
+                      <span className="text-[9px] font-mono-data font-bold text-[#FF3B30] block uppercase mb-1">## IMPACT</span>
+                      <p className="text-[#C5D1E8] text-[10.5px] leading-snug">{sectionData.recommendation.structuredDiagnostic.impact}</p>
+                    </div>
+
+                    <div className="bg-[#111827] border border-[#00A8FF]/40 p-2 rounded flex flex-col justify-between">
+                      <span className="text-[9px] font-mono-data font-bold text-[#00A8FF] block uppercase mb-1">## RECOMMENDATION</span>
+                      <p className="text-[#E8EDF7] font-medium text-[10.5px] leading-snug">{sectionData.recommendation.structuredDiagnostic.recommendation}</p>
+                    </div>
+
+                    <div className="bg-[#00E87A]/10 border border-[#00E87A]/40 p-2 rounded flex flex-col justify-between">
+                      <span className="text-[9px] font-mono-data font-bold text-[#00E87A] block uppercase mb-1">## EXPECTED EFFECT</span>
+                      <p className="text-[#D1D5DB] font-semibold text-[10.5px] leading-snug">{sectionData.recommendation.structuredDiagnostic.expectedEffect}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-[#0A0F1E] border border-[#1F2D45] rounded p-2.5">
                 <span className="text-[#00E87A] font-bold uppercase block mb-1">Actionable Flight Items:</span>
                 <ul className="list-disc list-inside space-y-1 text-[#E8EDF7]">
