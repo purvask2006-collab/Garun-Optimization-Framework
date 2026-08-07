@@ -1,0 +1,45 @@
+{
+  "$schema_note": "Objectives for GARUN's NSGA-II sizing problem. All pymoo objectives are minimized by convention -- endurance is negated (f2 = -endurance_hr) so maximizing endurance becomes minimizing -endurance_hr.",
+  "objectives": [
+    {
+      "id": "mtow_kg",
+      "label": "Maximum Take-Off Weight",
+      "unit": "kg",
+      "direction": "minimize",
+      "computed_by": "HybridUAVSizingProblem._estimate_mtow()",
+      "notes": "Mass-buildup estimate: payload + fuel + battery_mass + engine_mass + motor_mass, divided by (1 - structure_fraction)."
+    },
+    {
+      "id": "fuel_kg",
+      "label": "Mission fuel burn",
+      "unit": "kg",
+      "direction": "minimize",
+      "computed_by": "mission.MissionProfile.total_fuel_kg",
+      "notes": "Summed fuel consumption across all 6 mission segments (takeoff, climb, cruise, loiter, descent, land)."
+    },
+    {
+      "id": "endurance_hr",
+      "label": "Mission endurance",
+      "unit": "hr",
+      "direction": "maximize",
+      "internal_form": "f2 = -endurance_hr (negated for pymoo's minimize-only convention)",
+      "computed_by": "mission.MissionProfile.endurance_hr",
+      "notes": "Dominated primarily by the iteratively-computed loiter duration -- see mission._max_loiter_time()."
+    }
+  ],
+  "n_obj": 3,
+  "reference_point_for_hypervolume": {
+    "mtow_kg": 1200.0,
+    "fuel_kg": 250.0,
+    "neg_endurance_hr": 0.0,
+    "notes": "Worst-case-ish reference point used by pymoo.indicators.hv.HV in main.py's run_optimization()."
+  },
+  "reference_target_for_knee_selection": {
+    "mtow_kg": 418.0,
+    "endurance_hr": 7.7,
+    "fuel_burn_pct_of_baseline": 78,
+    "source": "Originally submitted proposal figures -- used only as a comparison target in pick_knee_design(), not independently re-derived by this codebase.",
+    "status": "reference_only_not_reproduced"
+  },
+  "source": "main.py :: HybridUAVSizingProblem._evaluate(), pick_knee_design()"
+}

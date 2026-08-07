@@ -1,0 +1,4 @@
+motor_id,manufacturer,model,peak_power_kw,continuous_power_kw,rpm_max,torque_nm,efficiency_curve_ref,weight_kg,voltage_v,cooling_type,controller_model,source,confidence,notes
+MOT-001,,,,,,,,,,,,"TBD - cite datasheet","Low - placeholder","Example row: replace with real motor spec before optimizer integration"
+MOT-002,,,,,,,,,,,,,,
+MOT-003,,,,,,,,,,,,,,

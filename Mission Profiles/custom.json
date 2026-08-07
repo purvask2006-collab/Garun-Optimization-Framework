@@ -1,0 +1,61 @@
+{
+  "mission_id": "custom",
+  "mission_name": "REPLACE_WITH_MISSION_NAME",
+  "description": "Template scaffold for defining a new mission type. Copy this file, rename it, fill in every field, and add/remove phase blocks as needed. All numeric fields are placeholders (0 or null) — the simulator should reject a run where required fields are still 0/null except where noted.",
+  "schema_version": "1.0",
+  "compatible_engines": ["mission_simulator.py", "optimizer_mdo.py", "rl_balancing.py"],
+  "aircraft_reference": {
+    "mtow_kg": 1000,
+    "engine_rating_kw": 60
+  },
+  "payload": {
+    "type": "REPLACE_WITH_PAYLOAD_TYPE",
+    "mass_kg": 0
+  },
+  "weather": {
+    "condition": "REPLACE (clear | partly_cloudy | overcast | rain | high_wind)",
+    "wind_speed_mps": 0,
+    "wind_direction_deg": 0,
+    "temperature_c": 0,
+    "visibility_km": 0,
+    "icing_risk": "REPLACE (none | low | moderate | severe)"
+  },
+  "reserves": {
+    "fuel_reserve_pct": 15,
+    "battery_soc_reserve_pct": 20,
+    "contingency_time_min": 20
+  },
+  "phases": [
+    {
+      "phase_id": 1,
+      "phase_name": "REPLACE_PHASE_NAME (e.g. Takeoff)",
+      "altitude_m": {"start": 0, "end": 0},
+      "duration_s": 0,
+      "power_kw": 0,
+      "speed_mps": {"start": 0, "end": 0},
+      "climb_rate_mps": 0,
+      "power_source_hint": "engine_primary | battery_primary | engine_primary_battery_assist | battery_primary_engine_charging",
+      "notes": ""
+    },
+    {
+      "phase_id": 2,
+      "phase_name": "REPLACE_PHASE_NAME (add as many phase blocks as your mission needs, in order)",
+      "altitude_m": {"start": 0, "end": 0},
+      "duration_s": 0,
+      "power_kw": 0,
+      "speed_mps": {"start": 0, "end": 0},
+      "climb_rate_mps": 0,
+      "power_source_hint": "",
+      "notes": "Set duration_s to null instead of a number if this phase should run until a reserve floor is hit (see loiter.json for an example)."
+    }
+  ],
+  "_field_reference": {
+    "altitude_m": "meters above ground level, start/end of phase",
+    "duration_s": "seconds; use null for a floor-triggered open-ended phase",
+    "power_kw": "average shaft/electrical power demand for the phase",
+    "speed_mps": "airspeed in meters/second, start/end of phase",
+    "climb_rate_mps": "positive = climbing, negative = descending, 0 = level",
+    "power_source_hint": "which power path the mission simulator should default to before running its own power-split optimization",
+    "reserve_floor_behavior": "simulation engines should terminate any null-duration phase when fuel_reserve_pct or battery_soc_reserve_pct reaches the value defined in the top-level reserves block"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "TJ-GENERIC-500",
+  "metadata": {
+    "name": "TJ-500 Generic Turbojet (Cruise Missile / UCAV Class)",
+    "type": "turbojet",
+    "variant": "single-spool axial",
+    "manufacturer": "Generic — representative of TJ-100 / HAL NPE class",
+    "application": ["cruise missile", "loitering munition", "UCAV propulsion", "expendable drone"],
+    "certification_basis": "Programme-specific (expendable / one-use basis)",
+    "revision": "G1",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_thrust_kN": 5.5,
+    "rated_thrust_lbf": 1237,
+    "dry_weight_kg": 22.5,
+    "thrust_to_weight_ratio": 24.9,
+    "rpm_design": 65000,
+    "overall_pressure_ratio": 7.8,
+    "turbine_entry_temperature_K": 1280,
+    "exhaust_gas_temperature_K": 720,
+    "mass_flow_kgs": 4.2,
+    "bypass_ratio": 0,
+    "fuel_type": ["Jet-A1", "JP-8", "kerosene"],
+    "afterburner": false,
+    "lubrication": "oil-mist / total-loss bearing lubrication",
+    "ignition": "single surface-discharge igniter"
+  },
+  "performance_map": {
+    "description": "Net thrust vs throttle at ISA SL static",
+    "throttle_percent": [0, 20, 40, 60, 80, 90, 100],
+    "net_thrust_kN":    [0, 0.8, 2.0, 3.2, 4.4, 5.0, 5.5],
+    "tsfc_kg_per_kN_hr": [0, 0.135, 0.122, 0.114, 0.108, 0.105, 0.103],
+    "notes": "Total-loss lubrication limits continuous operation to design life. No part-life TBO applies."
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "throttle_percent": [40, 60, 80, 100],
+      "eta_thermal":      [0.16, 0.22, 0.26, 0.28]
+    },
+    "propulsive_efficiency_map": {
+      "mach_number":    [0.0, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9],
+      "eta_propulsive": [0.0, 0.32, 0.48, 0.56, 0.62, 0.67, 0.71]
+    },
+    "overall_efficiency_map": {
+      "mach_number":    [0.3, 0.5, 0.7, 0.8, 0.9],
+      "eta_overall":    [0.07, 0.13, 0.17, 0.19, 0.20]
+    },
+    "compressor_map": {
+      "design_PR": 7.8,
+      "isentropic_efficiency_axial": 0.80,
+      "surge_margin_percent": 14,
+      "stages": 5
+    },
+    "turbine_efficiency": {
+      "HPT_isentropic": 0.86
+    }
+  },
+  "fuel_consumption_model": {
+    "model_type": "TSFC_polynomial_cruise_optimised",
+    "reference_condition": "ISA, 5000m altitude, Mach 0.7",
+    "tsfc_cruise_reference_kg_per_kN_hr": 0.098,
+    "altitude_correction": {
+      "altitude_m":     [0, 2000, 4000, 6000, 8000, 10000],
+      "tsfc_multiplier": [1.05, 1.02, 1.00, 0.98, 0.96, 0.95]
+    },
+    "mach_correction": {
+      "mach":           [0.3, 0.5, 0.6, 0.7, 0.8, 0.9],
+      "tsfc_multiplier": [1.08, 1.03, 1.01, 1.00, 1.00, 1.01]
+    },
+    "idle_fuel_flow_kg_per_hr": 8.5,
+    "startup_fuel_kg": 0.12,
+    "design_life_note": "Expendable — no TBO; single-use or very limited cycle life"
+  },
+  "thermal_limits": {
+    "TET_max_continuous_K": 1260,
+    "TET_max_short_K": 1320,
+    "EGT_max_K": 710,
+    "EGT_max_start_K": 780,
+    "compressor_exit_temp_max_K": 520,
+    "bearing_temp_max_C": 180,
+    "cooling_type": "uncooled turbine — Ni-superalloy",
+    "thermal_time_constant_s": 25,
+    "design_life_hours": 8
+  },
+  "operating_envelope": {
+    "altitude_max_m": 10000,
+    "mach_max": 0.92,
+    "ambient_temp_range_C": [-50, 50],
+    "rated_conditions": "ISA 5000m Mach 0.7",
+    "cruise_optimized_altitude_m": 5000,
+    "cruise_optimized_mach": 0.7,
+    "thrust_deck": {
+      "altitude_m": [0, 2000, 5000, 8000, 10000],
+      "mach_0.0":   [5.5, 4.8, 3.8, 2.9, 2.2],
+      "mach_0.5":   [4.8, 4.2, 3.4, 2.6, 2.0],
+      "mach_0.7":   [4.2, 3.7, 3.0, 2.3, 1.7],
+      "mach_0.9":   [3.5, 3.1, 2.5, 1.9, 1.4]
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "TSFC (kg/kN·hr) at various throttle and altitude",
+    "throttle_fraction": [0.5, 0.7, 0.9, 1.0],
+    "altitude_m": [0, 3000, 6000, 10000],
+    "tsfc_matrix": [
+      [0.114, 0.110, 0.106, 0.102],
+      [0.108, 0.105, 0.101, 0.097],
+      [0.105, 0.101, 0.098, 0.094],
+      [0.103, 0.100, 0.096, 0.092]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "not fitted — no AGB",
+    "pto_max_power_kw": 0,
+    "hybrid_mode": "not applicable",
+    "notes": "Expendable engine — no accessories or power extraction. Avionics powered by battery only."
+  },
+  "sizing_parameters": {
+    "length_mm": 480,
+    "diameter_mm": 220,
+    "dry_weight_kg": 22.5,
+    "cg_from_intake_mm": 200,
+    "inlet_diameter_mm": 200,
+    "exhaust_diameter_mm": 140,
+    "mount_interface": "2-lug mid-fuselage cradle",
+    "frontal_area_m2": 0.038,
+    "volume_m3": 0.018,
+    "inlet_total_pressure_recovery": 0.965
+  },
+  "maintenance": {
+    "TBO_hours": null,
+    "design_life_hours": 8,
+    "design_life_cycles": 1,
+    "mttr_hours": 0.5,
+    "line_replaceable_units": ["complete engine (expendable)", "igniter"],
+    "ECU": {
+      "channels": 1,
+      "authority": "full electronic",
+      "reversion_mode": "fixed schedule run-to-depletion"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "description": "Chart specs used across sections/templates. Data sources reference the PRD's optimizer->dashboard JSON contract and simulation/*.json fields directly. Colors reference ui/colors.json so dashboard and static report exports look identical.",
+  "compatible_engines": ["sections.json", "templates.json", "exports.json", "ui/colors.json"],
+  "charts": [
+    {
+      "chart_id": "pareto_front_scatter",
+      "type": "scatter",
+      "title": "Pareto Front: Endurance vs. MTOW",
+      "data_source": "optimizer JSON -> pareto_front[] (fields: mtow, endurance, fuel_burn)",
+      "x_axis": {"field": "mtow", "label": "MTOW (kg)"},
+      "y_axis": {"field": "endurance", "label": "Endurance (hr)"},
+      "color_encoding": {"field": "fuel_burn", "scale": "sequential", "color_ref": "palette.accent.primary"},
+      "used_in": ["dashboard panel: pareto_front", "readme: results", "pitch_deck: results"]
+    },
+    {
+      "chart_id": "endurance_comparison_bar",
+      "type": "grouped_bar",
+      "title": "Endurance by Strategy",
+      "data_source": "manual/derived: rule-based vs static-optimized vs RL-adaptive results",
+      "categories": ["Rule-based (baseline)", "Static-optimized", "RL-adaptive"],
+      "y_axis": {"field": "endurance_hr", "label": "Endurance (hr)"},
+      "color_encoding": {
+        "Rule-based (baseline)": "color_ref: data_series.series_4_baseline_comparison",
+        "Static-optimized": "color_ref: data_series.series_3_combined",
+        "RL-adaptive": "color_ref: data_series.series_1_engine"
+      },
+      "used_in": ["readme: baseline_comparison", "pitch_deck: baseline_comparison"],
+      "annotation_note": "Label bars with the improvement percentage (e.g. '+18%') directly on the chart — matches PRD 'Presentation & Visualization' scoring criterion."
+    },
+    {
+      "chart_id": "mission_profile_timeline",
+      "type": "multi_line_timeseries",
+      "title": "Mission Profile",
+      "data_source": "timeline.json output_record_schema -> time_min, altitude_m, power_kw, soc",
+      "x_axis": {"field": "time_min", "label": "Time (min)"},
+      "y_axis_left": {"field": "altitude_m", "label": "Altitude (m)", "color_ref": "data_series.series_1_engine"},
+      "y_axis_right": {"field": "power_kw", "label": "Power (kW)", "color_ref": "data_series.series_2_battery"},
+      "overlay": {"field": "phase_name", "type": "background_band", "icon_ref": "icons.json mission_phase_icons"},
+      "used_in": ["dashboard panel: mission_profile", "pitch_deck: methodology"]
+    },
+    {
+      "chart_id": "battery_soc_curve",
+      "type": "area",
+      "title": "Battery State of Charge",
+      "data_source": "timeline.json output_record_schema -> time_min, soc",
+      "x_axis": {"field": "time_min", "label": "Time (min)"},
+      "y_axis": {"field": "soc", "label": "SoC (%)", "range": [0, 100]},
+      "threshold_lines": [
+        {"value_ref": "simulation/defaults.json battery.soc_min_pct", "label": "Reserve floor", "color_ref": "status.emergency"},
+        {"value_ref": "simulation/defaults.json battery.soc_max_pct", "label": "Charge ceiling", "color_ref": "status.degraded"}
+      ],
+      "fill_color_ref": "palette.accent.primary_glow",
+      "used_in": ["dashboard panel: battery_soc"]
+    },
+    {
+      "chart_id": "convergence_hypervolume",
+      "type": "line",
+      "title": "Optimizer Convergence",
+      "data_source": "optimizer JSON -> convergence (fields: generations, hypervolume, converged)",
+      "x_axis": {"field": "generation", "label": "Generation"},
+      "y_axis": {"field": "hypervolume", "label": "Hypervolume"},
+      "color_ref": "palette.accent.primary",
+      "used_in": ["readme: methodology (optional, technical-depth appendix)"]
+    },
+    {
+      "chart_id": "sensitivity_tornado",
+      "type": "tornado_bar",
+      "title": "Sensitivity of Endurance to Key Assumptions",
+      "data_source": "manual/derived: endurance delta when varying L/D, SFC, battery Wh/kg by +/-X%",
+      "categories": ["L/D ratio", "SFC", "battery energy density", "propeller efficiency"],
+      "y_axis": {"field": "endurance_delta_pct", "label": "Endurance change (%)"},
+      "color_encoding": {"positive": "color_ref: status.nominal", "negative": "color_ref: status.emergency"},
+      "used_in": ["sensitivity_report", "judge_faq: answers assumption-robustness questions"]
+    },
+    {
+      "chart_id": "constraint_satisfaction_panel",
+      "type": "status_grid",
+      "title": "Constraint Checker",
+      "data_source": "optimizer JSON -> solution + simulation/defaults.json constraint values",
+      "checks": [
+        {"label": "MTOW <= 1000 kg", "status_ref": "computed"},
+        {"label": "Payload = 200 kg", "status_ref": "computed"},
+        {"label": "SoC within 20-90%", "status_ref": "computed"},
+        {"label": "Cruise power < engine capacity", "status_ref": "computed"}
+      ],
+      "icon_ref": "icons.json status_icons",
+      "used_in": ["dashboard panel: constraint_checker"]
+    }
+  ]
+}

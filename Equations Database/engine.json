@@ -1,0 +1,188 @@
+{
+  "_schema": "equations-db/v1.0",
+  "_domain": "Turboshaft Engine — Thermodynamic Model",
+  "_description": "HAL HTSE-1200 class turboshaft: Brayton cycle analysis, TET constraint, shaft power, and performance equations.",
+
+  "equations": [
+
+    {
+      "id": "EQ-ENG-01",
+      "name": "Compressor Exit Temperature (Isentropic + Efficiency)",
+      "latex": "T_2 = T_1 \\left(1 + \\frac{PR^{(\\gamma-1)/\\gamma} - 1}{\\eta_c}\\right)",
+      "python": "T2 = T1 * (1 + (PR**((gamma-1)/gamma) - 1) / eta_c)",
+      "description": "Temperature at compressor exit (station 2). Accounts for compressor isentropic efficiency eta_c. Higher PR → higher T2 → higher TET required for same power.",
+      "category": "thermodynamic_cycle",
+      "variables": {
+        "T2":    { "name": "Compressor exit temperature",  "unit": "K",    "typical_range": "450–700" },
+        "T1":    { "name": "Compressor inlet temperature", "unit": "K",    "notes": "= T_ambient = ISA T(h)" },
+        "PR":    { "name": "Compressor pressure ratio",    "unit": "—",    "typical_range": "6–15",    "notes": "For GARUN HTSE-class: 8.5" },
+        "gamma": { "name": "Ratio of specific heats",     "unit": "—",    "value": 1.4,               "notes": "For air (cold side). Use 1.33 for hot combustion gases." },
+        "eta_c": { "name": "Compressor isentropic efficiency", "unit": "—", "typical_range": "0.78–0.86", "notes": "0.82 for GARUN HTSE-class" }
+      },
+      "reference": {
+        "text": "Mattingly, J.D. — Elements of Gas Turbine Propulsion, §5.3. McGraw-Hill.",
+        "standard": "ARP 755A — Gas Turbine Performance Definitions"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "T1": 268.67, "PR": 8.5, "gamma": 1.4, "eta_c": 0.82 },
+          "expected_T2_K": 557.4,
+          "computed_T2_K": 557.4,
+          "error_pct": 0.0
+        }
+      }
+    },
+
+    {
+      "id": "EQ-ENG-02",
+      "name": "Turbine Entry Temperature — PRIMARY CONSTRAINT",
+      "latex": "T_3 = T_2 + \\frac{\\eta_b \\cdot \\dot{m}_{fuel} \\cdot LHV}{\\dot{m}_{total} \\cdot c_{p,hot}} \\leq T_{TET,limit}",
+      "python": "T3 = T2 + (eta_b * m_dot_fuel * LHV) / (m_dot_total * cp_hot)",
+      "description": "Turbine Entry Temperature. THE critical constraint for HAL indigenous engines. Single-crystal blade technology limits TET to 1700 K. If T3 > 1700 K, reduce throttle or engage battery to reduce fuel flow.",
+      "category": "CRITICAL_CONSTRAINT",
+      "variables": {
+        "T3":         { "name": "Turbine Entry Temperature (TET)",  "unit": "K",      "hard_limit": 1700, "notes": "HARD CONSTRAINT. Must not exceed 1700 K for HTSE-class blades." },
+        "T2":         { "name": "Compressor exit temperature",       "unit": "K" },
+        "eta_b":      { "name": "Combustion efficiency",             "unit": "—",      "typical_range": "0.99–0.995" },
+        "m_dot_fuel": { "name": "Fuel mass flow rate",               "unit": "kg/s" },
+        "LHV":        { "name": "Lower Heating Value of fuel",       "unit": "J/kg",   "value": 43200000, "notes": "43.2 MJ/kg for Jet-A1" },
+        "m_dot_total":{ "name": "Total mass flow through combustor", "unit": "kg/s",   "notes": "= m_dot_air + m_dot_fuel. Fuel-air ratio typically 0.02–0.03" },
+        "cp_hot":     { "name": "Specific heat of hot gases",        "unit": "J/kg/K", "value": 1150,     "notes": "Combustion products. Higher than air (1005 J/kg/K) due to CO2 and H2O." }
+      },
+      "fuel_air_ratio": {
+        "latex": "f = \\frac{\\dot{m}_{fuel}}{\\dot{m}_{air}} = \\frac{c_p (T_3 - T_2)}{\\eta_b \\cdot LHV}",
+        "python": "f = (cp_hot * (T3 - T2)) / (eta_b * LHV)",
+        "notes": "Inverse form: compute required fuel flow to reach target TET."
+      },
+      "TET_management": {
+        "rule": "IF T3_predicted > 1700 K: reduce throttle (reduce m_dot_fuel) → power deficit → battery supplements",
+        "python_check": "if T3 > 1700: engage_battery_boost()"
+      },
+      "reference": {
+        "text": "Mattingly §5.4. HAL TBC coating specification (confidential).",
+        "blade_limit_ref": "Nickel superalloy TMS-238, CMSX-4 single crystal blades: T_limit = 1700 K (HAL programme target)"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "T2": 557.4, "eta_b": 0.995, "m_dot_fuel": 0.00825, "LHV": 43200000, "m_dot_total": 2.108, "cp_hot": 1150 },
+          "expected_T3_K": 1557,
+          "notes": "At cruise throttle. TET well below 1700K limit → 143K margin."
+        }
+      }
+    },
+
+    {
+      "id": "EQ-ENG-03",
+      "name": "Gas Generator Turbine Work",
+      "latex": "W_{GGT} = \\frac{W_c}{\\eta_{GGT}}",
+      "python": "W_GGT = W_c / eta_GGT",
+      "description": "Work extracted by the Gas Generator Turbine (GGT) to drive the compressor. The GGT does not contribute to shaft power output — it powers the compressor only.",
+      "category": "thermodynamic_cycle",
+      "variables": {
+        "W_GGT":   { "name": "GGT work per unit mass flow", "unit": "J/kg" },
+        "W_c":     { "name": "Compressor work per unit mass flow", "unit": "J/kg", "notes": "W_c = cp_air * (T2 - T1)" },
+        "eta_GGT": { "name": "GGT isentropic efficiency",   "unit": "—",  "typical_range": "0.82–0.90", "notes": "0.85 for GARUN" }
+      },
+      "compressor_work": {
+        "latex": "W_c = c_{p,air} (T_2 - T_1)",
+        "python": "W_c = cp_air * (T2 - T1)",
+        "cp_air": 1005
+      },
+      "reference": { "text": "Mattingly §5.5" },
+      "validation": {
+        "test_case": {
+          "inputs": { "cp_air": 1005, "T2": 557.4, "T1": 268.67, "eta_GGT": 0.85 },
+          "W_c_J_per_kg": 290063,
+          "expected_W_GGT_J_per_kg": 341251,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-ENG-04",
+      "name": "Power Turbine Shaft Power",
+      "latex": "P_{shaft} = \\dot{m} \\cdot c_{p,hot} \\cdot (T_4 - T_5) \\cdot \\eta_{PT}",
+      "python": "P_shaft = m_dot * cp_hot * (T4 - T5) * eta_PT",
+      "description": "Shaft power extracted by the Power Turbine (PT) from hot gas expansion from T4 to T5. This is the usable mechanical output to the gearbox.",
+      "category": "shaft_power",
+      "variables": {
+        "P_shaft": { "name": "Shaft power output",            "unit": "W or kW",  "typical_range": "20–100 kW" },
+        "m_dot":   { "name": "Mass flow rate",                "unit": "kg/s",     "notes": "Total gas flow through power turbine" },
+        "cp_hot":  { "name": "Specific heat of hot gases",    "unit": "J/kg/K",   "value": 1150 },
+        "T4":      { "name": "Power turbine inlet temperature","unit": "K",        "notes": "= T3 minus GGT temperature drop" },
+        "T5":      { "name": "Power turbine exit temperature", "unit": "K",        "notes": "Exhaust temperature" },
+        "eta_PT":  { "name": "Power turbine isentropic efficiency", "unit": "—",  "typical_range": "0.84–0.90", "notes": "0.87 for GARUN" }
+      },
+      "reference": { "text": "Mattingly §5.5, Walsh & Fletcher — Gas Turbine Performance, Ch.3" },
+      "validation": {
+        "test_case": {
+          "inputs": { "m_dot": 2.1, "cp_hot": 1150, "T4": 1350, "T5": 980, "eta_PT": 0.87 },
+          "expected_P_shaft_kW": 777.8,
+          "notes": "Full gas path power — gearbox and generator extract from this"
+        }
+      }
+    },
+
+    {
+      "id": "EQ-ENG-05",
+      "name": "Thermal Efficiency",
+      "latex": "\\eta_{th} = 1 - \\frac{T_1}{T_3} \\cdot \\frac{T_5/T_1 - 1}{T_3/T_1 - 1}  \\approx  1 - \\frac{1}{PR^{(\\gamma-1)/\\gamma}} \\quad \\text{(ideal Brayton)}",
+      "python": "eta_th_ideal = 1 - 1 / (PR**((gamma-1)/gamma))",
+      "description": "Cycle thermal efficiency. Ideal Brayton cycle approximation shows only PR governs efficiency. Real cycle includes compressor/turbine irreversibilities.",
+      "category": "cycle_efficiency",
+      "variables": {
+        "eta_th": { "name": "Thermal efficiency",          "unit": "—",    "typical_range": "0.25–0.45" },
+        "PR":     { "name": "Compressor pressure ratio",   "unit": "—" },
+        "gamma":  { "name": "Ratio of specific heats",    "unit": "—",    "value": 1.4 }
+      },
+      "real_vs_ideal": {
+        "ideal_at_PR_8.5": 0.451,
+        "real_GARUN": 0.312,
+        "gap_explanation": "Real losses: compressor irreversibility (Δ≈8%), combustor pressure loss (Δ≈2%), turbine irreversibility (Δ≈6%), heat leaks (Δ≈3%)"
+      },
+      "reference": { "text": "Çengel & Boles — Thermodynamics: An Engineering Approach, §9.8. McGraw-Hill." },
+      "validation": {
+        "test_case": {
+          "inputs": { "PR": 8.5, "gamma": 1.4 },
+          "expected_eta_ideal": 0.451,
+          "expected_eta_real_approx": 0.31,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-ENG-06",
+      "name": "Engine Power Lapse with Altitude",
+      "latex": "P_{shaft}(h) = P_{shaft,SL} \\cdot \\left(\\frac{\\rho(h)}{\\rho_{SL}}\\right)^n",
+      "python": "P_at_altitude = P_SL * (rho_h / rho_SL) ** n",
+      "description": "Turboshaft power decreases with altitude due to reduced air density. Exponent n depends on engine type: 1.0 for naturally aspirated piston, ~0.7–0.8 for turboshaft (compressor partially compensates).",
+      "category": "altitude_performance",
+      "variables": {
+        "P_shaft_h":  { "name": "Shaft power at altitude h",  "unit": "kW" },
+        "P_shaft_SL": { "name": "Shaft power at sea level",   "unit": "kW", "notes": "Rated power: 75 kW for GARUN" },
+        "rho_h":      { "name": "Air density at altitude h",  "unit": "kg/m³", "notes": "From ISA model" },
+        "rho_SL":     { "name": "Air density at sea level",   "unit": "kg/m³", "value": 1.225 },
+        "n":          { "name": "Power lapse exponent",       "unit": "—",     "typical_range": "0.7–1.0", "notes": "n=0.75 for HAL turboshaft class" }
+      },
+      "GARUN_at_3000m": {
+        "rho_3000": 0.905,
+        "rho_SL": 1.225,
+        "n": 0.75,
+        "P_SL_kW": 75,
+        "P_3000_kW": 63.2,
+        "lapse_pct": 15.7
+      },
+      "reference": { "text": "Raymer §13.4. Mattingly §9.2." },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_SL_kW": 75, "rho_h": 0.905, "rho_SL": 1.225, "n": 0.75 },
+          "expected_P_kW": 63.2,
+          "error_pct": 0.5
+        }
+      }
+    }
+
+  ]
+}

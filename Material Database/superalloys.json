@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "dataset": "Aerospace Structural & Propulsion Materials Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "note": "Values below are representative handbook/typical-batch figures (comparable to MMPDS, MatWeb, and standard aerospace materials references), not a specific mill certification. Real properties vary by heat treatment, batch, test temperature, and manufacturer -- verify against a datasheet before citing an exact number to a HAL panel. All values room-temperature unless otherwise noted."
+  },
+  "items": [
+    {
+      "id": "inconel_718",
+      "material": "Inconel 718 (Alloy 718, UNS N07718)",
+      "type": "Nickel-chromium-iron superalloy, precipitation-hardened",
+      "density_kg_m3": 8190,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 1100,
+        "ultimate_tensile_strength_MPa": 1375,
+        "elastic_modulus_GPa": 200,
+        "elongation_percent": 12
+      },
+      "max_service_temp_C": 700,
+      "typical_aerospace_applications": [
+        "Turbine disks",
+        "Engine casings",
+        "Fasteners",
+        "Shafts"
+      ],
+      "garun_relevance": "Reference material for the turboshaft engine's hot-section components (\u00a75.4 propulsion chain) if a structural weight estimate is ever required beyond PS1's stated scope.",
+      "description": "The most widely used aerospace superalloy overall; excellent strength retention up to ~650 C and good weldability relative to other superalloys, which is why it dominates turbine-disk and casing applications."
+    },
+    {
+      "id": "inconel_625",
+      "material": "Inconel 625 (Alloy 625, UNS N06625)",
+      "type": "Nickel-chromium-molybdenum-niobium superalloy, solid-solution strengthened",
+      "density_kg_m3": 8440,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 460,
+        "ultimate_tensile_strength_MPa": 930,
+        "elastic_modulus_GPa": 208,
+        "elongation_percent": 42
+      },
+      "max_service_temp_C": 980,
+      "typical_aerospace_applications": [
+        "Exhaust systems",
+        "Combustor liners",
+        "Ducting"
+      ],
+      "garun_relevance": "Relevant if modeling the exhaust/tailpipe section of the series-hybrid engine, which sees both high temperature and corrosive combustion products.",
+      "description": "Chosen over Inconel 718 where corrosion/oxidation resistance at very high temperature matters more than peak strength; lower strength but far higher elongation and oxidation resistance."
+    },
+    {
+      "id": "rene_41",
+      "material": "Rene 41",
+      "type": "Nickel-base superalloy, precipitation-hardened",
+      "density_kg_m3": 8250,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 1035,
+        "ultimate_tensile_strength_MPa": 1310,
+        "elastic_modulus_GPa": 218,
+        "elongation_percent": 14
+      },
+      "max_service_temp_C": 815,
+      "typical_aerospace_applications": [
+        "Turbine blades",
+        "Turbine disks",
+        "High-temp fasteners"
+      ],
+      "garun_relevance": "Higher-temperature alternative to Inconel 718 if the BSFC map (\u00a75.6) implies sustained high-power operation near the engine's rated limit.",
+      "description": "Historically used in high-performance jet engines and rocket structures (e.g. X-15) where 718's ~700 C ceiling isn't sufficient."
+    },
+    {
+      "id": "hastelloy_x",
+      "material": "Hastelloy X",
+      "type": "Nickel-chromium-iron-molybdenum superalloy, solid-solution strengthened",
+      "density_kg_m3": 8220,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 360,
+        "ultimate_tensile_strength_MPa": 785,
+        "elastic_modulus_GPa": 205,
+        "elongation_percent": 43
+      },
+      "max_service_temp_C": 1200,
+      "typical_aerospace_applications": [
+        "Combustor cans",
+        "Afterburner components",
+        "Flame holders"
+      ],
+      "garun_relevance": "The combustor-can-class material if a future GARUN iteration models internal engine geometry rather than treating the engine as a black-box BSFC lookup.",
+      "description": "Prioritizes oxidation/fatigue resistance at very high temperature over strength -- used where components see the most direct flame exposure in a gas turbine."
+    },
+    {
+      "id": "nimonic_90",
+      "material": "Nimonic 90",
+      "type": "Nickel-chromium-cobalt superalloy, precipitation-hardened",
+      "density_kg_m3": 8180,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 815,
+        "ultimate_tensile_strength_MPa": 1220,
+        "elastic_modulus_GPa": 213,
+        "elongation_percent": 12
+      },
+      "max_service_temp_C": 815,
+      "typical_aerospace_applications": [
+        "Turbine blades",
+        "Turbine rings",
+        "Exhaust valves"
+      ],
+      "garun_relevance": "Classic small-turboshaft turbine-blade material, directly relevant to the 60 kW-class engine assumed in your blueprint's propulsion sizing.",
+      "description": "One of the earliest widely-used nickel superalloys; still common in small/medium turboshaft turbine sections due to good creep resistance and manufacturability."
+    }
+  ]
+}

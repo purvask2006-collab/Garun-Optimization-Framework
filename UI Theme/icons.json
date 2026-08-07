@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "description": "Icon mapping using lucide icon names (available via lucide-react, and lucide's SVG set works fine embedded directly in Streamlit/HTML if not using React). One icon per panel, one per health status, one per power source — kept minimal and functional, not decorative.",
+  "icon_set": "lucide",
+  "stroke_width_default": 1.75,
+  "size_px_default": 20,
+  "panel_icons": {
+    "key_metrics": "gauge",
+    "pareto_front": "scatter-chart",
+    "mission_profile": "route",
+    "battery_soc": "battery-charging",
+    "constraint_checker": "shield-check",
+    "assumptions": "list-checks"
+  },
+  "status_icons": {
+    "NOMINAL": {"icon": "check-circle-2", "color_ref": "status.nominal"},
+    "DEGRADED": {"icon": "alert-triangle", "color_ref": "status.degraded"},
+    "EMERGENCY": {"icon": "octagon-alert", "color_ref": "status.emergency"},
+    "ABORT": {"icon": "circle-slash", "color_ref": "status.abort"},
+    "note": "Maps 1:1 to simulation/states.json health_states."
+  },
+  "power_source_icons": {
+    "engine_primary": "flame",
+    "battery_primary": "battery-full",
+    "engine_primary_battery_assist": "zap",
+    "battery_primary_engine_charging": "refresh-cw",
+    "note": "Maps to active_power_source values in simulation/states.json — shown as a small badge on the Mission Profile panel timeline."
+  },
+  "mission_phase_icons": {
+    "Takeoff": "plane-takeoff",
+    "Climb": "trending-up",
+    "Cruise": "move-right",
+    "Loiter": "orbit",
+    "Descent": "trending-down",
+    "Landing": "plane-landing",
+    "note": "Matched loosely by keyword against phase_name in missions/*.json; falls back to 'circle-dot' for any unmatched phase name (e.g. 'Delivery', 'Survey Grid')."
+  },
+  "misc": {
+    "loading": "loader-circle",
+    "error": "x-circle",
+    "info": "info",
+    "expand": "chevron-down",
+    "collapse": "chevron-up",
+    "download": "download",
+    "refresh_rerun": "refresh-cw"
+  },
+  "usage_notes": [
+    "Keep icons at size_px_default everywhere except metric_hero contexts, where they may scale to 28px max — never larger, this is a data dashboard, not a marketing page.",
+    "Status and power-source icons always pair with their color_ref token from colors.json — never rely on color alone (accessibility) or icon alone (scan speed); use both together."
+  ]
+}

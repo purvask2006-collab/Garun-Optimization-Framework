@@ -1,0 +1,476 @@
+{
+  "$schema": "../schemas/hybrid_propulsion_schema_v1.json",
+  "system_id": "HPS-SERIES-60KW",
+  "metadata": {
+    "name": "60kW Series Hybrid Range-Extender System — Fixed Wing MALE UAV",
+    "architecture_type": "series",
+    "platform_class": "fixed_wing",
+    "design_mission": "24-hour ISTAR mission at 3000m, 120 ktas cruise, loiter capable",
+    "certification_basis": "DGCA RPAS Category Specific / STANAG 4703",
+    "revision": "A1",
+    "last_updated": "2026-07-01",
+    "design_authority": "Trinetra Aerospace Technologies"
+  },
+
+  "architecture": {
+    "type": "series",
+    "power_flow_description": "Micro-turboshaft (MICRO-TS-60) drives PMSG generator. Generator output rectified to 270V DC bus. Bus feeds: (1) PMSM propulsion motor via inverter, (2) battery pack for buffering/peak shaving. Battery also provides electric-only operation during startup, low-power loiter, and engine-off stealth segments. No mechanical path between turboshaft and propeller.",
+    "thermal_count": 1,
+    "generator_count": 1,
+    "motor_count": 1,
+    "battery_pack_count": 2,
+    "power_bus_topology": "single_bus",
+    "redundancy_level": "partial",
+    "failure_modes": [
+      {
+        "failure": "Turboshaft flame-out",
+        "effect": "Generator drops offline; battery supplies motor only",
+        "mitigation": "Battery provides 15 min emergency endurance; automatic in-flight restart attempted once"
+      },
+      {
+        "failure": "Generator failure",
+        "effect": "Same as flame-out from bus perspective",
+        "mitigation": "Battery reserve; return-to-home mode engaged"
+      },
+      {
+        "failure": "Battery pack 1 fault",
+        "effect": "50% battery power reduction; derates peak power",
+        "mitigation": "Pack 2 continues; mission continues at reduced tempo"
+      },
+      {
+        "failure": "Motor inverter fault",
+        "effect": "Total propulsion loss",
+        "mitigation": "Glide ratio permits controlled descent; auto-land mode"
+      }
+    ],
+    "block_diagram_notes": "MICRO-TS-60 → [shaft] → PMSG-60kW → [AC 3-phase] → Rectifier → [270V DC bus] → Inverter → PMSM-60kW → [shaft] → Propeller. Battery packs connect directly to 270V DC bus via bidirectional DC-DC or direct switched connection."
+  },
+
+  "thermal_unit": {
+    "engine_id_ref": ["MICRO-TS-60"],
+    "quantity": 1,
+    "role": "primary_range_extender",
+    "nominal_operating_point_kw": 43,
+    "operating_rpm": 6500,
+    "fuel_tank_capacity_kg": 35,
+    "fuel_tank_capacity_L": 45,
+    "fuel_type_primary": "Jet-A1",
+    "specific_fuel_consumption_kg_per_kwh": 0.368,
+    "start_time_s": 45,
+    "warm_up_time_s": 120,
+    "cht_integration": {
+      "waste_heat_recoverable_kw": 8,
+      "heat_to_cabin_kw": 0,
+      "heat_to_avionics_kw": 0.5
+    }
+  },
+
+  "electrical_unit": {
+    "generators": [
+      {
+        "generator_id": "60kW-PMSG-001",
+        "type": "PMSG",
+        "rated_power_kw": 60,
+        "rated_rpm": 6000,
+        "rated_voltage_V": 270,
+        "phase": 3,
+        "peak_efficiency": 0.945,
+        "efficiency_at_nominal": 0.938,
+        "weight_kg": 9.5,
+        "cooling": "oil-cooled end-windings + airflow housing",
+        "protection_class": "IP54"
+      }
+    ],
+    "motors": [
+      {
+        "motor_id": "PMSM-PROP-60KW",
+        "type": "PMSM",
+        "rated_power_kw": 60,
+        "peak_power_kw": 80,
+        "rated_rpm": 2400,
+        "rated_torque_Nm": 238,
+        "peak_torque_Nm": 318,
+        "rated_voltage_V": 270,
+        "phase": 3,
+        "peak_efficiency": 0.96,
+        "efficiency_at_nominal": 0.955,
+        "specific_power_kw_per_kg": 5.8,
+        "weight_kg": 10.5,
+        "cooling": "liquid-cooled stator jacket",
+        "protection_class": "IP67",
+        "quantity": 1
+      }
+    ],
+    "power_electronics": {
+      "inverter_type": "3-phase SiC MOSFET",
+      "inverter_rated_power_kw": 80,
+      "inverter_efficiency": 0.982,
+      "rectifier_efficiency": 0.978,
+      "dc_bus_voltage_V": 270,
+      "switching_frequency_kHz": 20,
+      "cooling": "liquid-cooled cold plate",
+      "emc_class": "MIL-STD-461G"
+    }
+  },
+
+  "energy_storage": {
+    "type": "NMC",
+    "quantity_packs": 2,
+    "usable_capacity_kwh": 8.0,
+    "total_capacity_kwh": 10.0,
+    "nominal_voltage_V": 268,
+    "max_voltage_V": 302,
+    "min_voltage_V": 230,
+    "continuous_discharge_C": 2.0,
+    "peak_discharge_C": 4.0,
+    "max_continuous_power_kw": 20,
+    "peak_power_kw": 40,
+    "peak_duration_s": 30,
+    "charge_rate_max_C": 1.0,
+    "specific_energy_wh_per_kg": 220,
+    "specific_power_w_per_kg": 820,
+    "energy_density_wh_per_L": 480,
+    "weight_kg": 36.4,
+    "volume_L": 16.7,
+    "cycle_life_to_80pct_cap": 1000,
+    "calendar_life_years": 5,
+    "operating_temp_C": [-20, 55],
+    "thermal_runaway_threshold_C": 85,
+    "bms": {
+      "type": "distributed cell-level monitoring with pack-level control",
+      "soc_estimation_method": "EKF",
+      "balancing": "active_capacitive",
+      "protection_functions": [
+        "over-voltage cutoff",
+        "under-voltage cutoff",
+        "over-current cutoff",
+        "over-temperature cutoff",
+        "cell-level fuse",
+        "short-circuit protection",
+        "ground fault detection"
+      ],
+      "communication_protocol": "CAN 2.0B"
+    },
+    "soc_operating_window": {
+      "min_soc_normal": 0.20,
+      "max_soc_normal": 0.90,
+      "min_soc_emergency": 0.10,
+      "reserve_energy_kwh": 1.0
+    },
+    "degradation_model": {
+      "capacity_fade_per_100_cycles_pct": 2.0,
+      "high_temp_accel_factor_per_10C": 1.8,
+      "dod_vs_cycle_life": {
+        "dod_pct": [20, 40, 60, 80, 100],
+        "cycle_life": [5000, 2500, 1400, 900, 600]
+      }
+    }
+  },
+
+  "power_management": {
+    "strategy": "combined_CD_CS",
+    "operating_modes": [
+      {
+        "label": "electric_only_startup",
+        "thermal_power_kw": 0,
+        "electrical_power_kw": 25,
+        "battery_power_kw": 25,
+        "soc_band": [0.7, 0.9],
+        "duration_min": 5,
+        "notes": "Pre-launch taxi/hover and engine start sequence"
+      },
+      {
+        "label": "climb_boost",
+        "thermal_power_kw": 60,
+        "electrical_power_kw": 80,
+        "battery_power_kw": 20,
+        "soc_band": [0.5, 0.85],
+        "duration_min": 15,
+        "notes": "Engine running at rated; battery supplements to 80kW peak for climb"
+      },
+      {
+        "label": "cruise_charge_sustaining",
+        "thermal_power_kw": 43,
+        "electrical_power_kw": 38,
+        "battery_power_kw": -5,
+        "soc_band": [0.55, 0.65],
+        "duration_min": 900,
+        "notes": "Engine at 72% rated for best SFC; 5kW to trickle charge battery. Motor at 38kW cruise."
+      },
+      {
+        "label": "loiter_economy",
+        "thermal_power_kw": 25,
+        "electrical_power_kw": 18,
+        "battery_power_kw": -7,
+        "soc_band": [0.60, 0.75],
+        "duration_min": 300,
+        "notes": "Low-speed ISR orbit; engine lightly loaded, excess charges battery"
+      },
+      {
+        "label": "stealth_electric_only",
+        "thermal_power_kw": 0,
+        "electrical_power_kw": 15,
+        "battery_power_kw": 15,
+        "soc_band": [0.40, 0.70],
+        "duration_min": 30,
+        "notes": "Engine off — thermal/acoustic signature minimised"
+      },
+      {
+        "label": "emergency_battery_return",
+        "thermal_power_kw": 0,
+        "electrical_power_kw": 20,
+        "battery_power_kw": 20,
+        "soc_band": [0.10, 0.25],
+        "duration_min": 15,
+        "notes": "Engine flame-out; battery-only emergency RTL at reduced power"
+      }
+    ],
+    "efficiency_chains": [
+      {
+        "chain_label": "fuel_to_propeller_via_engine_generator_motor",
+        "thermal_eta": 0.203,
+        "generator_eta": 0.938,
+        "rectifier_eta": 0.978,
+        "inverter_eta": 0.982,
+        "motor_eta": 0.955,
+        "gearbox_eta": 1.0,
+        "overall_fuel_to_shaft_eta": 0.176,
+        "notes": "Series chain penalty relative to direct-drive; offset by operating point optimisation"
+      },
+      {
+        "chain_label": "battery_to_propeller",
+        "generator_eta": 1.0,
+        "rectifier_eta": 1.0,
+        "inverter_eta": 0.982,
+        "motor_eta": 0.955,
+        "battery_round_trip_eta": 0.96,
+        "overall_fuel_to_shaft_eta": 0.938,
+        "notes": "Battery roundtrip 96% assumed; inverter+motor chain from bus"
+      }
+    ],
+    "power_split_rules": {
+      "thermal_min_power_kw": 20,
+      "thermal_max_power_kw": 60,
+      "battery_boost_soc_min": 0.40,
+      "battery_charge_soc_max": 0.85,
+      "thermal_only_below_power_kw": 15,
+      "electric_only_below_power_kw": 15,
+      "battery_emergency_reserve_kwh": 1.0
+    },
+    "transient_response": {
+      "battery_ramp_rate_kw_per_s": 80,
+      "thermal_ramp_rate_kw_per_s": 3,
+      "motor_torque_rise_time_ms": 5
+    }
+  },
+
+  "system_performance": {
+    "total_system_power_kw": 60,
+    "total_peak_power_kw": 80,
+    "electric_only_range_km": 95,
+    "electric_only_endurance_min": 48,
+    "hybrid_range_km": 2400,
+    "hybrid_endurance_hr": 20,
+    "specific_fuel_consumption_system_kg_per_kwh": 0.41,
+    "system_power_to_weight_kw_per_kg": 0.62,
+    "system_energy_density_kwh_per_kg": 0.26,
+    "fuel_burn_hybrid_vs_thermal_only_pct_reduction": 18,
+    "co2_reduction_pct": 18,
+    "mission_profile": {
+      "segments": [
+        {
+          "name": "Ground start + taxi",
+          "duration_min": 5,
+          "altitude_m": 0,
+          "airspeed_ktas": 0,
+          "thermal_power_kw": 0,
+          "battery_power_kw": 10,
+          "motor_power_kw": 5,
+          "soc_start": 0.90,
+          "soc_end": 0.87,
+          "fuel_burn_kg": 0,
+          "notes": "Engine started during taxi; battery handles avionics + motor"
+        },
+        {
+          "name": "Climb to 3000m",
+          "duration_min": 18,
+          "altitude_m": 1500,
+          "airspeed_ktas": 90,
+          "thermal_power_kw": 60,
+          "battery_power_kw": 18,
+          "motor_power_kw": 78,
+          "soc_start": 0.87,
+          "soc_end": 0.78,
+          "fuel_burn_kg": 1.8,
+          "notes": "Battery boosts motor during climb; engine at rated"
+        },
+        {
+          "name": "Transit cruise",
+          "duration_min": 120,
+          "altitude_m": 3000,
+          "airspeed_ktas": 120,
+          "thermal_power_kw": 43,
+          "battery_power_kw": -5,
+          "motor_power_kw": 38,
+          "soc_start": 0.78,
+          "soc_end": 0.82,
+          "fuel_burn_kg": 8.9,
+          "notes": "Charge-sustaining; engine at best-SFC operating point"
+        },
+        {
+          "name": "ISR loiter",
+          "duration_min": 720,
+          "altitude_m": 3000,
+          "airspeed_ktas": 80,
+          "thermal_power_kw": 25,
+          "battery_power_kw": -7,
+          "motor_power_kw": 18,
+          "soc_start": 0.82,
+          "soc_end": 0.85,
+          "fuel_burn_kg": 22.2,
+          "notes": "Long loiter; engine charges battery slowly. Stealth window mid-loiter."
+        },
+        {
+          "name": "Return transit",
+          "duration_min": 120,
+          "altitude_m": 2000,
+          "airspeed_ktas": 120,
+          "thermal_power_kw": 43,
+          "battery_power_kw": -3,
+          "motor_power_kw": 38,
+          "soc_start": 0.85,
+          "soc_end": 0.88,
+          "fuel_burn_kg": 8.9,
+          "notes": "Return under engine power; battery topped up"
+        },
+        {
+          "name": "Descent + land",
+          "duration_min": 15,
+          "altitude_m": 500,
+          "airspeed_ktas": 70,
+          "thermal_power_kw": 10,
+          "battery_power_kw": -3,
+          "motor_power_kw": 7,
+          "soc_start": 0.88,
+          "soc_end": 0.90,
+          "fuel_burn_kg": 0.4,
+          "notes": "Engine at idle; regenerative charging during descent (motor as generator at partial)"
+        }
+      ],
+      "total_fuel_burn_kg": 42.2,
+      "total_energy_kwh": 88.5,
+      "total_range_km": 2160,
+      "total_endurance_hr": 16.5
+    }
+  },
+
+  "thermal_management": {
+    "cooling_architecture": "liquid_cooled",
+    "coolant_type": "50/50 ethylene glycol / deionised water",
+    "coolant_flow_rate_Lpm": 12,
+    "radiator_area_m2": 0.35,
+    "total_heat_rejection_kw": 22,
+    "component_heat_loads": {
+      "engine_kw": 12,
+      "generator_kw": 3.5,
+      "motor_kw": 2.8,
+      "power_electronics_kw": 1.5,
+      "battery_kw": 2.2
+    },
+    "max_ambient_for_full_power_C": 45,
+    "derating_above_ambient_C": {
+      "ambient_C": [45, 50, 55],
+      "power_multiplier": [1.0, 0.93, 0.85]
+    },
+    "battery_thermal_control": {
+      "method": "combined",
+      "target_temp_range_C": [15, 40],
+      "heating_power_kw": 0.5,
+      "cooling_power_kw": 1.2
+    }
+  },
+
+  "system_envelope": {
+    "altitude_max_m": 5000,
+    "altitude_rated_m": 3000,
+    "ambient_temp_range_C": [-30, 50],
+    "mach_max": 0.22,
+    "g_load_limits": { "positive_g": 3.5, "negative_g": -1.5 },
+    "humidity_max_percent": 100,
+    "dust_ingestion_class": "MIL-STD-810H Method 510.7",
+    "vibration_qualification": "MIL-STD-810H Method 514.8",
+    "emi_qualification": "MIL-STD-461G"
+  },
+
+  "control_system": {
+    "hems_type": "power_split_rule_based",
+    "computation_platform": "ARM Cortex-A53 + real-time RTOS",
+    "update_rate_Hz": 100,
+    "communication_bus": "CAN",
+    "communication_rate_kbps": 1000,
+    "sensors_required": [
+      "engine RPM", "engine TET", "engine EGT",
+      "generator voltage", "generator current", "generator temperature",
+      "DC bus voltage", "DC bus current",
+      "motor RPM", "motor torque", "motor temperature",
+      "battery SOC (per cell)", "battery voltage (per cell)", "battery current", "battery temperature (per cell)",
+      "inverter temperature", "ambient temperature", "coolant temperature"
+    ],
+    "fault_detection": {
+      "method": "threshold + rate-of-change + model residual",
+      "response_time_ms": 10,
+      "graceful_degradation_modes": [
+        "thermal_unit_off — battery_only",
+        "battery_fault — thermal_generator_direct",
+        "single_pack_fault — derate_50pct",
+        "inverter_fault — emergency_glide"
+      ]
+    },
+    "interfaces_with": [
+      "autopilot (MAVLink)",
+      "GCS telemetry (encrypted)",
+      "FADEC (CAN)",
+      "BMS (CAN)",
+      "flight data recorder"
+    ]
+  },
+
+  "sizing_parameters": {
+    "total_system_weight_kg": 96.7,
+    "thermal_unit_weight_kg": 16.5,
+    "generator_weight_kg": 9.5,
+    "motor_weight_kg": 10.5,
+    "battery_weight_kg": 36.4,
+    "power_electronics_weight_kg": 6.8,
+    "fuel_system_weight_kg": 5.5,
+    "structural_penalty_kg": 11.5,
+    "total_volume_m3": 0.085,
+    "cg_notes": "Battery packs forward of wing spar; engine+generator aft of CG; motor at nose",
+    "installation_constraints": "Firewall required between engine bay and battery bay. Minimum 50mm separation for thermal isolation."
+  },
+
+  "maintenance": {
+    "system_mttr_hours": 4.5,
+    "thermal_unit_tbo_hours": 500,
+    "battery_replacement_cycles": 1000,
+    "battery_replacement_years": 3,
+    "scheduled_inspection_hours": 100,
+    "predictive_maintenance_features": [
+      "SOC/SOH trending via BMS",
+      "engine TET trending vs baseline",
+      "vibration FFT analysis on motor",
+      "insulation resistance monitoring generator",
+      "fuel flow vs expected (engine health)"
+    ],
+    "data_logging": {
+      "parameters_logged": [
+        "all sensor channels", "HEMS mode transitions", "fault events",
+        "SOC trace", "fuel burn cumulative", "motor power trace",
+        "thermal unit EGT/TET", "bus voltage/current"
+      ],
+      "log_rate_Hz": 10,
+      "storage_GB": 32,
+      "telemetry": true
+    }
+  }
+}

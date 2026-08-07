@@ -1,0 +1,38 @@
+{
+  "$schema_note": "Design variables for GARUN's NSGA-II sizing problem. Bounds match HybridUAVSizingProblem in main.py (xl/xu arrays) -- keep these in sync if either file changes.",
+  "variables": [
+    {
+      "id": "battery_kwh",
+      "label": "Battery capacity",
+      "unit": "kWh",
+      "type": "continuous",
+      "bounds": { "min": 3.0, "max": 40.0 },
+      "default": 15.0,
+      "maps_to": "aircraft.battery_specific_energy_wh_per_kg (mass) + mission.build_mission_profile(battery_capacity_kwh=...)",
+      "notes": "Lower bound reflects a minimal electric-assist pack; upper bound is a soft practical ceiling for this MTOW class, not a hard physical limit."
+    },
+    {
+      "id": "engine_kw",
+      "label": "Turboshaft / generator rated power",
+      "unit": "kW",
+      "type": "continuous",
+      "bounds": { "min": 20.0, "max": 90.0 },
+      "default": 60.0,
+      "maps_to": "aircraft.Aircraft(engine_rated_power_kw=...)",
+      "notes": "PS1 baseline engine is 60 kW; range allows the optimizer to explore both under- and over-sized generator options."
+    },
+    {
+      "id": "motor_kw",
+      "label": "Electric motor rated power",
+      "unit": "kW",
+      "type": "continuous",
+      "bounds": { "min": 20.0, "max": 120.0 },
+      "default": 60.0,
+      "maps_to": "mass buildup in HybridUAVSizingProblem._estimate_mtow (motor_mass_kg = motor_kw / 5.0)",
+      "notes": "Upper bound set above the observed climb-phase peak power demand (~110 kW at baseline MTOW) so the optimizer can actually size the motor to cover peak bursts rather than assume them away."
+    }
+  ],
+  "n_var": 3,
+  "encoding": "real",
+  "source": "main.py :: HybridUAVSizingProblem.__init__"
+}

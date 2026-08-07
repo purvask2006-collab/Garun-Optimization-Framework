@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "description": "8px base grid for consistent panel padding, gaps, and layout rhythm across the 6-panel dashboard.",
+  "base_unit_px": 8,
+  "scale": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48,
+    "xxxl": 64
+  },
+  "semantic": {
+    "panel_padding": "md",
+    "panel_gap": "lg",
+    "page_margin_desktop": "xxl",
+    "page_margin_mobile": "md",
+    "metric_card_padding": "md",
+    "metric_card_gap": "sm",
+    "chart_internal_padding": "sm",
+    "section_stack_gap": "xl",
+    "sidebar_width_px": 240,
+    "sidebar_item_gap": "xs"
+  },
+  "grid": {
+    "columns_desktop": 12,
+    "columns_mobile": 4,
+    "gutter": "md",
+    "panel_spans": {
+      "key_metrics": "12 (full width, top row)",
+      "pareto_front": "6",
+      "mission_profile": "6",
+      "battery_soc": "6",
+      "constraint_checker": "3",
+      "assumptions": "3"
+    }
+  },
+  "responsive_breakpoints_px": {
+    "mobile": 480,
+    "tablet": 768,
+    "desktop": 1200
+  },
+  "usage_notes": [
+    "Stick to the scale — no arbitrary pixel values in panel CSS. This is what keeps a 6-panel dashboard built by a non-technical lead under time pressure from drifting misaligned.",
+    "On mobile, all panel_spans collapse to full width (4/4) in the fixed order: key_metrics, pareto_front, mission_profile, battery_soc, constraint_checker, assumptions."
+  ]
+}

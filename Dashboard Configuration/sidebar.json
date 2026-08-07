@@ -1,0 +1,104 @@
+{
+  "$schema_note": "Sidebar / Page 1 input widget definitions -- the mission-parameter form. Field ids match the parameter names used in aircraft.py's Aircraft dataclass and mission.py's build_mission_profile(), so form values can be passed straight through without renaming.",
+  "section_title": "Mission Parameters",
+  "inputs": [
+    {
+      "id": "mtow_max_kg",
+      "widget": "st.slider",
+      "label": "MTOW max (kg)",
+      "min": 200,
+      "max": 1000,
+      "default": 1000,
+      "step": 10,
+      "maps_to": "aircraft.Aircraft.MTOW_kg (upper bound)"
+    },
+    {
+      "id": "payload_kg",
+      "widget": "st.number_input",
+      "label": "Payload (kg)",
+      "default": 200,
+      "min": 0,
+      "maps_to": "aircraft.Aircraft.payload_mass_kg"
+    },
+    {
+      "id": "cruise_speed_kmh",
+      "widget": "st.slider",
+      "label": "Cruise speed (km/h)",
+      "min": 150,
+      "max": 300,
+      "default": 250,
+      "step": 5,
+      "unit_conversion": "internally converted to m/s (cruise_speed_kmh / 3.6) before being passed to physics.py",
+      "maps_to": "aircraft.Aircraft.cruise_speed_kmh"
+    },
+    {
+      "id": "cruise_altitude_m",
+      "widget": "st.slider",
+      "label": "Cruise altitude (m)",
+      "min": 3000,
+      "max": 10000,
+      "default": 5000,
+      "step": 500,
+      "maps_to": "mission.build_mission_profile() cruise segment altitude",
+      "notes": "Note: current mission.py hardcodes climb_alt_m = 3000.0 for the cruise/loiter altitude; wiring this slider through requires parameterizing that constant."
+    },
+    {
+      "id": "battery_specific_energy_wh_per_kg",
+      "widget": "st.slider",
+      "label": "Battery specific energy (Wh/kg)",
+      "min": 150,
+      "max": 350,
+      "default": 250,
+      "step": 10,
+      "maps_to": "aircraft.Aircraft.battery_specific_energy_wh_per_kg"
+    },
+    {
+      "id": "engine_max_power_kw",
+      "widget": "st.number_input",
+      "label": "Engine max power (kW)",
+      "default": 60,
+      "min": 10,
+      "maps_to": "aircraft.Aircraft.engine_rated_power_kw"
+    },
+    {
+      "id": "cruise_range_km",
+      "widget": "st.slider",
+      "label": "Cruise range (km)",
+      "min": 100,
+      "max": 1000,
+      "default": 500,
+      "step": 25,
+      "maps_to": "aircraft.Aircraft.range_km"
+    },
+    {
+      "id": "loiter_time_min",
+      "widget": "st.slider",
+      "label": "Loiter time (min)",
+      "min": 0,
+      "max": 180,
+      "default": 60,
+      "step": 5,
+      "maps_to": "mission.py loiter segment target -- currently computed as the MAXIMUM achievable loiter time given fuel/battery budget (mission._max_loiter_time()), not a fixed target. Wiring this slider in as a target-duration cap (rather than letting the simulator find the max) is a behavior change worth deciding on deliberately."
+    }
+  ],
+  "action_buttons": [
+    {
+      "id": "run_sizing_button",
+      "label": "Run Sizing",
+      "triggers": ["physics.py", "aircraft.py", "mission.build_mission_profile() with default rule-based split"]
+    },
+    {
+      "id": "run_optimization_button",
+      "label": "Run Optimization",
+      "triggers": ["main.py :: run_optimization()", "main.py :: pick_knee_design()", "main.py :: benchmark_strategies()"]
+    },
+    {
+      "id": "train_rl_button",
+      "label": "Train RL",
+      "triggers": ["rl_balancing.py :: RLController.train()"],
+      "performance_note": "Slowest of the three buttons. Cache the trained model with st.cache_resource so it is not retrained on every Streamlit script rerun.",
+      "graceful_degradation": "If gymnasium/stable-baselines3 are not installed, train() returns False and RLController.predict() automatically falls back to the rule-based policy -- the dashboard should surface this fallback state to the user rather than silently proceeding."
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.2 Page 1 (conversation-derived, not yet implemented in code)"
+}

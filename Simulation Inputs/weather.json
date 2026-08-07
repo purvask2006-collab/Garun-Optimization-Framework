@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "description": "Atmospheric model and reusable weather presets. Mission files (missions/*.json) can either embed a full weather block inline or reference a preset here by name for consistency across runs.",
+  "compatible_engines": ["mission_simulator.py", "thermal_sim.py"],
+  "atmosphere_model": {
+    "type": "ISA",
+    "sea_level_temp_c": 15,
+    "sea_level_pressure_pa": 101325,
+    "lapse_rate_c_per_m": -0.0065,
+    "note": "Standard International Standard Atmosphere model. Air density at altitude feeds directly into drag and engine/prop performance in Layer 1 (Physics & Sizing Engine)."
+  },
+  "presets": {
+    "clear": {
+      "wind_speed_mps": 5,
+      "wind_direction_deg": 0,
+      "gust_factor": 1.1,
+      "temperature_offset_c": 0,
+      "visibility_km": 15,
+      "precipitation": "none",
+      "icing_risk": "none",
+      "density_altitude_effect": "negligible"
+    },
+    "windy": {
+      "wind_speed_mps": 14,
+      "wind_direction_deg": 270,
+      "gust_factor": 1.4,
+      "temperature_offset_c": -2,
+      "visibility_km": 12,
+      "precipitation": "none",
+      "icing_risk": "none",
+      "density_altitude_effect": "negligible"
+    },
+    "monsoon": {
+      "wind_speed_mps": 12,
+      "wind_direction_deg": 220,
+      "gust_factor": 1.6,
+      "temperature_offset_c": -1,
+      "visibility_km": 4,
+      "precipitation": "heavy_rain",
+      "icing_risk": "none",
+      "density_altitude_effect": "moderate_lift_reduction"
+    },
+    "high_altitude_cold": {
+      "wind_speed_mps": 9,
+      "wind_direction_deg": 300,
+      "gust_factor": 1.2,
+      "temperature_offset_c": -15,
+      "visibility_km": 18,
+      "precipitation": "none",
+      "icing_risk": "moderate",
+      "density_altitude_effect": "increases_engine_and_prop_efficiency"
+    },
+    "hot_low_density": {
+      "wind_speed_mps": 6,
+      "wind_direction_deg": 90,
+      "gust_factor": 1.1,
+      "temperature_offset_c": 20,
+      "visibility_km": 10,
+      "precipitation": "none",
+      "icing_risk": "none",
+      "density_altitude_effect": "reduces_engine_and_prop_efficiency_significant"
+    }
+  },
+  "usage_note": "To reference a preset instead of embedding weather inline, set a mission's weather block to {\"preset_ref\": \"monsoon\"} and have mission_simulator.py resolve it against this file at load time."
+}

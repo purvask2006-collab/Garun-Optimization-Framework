@@ -1,0 +1,39 @@
+{
+  "$schema_note": "NSGA-II algorithm configuration, matching main.py's run_optimization(). Two named profiles are provided: 'demo' (fast, used for iterative development) and 'ps1_full' (the population=100/generations=200 setting PS1 suggests for a final, converged run). Switch profiles via the 'active_profile' field.",
+  "algorithm": "NSGA-II",
+  "algorithm_full_name": "Non-dominated Sorting Genetic Algorithm II",
+  "library": "pymoo",
+  "library_version_tested": "0.6.2",
+  "active_profile": "demo",
+  "profiles": {
+    "demo": {
+      "pop_size": 40,
+      "n_gen": 60,
+      "seed": 42,
+      "purpose": "Fast iteration during development and live demos. NOT the settings used for final reported/submitted numbers.",
+      "typical_runtime_note": "Completes in well under a minute on a standard laptop for this problem size."
+    },
+    "ps1_full": {
+      "pop_size": 100,
+      "n_gen": 200,
+      "seed": 42,
+      "purpose": "Full-scale run per PS1's suggested settings. Should be run before treating Pareto-front/knee-point results as final for submission.",
+      "status": "coded_but_not_yet_run_for_current_report",
+      "invocation_note": "main.py has this as a documented one-line commented-out call inside run_optimization() -- uncomment / swap the profile to use it."
+    }
+  },
+  "operators": {
+    "selection": "binary_tournament (pymoo NSGA2 default)",
+    "crossover": "simulated_binary_crossover (pymoo NSGA2 default, real-valued encoding)",
+    "mutation": "polynomial_mutation (pymoo NSGA2 default, real-valued encoding)",
+    "survival": "rank_and_crowding (non-dominated sorting + crowding distance)",
+    "notes": "This config file does not override pymoo's NSGA2() default operator settings (e.g. eta_crossover, eta_mutation, prob_crossover) -- those remain at pymoo's library defaults unless explicitly tuned. Document any future tuning here."
+  },
+  "convergence_tracking": {
+    "metric": "hypervolume",
+    "reference_point": { "mtow_kg": 1200.0, "fuel_kg": 250.0, "neg_endurance_hr": 0.0 },
+    "save_history": true,
+    "output_artifact": "hypervolume_convergence.png"
+  },
+  "source": "main.py :: run_optimization()"
+}

@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "dataset": "Aerospace Structural & Propulsion Materials Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "note": "Values below are representative handbook/typical-batch figures (comparable to MMPDS, MatWeb, and standard aerospace materials references), not a specific mill certification. Real properties vary by heat treatment, batch, test temperature, and manufacturer -- verify against a datasheet before citing an exact number to a HAL panel. All values room-temperature unless otherwise noted."
+  },
+  "items": [
+    {
+      "id": "t300_epoxy",
+      "material": "T300 Carbon Fiber / Epoxy (unidirectional prepreg)",
+      "type": "Standard-modulus carbon fiber composite",
+      "density_kg_m3": 1550,
+      "key_mechanical_properties": {
+        "tensile_strength_0deg_MPa": 1500,
+        "tensile_modulus_0deg_GPa": 130,
+        "fiber_volume_fraction_percent": 60,
+        "note": "0-degree = along fiber direction (unidirectional layup); off-axis/quasi-isotropic properties are substantially lower -- see quasi-isotropic entry below."
+      },
+      "max_service_temp_C": 120,
+      "typical_aerospace_applications": [
+        "Secondary structures",
+        "Fairings",
+        "Non-primary skin panels"
+      ],
+      "garun_relevance": "The most cost-effective composite reference point if the panel asks about material cost trade-offs behind your C_D0/weight assumptions (\u00a75.2, \u00a75.9) -- lower performance than T800/IM7 but significantly cheaper.",
+      "description": "The oldest and most widely available standard-modulus aerospace carbon fiber; still common for secondary (non-flight-critical) structures where cost matters more than peak performance."
+    },
+    {
+      "id": "t800_epoxy",
+      "material": "T800 Carbon Fiber / Epoxy (unidirectional prepreg)",
+      "type": "Intermediate-modulus, high-strength carbon fiber composite",
+      "density_kg_m3": 1580,
+      "key_mechanical_properties": {
+        "tensile_strength_0deg_MPa": 2800,
+        "tensile_modulus_0deg_GPa": 160,
+        "fiber_volume_fraction_percent": 60,
+        "note": "0-degree = along fiber direction (unidirectional layup)."
+      },
+      "max_service_temp_C": 120,
+      "typical_aerospace_applications": [
+        "Primary wing/fuselage structure (e.g. Boeing 787-class primary structure)"
+      ],
+      "garun_relevance": "The realistic material class behind your blueprint's claimed L/D=16-with-C_D0=0.025-and-AR=8 inconsistency (\u00a75.2/Part 14) -- a genuinely purpose-designed T800-class composite airfoil is one legitimate way to justify better-than-baseline aerodynamic assumptions if paired with an actual airfoil selection.",
+      "description": "A step up from T300 in both strength and stiffness; representative of the fiber class used in modern primary composite airframe structures."
+    },
+    {
+      "id": "im7_8552",
+      "material": "IM7 Carbon Fiber / 8552 Epoxy (unidirectional prepreg)",
+      "type": "Intermediate-modulus carbon fiber, toughened epoxy matrix",
+      "density_kg_m3": 1570,
+      "key_mechanical_properties": {
+        "tensile_strength_0deg_MPa": 2724,
+        "tensile_modulus_0deg_GPa": 164,
+        "fiber_volume_fraction_percent": 57.7,
+        "note": "0-degree = along fiber direction (unidirectional layup)."
+      },
+      "max_service_temp_C": 121,
+      "typical_aerospace_applications": [
+        "Primary aerospace structures",
+        "Wing skins",
+        "Spars"
+      ],
+      "garun_relevance": "The single most-cited composite system in published aerospace structural literature -- the strongest choice if your Assumptions Appendix (Appendix A) needs one well-documented, defensible composite reference for the 'Structural weight fraction' row.",
+      "description": "One of the most extensively characterized and published aerospace prepreg systems (Hexcel 8552 matrix); a toughened epoxy specifically formulated for damage tolerance in primary structure, widely used as the benchmark system in composite-structures research."
+    },
+    {
+      "id": "quasi_isotropic_laminate",
+      "material": "Quasi-Isotropic Laminate, generic (e.g. [0/+45/-45/90]s stacking, IM7/8552-class fiber)",
+      "type": "Multi-directional laminate (component-level, not unidirectional)",
+      "density_kg_m3": 1570,
+      "key_mechanical_properties": {
+        "tensile_strength_inplane_MPa": 760,
+        "tensile_modulus_inplane_GPa": 58,
+        "note": "These in-plane values are what you should actually use for a real component-level structural estimate -- unidirectional 0-degree properties (see other entries) never apply directly to a real panel, which always carries multi-angle plies to resist loads from more than one direction."
+      },
+      "max_service_temp_C": 121,
+      "typical_aerospace_applications": [
+        "Real wing skins, fuselage panels -- i.e. what an actual built structure looks like, as opposed to a single-direction test coupon"
+      ],
+      "garun_relevance": "IMPORTANT: if you ever quote a composite 'strength' number to a HAL panel, this entry -- not the unidirectional entries above -- is the honest one to use for a component-level claim. Citing a 0-degree unidirectional number (1500-2800 MPa) as if it applied to your whole airframe would be a significant and easily-caught overstatement.",
+      "description": "Roughly a quarter to a third of the unidirectional fiber-direction strength/stiffness, because only a fraction of the fibers in a real multi-angle laminate are aligned with any given load direction -- this is the number a structural reviewer will actually expect to see."
+    }
+  ]
+}

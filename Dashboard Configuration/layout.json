@@ -1,0 +1,61 @@
+{
+  "$schema_note": "Coarse layout structure per page -- column splits and section ordering. Does not duplicate widget/chart/card definitions (see the respective JSON files); just says where each referenced element sits.",
+  "global": {
+    "page_config": {
+      "layout": "wide",
+      "sidebar_state": "expanded",
+      "page_title": "GARUN"
+    }
+  },
+  "pages": [
+    {
+      "id": "mission_setup",
+      "sections": [
+        { "type": "sidebar_form", "ref": "sidebar.json :: inputs" },
+        { "type": "main_area", "content": "welcome_text_and_pipeline_diagram" },
+        { "type": "button_row", "ref": "sidebar.json :: action_buttons" }
+      ]
+    },
+    {
+      "id": "sizing_results",
+      "sections": [
+        { "type": "metric_row", "columns": 2, "ref": ["cards.json :: wing_loading", "cards.json :: power_loading"] },
+        { "type": "full_width", "ref": "cards.json :: cruise_power_margin" },
+        { "type": "full_width", "ref": "charts.json :: validation_table" }
+      ]
+    },
+    {
+      "id": "mission_simulation",
+      "sections": [
+        { "type": "metric_row", "columns": 3, "ref": ["cards.json :: total_endurance", "cards.json :: total_fuel_burn", "cards.json :: min_soc_reached"] },
+        { "type": "widget_row", "ref": "widgets.json :: phase_selector" },
+        { "type": "stacked_charts", "columns": 1, "ref": ["charts.json :: altitude_vs_time", "charts.json :: speed_vs_time", "charts.json :: power_balance", "charts.json :: soc_vs_time", "charts.json :: fuel_remaining_vs_time"] }
+      ]
+    },
+    {
+      "id": "optimization",
+      "sections": [
+        { "type": "metric_row", "columns": 3, "ref": ["cards.json :: pareto_front_size", "cards.json :: final_hypervolume", "cards.json :: chosen_design_summary"] },
+        { "type": "two_column", "left": "charts.json :: pareto_front_3d", "right": "charts.json :: hypervolume_convergence" },
+        { "type": "widget_row", "ref": "widgets.json :: generation_slider" }
+      ]
+    },
+    {
+      "id": "energy_management",
+      "sections": [
+        { "type": "widget_row", "ref": "widgets.json :: controller_toggle" },
+        { "type": "three_column", "columns": ["charts.json :: power_split_rule_based", "charts.json :: power_split_static_optimized", "charts.json :: power_split_rl_adaptive"] },
+        { "type": "metric_row", "columns": 2, "ref": ["cards.json :: best_fuel_strategy", "cards.json :: soc_violation_flag"] },
+        { "type": "full_width", "ref": "charts.json :: strategy_comparison_bar" }
+      ]
+    },
+    {
+      "id": "report",
+      "sections": [
+        { "type": "full_width", "content": "report_preview_summary" },
+        { "type": "button_row", "ref": "widgets.json :: generate_report_button" }
+      ]
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.2 (conversation-derived, not yet implemented in code)"
+}

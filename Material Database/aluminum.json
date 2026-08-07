@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "dataset": "Aerospace Structural & Propulsion Materials Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "note": "Values below are representative handbook/typical-batch figures (comparable to MMPDS, MatWeb, and standard aerospace materials references), not a specific mill certification. Real properties vary by heat treatment, batch, test temperature, and manufacturer -- verify against a datasheet before citing an exact number to a HAL panel. All values room-temperature unless otherwise noted."
+  },
+  "items": [
+    {
+      "id": "al_7075_t6",
+      "material": "Aluminum 7075-T6",
+      "type": "Zinc-magnesium-copper wrought alloy, precipitation-hardened",
+      "density_kg_m3": 2810,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 503,
+        "ultimate_tensile_strength_MPa": 572,
+        "elastic_modulus_GPa": 71.7,
+        "elongation_percent": 11
+      },
+      "max_service_temp_C": 120,
+      "typical_aerospace_applications": [
+        "Wing spars",
+        "Wing skins (high-load)",
+        "Fuselage stringers"
+      ],
+      "garun_relevance": "The most likely wing-spar material for a composite-skin/metal-spar hybrid layout, or as the comparison baseline if your team argues for a full-composite spar instead (\u00a75.9 weight budget discussion).",
+      "description": "The highest-strength common aerospace aluminum alloy, but with lower fracture toughness and corrosion resistance than 2024 -- typically used where strength matters more than damage tolerance."
+    },
+    {
+      "id": "al_2024_t3",
+      "material": "Aluminum 2024-T3",
+      "type": "Copper-based wrought alloy, precipitation-hardened",
+      "density_kg_m3": 2780,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 345,
+        "ultimate_tensile_strength_MPa": 483,
+        "elastic_modulus_GPa": 73.1,
+        "elongation_percent": 18
+      },
+      "max_service_temp_C": 150,
+      "typical_aerospace_applications": [
+        "Fuselage skins",
+        "Lower wing skins (fatigue-critical)"
+      ],
+      "garun_relevance": "Standard fuselage-skin comparison point if the panel questions why your conceptual layout (\u00a711.3) doesn't quantify skin material choice.",
+      "description": "Lower strength than 7075 but significantly better fatigue and fracture-toughness performance -- the classic choice for fatigue-critical skin panels."
+    },
+    {
+      "id": "al_6061_t6",
+      "material": "Aluminum 6061-T6",
+      "type": "Magnesium-silicon wrought alloy, precipitation-hardened",
+      "density_kg_m3": 2700,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 276,
+        "ultimate_tensile_strength_MPa": 310,
+        "elastic_modulus_GPa": 68.9,
+        "elongation_percent": 12
+      },
+      "max_service_temp_C": 150,
+      "typical_aerospace_applications": [
+        "Brackets",
+        "Fittings",
+        "Battery-pack casing/frame",
+        "General structural weldments"
+      ],
+      "garun_relevance": "The most realistic material for your battery pack's outer casing/frame (the SimScale thermal model's structural context) -- weldable, decent thermal conductivity, moderate strength, low cost relative to 7075.",
+      "description": "Lower strength than 2024/7075 but weldable (unlike most high-strength aerospace aluminums) and easy to machine -- the default 'general purpose structural aluminum' choice."
+    },
+    {
+      "id": "al_li_2195",
+      "material": "Aluminum-Lithium 2195",
+      "type": "Aluminum-lithium-copper wrought alloy, precipitation-hardened",
+      "density_kg_m3": 2710,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 517,
+        "ultimate_tensile_strength_MPa": 586,
+        "elastic_modulus_GPa": 76,
+        "elongation_percent": 8
+      },
+      "max_service_temp_C": 150,
+      "typical_aerospace_applications": [
+        "Weight-critical tankage/structure (e.g. Space Shuttle external tank)",
+        "Weight-critical fuselage panels"
+      ],
+      "garun_relevance": "Worth naming if a reviewer challenges your 47.8% payload fraction (\u00a75.9) and asks what advanced materials could plausibly support such a light airframe -- Al-Li alloys are a real, if costly, lever for weight reduction beyond standard 2024/7075.",
+      "description": "Lithium addition reduces density (~3% lighter than conventional aluminum) while increasing stiffness -- historically justified only where weight savings are worth the higher material and processing cost."
+    }
+  ]
+}

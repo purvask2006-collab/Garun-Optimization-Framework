@@ -1,0 +1,107 @@
+{
+  "mission_id": "surveillance",
+  "mission_name": "Wide-Area Surveillance",
+  "description": "Baseline ISR mission: transit to an area of interest, orbit for extended sensor coverage, return to base.",
+  "schema_version": "1.0",
+  "compatible_engines": ["mission_simulator.py", "optimizer_mdo.py", "rl_balancing.py"],
+  "aircraft_reference": {
+    "mtow_kg": 1000,
+    "engine_rating_kw": 60
+  },
+  "payload": {
+    "type": "EO/IR camera + radar sensor suite",
+    "mass_kg": 200
+  },
+  "weather": {
+    "condition": "clear",
+    "wind_speed_mps": 8,
+    "wind_direction_deg": 270,
+    "temperature_c": 15,
+    "visibility_km": 10,
+    "icing_risk": "none"
+  },
+  "reserves": {
+    "fuel_reserve_pct": 15,
+    "battery_soc_reserve_pct": 20,
+    "contingency_time_min": 20
+  },
+  "phases": [
+    {
+      "phase_id": 1,
+      "phase_name": "Takeoff",
+      "altitude_m": {"start": 0, "end": 50},
+      "duration_s": 60,
+      "power_kw": 60,
+      "speed_mps": {"start": 0, "end": 25},
+      "climb_rate_mps": 0.8,
+      "power_source_hint": "engine_primary_battery_assist",
+      "notes": "Max power phase; battery supplements peak demand above engine rating."
+    },
+    {
+      "phase_id": 2,
+      "phase_name": "Climb",
+      "altitude_m": {"start": 50, "end": 3000},
+      "duration_s": 600,
+      "power_kw": 55,
+      "speed_mps": {"start": 25, "end": 45},
+      "climb_rate_mps": 4.9,
+      "power_source_hint": "engine_primary",
+      "notes": "Sustained climb to cruise/loiter altitude."
+    },
+    {
+      "phase_id": 3,
+      "phase_name": "Cruise (Transit to AO)",
+      "altitude_m": {"start": 3000, "end": 3000},
+      "duration_s": 3600,
+      "power_kw": 53,
+      "speed_mps": {"start": 55, "end": 55},
+      "climb_rate_mps": 0,
+      "power_source_hint": "engine_primary",
+      "notes": "Steady-state cruise at L/D-optimal speed toward area of interest."
+    },
+    {
+      "phase_id": 4,
+      "phase_name": "Loiter (ISR Orbit)",
+      "altitude_m": {"start": 3000, "end": 3000},
+      "duration_s": 21600,
+      "power_kw": 28,
+      "speed_mps": {"start": 35, "end": 35},
+      "climb_rate_mps": 0,
+      "power_source_hint": "battery_primary_engine_charging",
+      "notes": "Minimum-power orbit over target area; series-hybrid engine may run at optimal efficiency point to recharge battery between low-power segments."
+    },
+    {
+      "phase_id": 5,
+      "phase_name": "Cruise (Return Transit)",
+      "altitude_m": {"start": 3000, "end": 3000},
+      "duration_s": 3600,
+      "power_kw": 53,
+      "speed_mps": {"start": 55, "end": 55},
+      "climb_rate_mps": 0,
+      "power_source_hint": "engine_primary",
+      "notes": "Return leg to base."
+    },
+    {
+      "phase_id": 6,
+      "phase_name": "Descent",
+      "altitude_m": {"start": 3000, "end": 50},
+      "duration_s": 480,
+      "power_kw": 15,
+      "speed_mps": {"start": 45, "end": 30},
+      "climb_rate_mps": -6.1,
+      "power_source_hint": "battery_primary",
+      "notes": "Low-power descent; good regenerative/idle window for engine."
+    },
+    {
+      "phase_id": 7,
+      "phase_name": "Landing",
+      "altitude_m": {"start": 50, "end": 0},
+      "duration_s": 90,
+      "power_kw": 20,
+      "speed_mps": {"start": 30, "end": 0},
+      "climb_rate_mps": -0.5,
+      "power_source_hint": "battery_primary_engine_assist",
+      "notes": "Approach and touchdown; battery handles fine power control."
+    }
+  ]
+}

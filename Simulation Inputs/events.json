@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "description": "Discrete event definitions that can be injected into a running mission timeline to test robustness — failure injection, environment changes, and mission-logic triggers. References failure_modes from failures.json and presets from weather.json by id/name.",
+  "compatible_engines": ["mission_simulator.py", "rl_balancing.py", "timeline.json"],
+  "trigger_types": {
+    "time": "Fires once simulation clock reaches trigger.time_s.",
+    "state_threshold": "Fires when a state_vector field crosses trigger.threshold (see states.json for field names).",
+    "phase_entry": "Fires when the mission simulator enters trigger.phase_name from missions/*.json."
+  },
+  "event_library": [
+    {
+      "event_id": "inject_engine_flameout",
+      "type": "failure_injection",
+      "failure_ref": "engine_flameout",
+      "trigger": {"trigger_type": "time", "time_s": null},
+      "description": "Generic engine-out injection point; set time_s per scenario."
+    },
+    {
+      "event_id": "inject_battery_fault",
+      "type": "failure_injection",
+      "failure_ref": "battery_cell_fault",
+      "trigger": {"trigger_type": "time", "time_s": null},
+      "description": "Generic battery fault injection point; set time_s per scenario."
+    },
+    {
+      "event_id": "weather_shift_to_monsoon",
+      "type": "environment_change",
+      "weather_ref": "monsoon",
+      "trigger": {"trigger_type": "time", "time_s": null},
+      "description": "Mid-mission weather deterioration."
+    },
+    {
+      "event_id": "low_soc_warning",
+      "type": "mission_abort_trigger",
+      "trigger": {"trigger_type": "state_threshold", "field": "soc_pct", "condition": "below", "threshold": 25},
+      "description": "Fires when SoC nears the reserve floor; should push the state machine toward DEGRADED (see states.json)."
+    },
+    {
+      "event_id": "low_fuel_warning",
+      "type": "mission_abort_trigger",
+      "trigger": {"trigger_type": "state_threshold", "field": "fuel_remaining_pct", "condition": "below", "threshold": 20},
+      "description": "Fires when fuel nears the reserve floor."
+    },
+    {
+      "event_id": "lost_link_rtb",
+      "type": "failure_injection",
+      "failure_ref": "comms_loss",
+      "trigger": {"trigger_type": "time", "time_s": null},
+      "description": "Triggers lost-link contingency profile."
+    },
+    {
+      "event_id": "loiter_phase_entered",
+      "type": "phase_entry",
+      "trigger": {"trigger_type": "phase_entry", "phase_name": "Loiter (ISR Orbit)"},
+      "description": "Marker event — useful as an anchor point to inject other events relative to loiter start, e.g. 'engine failure 10 minutes into loiter'."
+    }
+  ],
+  "example_scenarios": [
+    {
+      "scenario_name": "engine_out_during_loiter",
+      "description": "Robustness test: lose the engine 10 minutes into the loiter phase of surveillance.json and confirm the RL/rule-based controller can still complete descent and landing on battery + reserve margins.",
+      "base_mission": "surveillance",
+      "events": ["loiter_phase_entered", "inject_engine_flameout (fire 600s after loiter_phase_entered)"]
+    },
+    {
+      "scenario_name": "weather_degradation_return_leg",
+      "description": "Robustness test: weather shifts to monsoon during the return cruise leg, testing power margin under increased drag/wind.",
+      "base_mission": "surveillance",
+      "events": ["weather_shift_to_monsoon (fire at start of Cruise (Return Transit) phase)"]
+    }
+  ]
+}

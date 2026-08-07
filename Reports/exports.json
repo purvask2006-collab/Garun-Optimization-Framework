@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "description": "Export targets: what format each template compiles to, where it lands, and the final submission package checklist.",
+  "compatible_engines": ["templates.json", "charts.json"],
+  "exports": [
+    {
+      "export_id": "readme_export",
+      "template_ref": "readme",
+      "format": "markdown",
+      "destination_path": "README.md",
+      "generation_method": "manual/markdown, charts embedded as static PNG exports of chart specs in charts.json",
+      "file_naming": "README.md (repo root, fixed name)"
+    },
+    {
+      "export_id": "pitch_deck_export",
+      "template_ref": "pitch_deck",
+      "format": "pptx",
+      "destination_path": "submission/pitch_deck.pptx",
+      "generation_method": "Canva export to PPTX, or docx/pptx generation skill if built programmatically",
+      "file_naming": "TeamGARUN_AEROTHON2026_PitchDeck.pptx"
+    },
+    {
+      "export_id": "judge_faq_export",
+      "template_ref": "judge_faq_doc",
+      "format": "markdown",
+      "destination_path": "docs/judge_faq.md",
+      "generation_method": "manual/markdown, internal use only, not submitted",
+      "file_naming": "judge_faq.md"
+    },
+    {
+      "export_id": "demo_script_export",
+      "template_ref": "demo_script_doc",
+      "format": "markdown",
+      "destination_path": "docs/demo_script.md",
+      "generation_method": "manual/markdown, internal use only",
+      "file_naming": "demo_script.md"
+    },
+    {
+      "export_id": "literature_review_export",
+      "template_ref": "literature_review_doc",
+      "format": "markdown",
+      "destination_path": "docs/literature_review.md",
+      "generation_method": "manual/markdown, may fold into README as an appendix",
+      "file_naming": "literature_review.md"
+    },
+    {
+      "export_id": "sensitivity_report_export",
+      "template_ref": "sensitivity_report",
+      "format": "markdown",
+      "destination_path": "docs/sensitivity_and_validation.md",
+      "generation_method": "manual/markdown, charts from charts.json sensitivity_tornado + convergence_hypervolume embedded as static images",
+      "file_naming": "sensitivity_and_validation.md"
+    },
+    {
+      "export_id": "submission_form_export",
+      "template_ref": "submission_form_draft",
+      "format": "markdown",
+      "destination_path": "submission/submission_form_draft.md",
+      "generation_method": "manual/markdown, copy-paste into organizer's actual form at submission time",
+      "file_naming": "submission_form_draft.md"
+    },
+    {
+      "export_id": "dashboard_backup_video",
+      "template_ref": null,
+      "format": "mp4",
+      "destination_path": "submission/backup_demo.mp4",
+      "generation_method": "Screen recording of live Streamlit dashboard per demo_script.md, recorded Hour 18-22 per PRD timeline",
+      "file_naming": "TeamGARUN_backup_demo.mp4",
+      "notes": "Non-negotiable per PRD: 'Backup demo video recorded and uploaded' is on the Non-Tech 1 readiness checklist."
+    },
+    {
+      "export_id": "results_data_export",
+      "template_ref": null,
+      "format": "json",
+      "destination_path": "results/final_solution.json",
+      "generation_method": "Direct export from optimizer_mdo.py, matching the PRD interface contract schema (solution, pareto_front, mission_profile, convergence)",
+      "file_naming": "final_solution.json"
+    }
+  ],
+  "submission_package_checklist": [
+    "README.md at repo root",
+    "submission/pitch_deck.pptx (<=10 slides)",
+    "submission/backup_demo.mp4",
+    "results/final_solution.json",
+    "docs/sensitivity_and_validation.md",
+    "docs/literature_review.md (or folded into README)",
+    "submission/submission_form_draft.md finalized and copied into organizer form",
+    "Live dashboard URL (Streamlit Cloud) included in README and submission form",
+    "Source code: pack_sizing.py, thermal_sim.py, optimizer_mdo.py, rl_balancing.py, plus missions/, simulation/, ui/, reports/ config folders"
+  ],
+  "final_check_owner": "non_tech_2_pitch_lead",
+  "final_check_timing": "Hours 20-22 per PRD Phase 5 (Demo Lock)"
+}

@@ -1,0 +1,393 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://trinetra.aerospace/schemas/engine_schema_v1.json",
+  "title": "Trinetra Aerospace Engine Database Schema v1",
+  "description": "Universal schema for all propulsion engine types in the Trinetra engine database. Covers turboshaft, turbofan, turbojet, piston, wankel, and electric motor entries.",
+  "type": "object",
+  "required": ["engine_id", "metadata", "core_parameters", "performance_map", "efficiency_curves", "fuel_consumption_model", "thermal_limits", "operating_envelope", "sizing_parameters", "maintenance"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "$schema": { "type": "string" },
+
+    "engine_id": {
+      "type": "string",
+      "description": "Unique identifier for this engine entry.",
+      "pattern": "^[A-Z0-9_\\-]+$",
+      "examples": ["HTSE-1200", "MICRO-TS-60", "WANKEL-UAV-20"]
+    },
+
+    "metadata": {
+      "type": "object",
+      "required": ["name", "type", "manufacturer", "application", "revision", "last_updated"],
+      "properties": {
+        "name":               { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["turboshaft", "turbofan", "turbojet", "turboprop", "piston", "wankel_rotary", "electric_motor", "hybrid_ice_electric"]
+        },
+        "variant":            { "type": "string" },
+        "manufacturer":       { "type": "string" },
+        "application": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "certification_basis": { "type": "string" },
+        "revision":           { "type": "string" },
+        "last_updated":       { "type": "string", "format": "date" }
+      },
+      "additionalProperties": false
+    },
+
+    "core_parameters": {
+      "type": "object",
+      "description": "Primary design-point parameters. At least one of rated_power_kw or rated_thrust_kN must be present.",
+      "properties": {
+        "rated_power_kw":           { "type": "number", "minimum": 0 },
+        "rated_power_shp":          { "type": "number", "minimum": 0 },
+        "rated_power_hp":           { "type": "number", "minimum": 0 },
+        "rated_thrust_kN":          { "type": "number", "minimum": 0 },
+        "rated_thrust_lbf":         { "type": "number", "minimum": 0 },
+        "rated_thrust_dry_kN":      { "type": "number", "minimum": 0 },
+        "rated_thrust_wet_kN":      { "type": "number", "minimum": 0 },
+        "dry_weight_kg":            { "type": "number", "exclusiveMinimum": 0 },
+        "power_to_weight_ratio":    { "type": "number", "minimum": 0 },
+        "thrust_to_weight_ratio":   { "type": "number", "minimum": 0 },
+        "thrust_to_weight_ratio_dry": { "type": "number" },
+        "thrust_to_weight_ratio_wet": { "type": "number" },
+        "rpm_design":               { "type": "number", "minimum": 0 },
+        "rpm_output_shaft":         { "type": "number", "minimum": 0 },
+        "rpm_lpc_design":           { "type": "number" },
+        "rpm_hpc_design":           { "type": "number" },
+        "rpm_core_design":          { "type": "number" },
+        "rpm_fan_design":           { "type": "number" },
+        "gear_ratio":               { "type": "number" },
+        "compressor_ratio":         { "type": "number", "minimum": 1 },
+        "overall_pressure_ratio":   { "type": "number", "minimum": 1 },
+        "fan_pressure_ratio":       { "type": "number" },
+        "bypass_ratio":             { "type": "number", "minimum": 0 },
+        "turbine_entry_temperature_K": { "type": "number", "minimum": 0 },
+        "exhaust_gas_temperature_K":   { "type": "number", "minimum": 0 },
+        "exhaust_gas_temperature_K_dry": { "type": "number" },
+        "exhaust_gas_temperature_K_wet": { "type": "number" },
+        "mass_flow_kgs":            { "type": "number", "minimum": 0 },
+        "fuel_type": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "afterburner":              { "type": "boolean" },
+        "afterburner_fuel_multiplier": { "type": "number" },
+        "displacement_cc_per_rotor": { "type": "number" },
+        "compression_ratio":        { "type": "number" },
+        "rotor_count":              { "type": "integer" },
+        "intake_type":              { "type": "string" },
+        "fuel_injection":           { "type": "string" },
+        "lubrication":              { "type": "string" },
+        "ignition":                 { "type": "string" },
+        "cooling":                  { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "performance_map": {
+      "type": "object",
+      "required": ["description"],
+      "description": "1-D performance sweep (throttle or RPM) at design-point reference conditions.",
+      "properties": {
+        "description":            { "type": "string" },
+        "mode":                   { "type": "string" },
+        "throttle_percent":       { "type": "array", "items": { "type": "number" } },
+        "rpm_points":             { "type": "array", "items": { "type": "number" } },
+        "shaft_power_kw":         { "type": "array", "items": { "type": "number" } },
+        "net_thrust_kN":          { "type": "array", "items": { "type": "number" } },
+        "sfc_kg_per_kwh":         { "type": "array", "items": { "type": "number" } },
+        "tsfc_kg_per_kN_hr":      { "type": "array", "items": { "type": "number" } },
+        "tsfc_kg_per_kN_hr_dry":  { "type": "array", "items": { "type": "number" } },
+        "wot_power_kw":           { "type": "array", "items": { "type": "number" } },
+        "wot_torque_Nm":          { "type": "array", "items": { "type": "number" } },
+        "bsfc_wot_g_per_kwh":     { "type": "array", "items": { "type": "number" } },
+        "fan_efficiency":         { "type": "array", "items": { "type": "number" } },
+        "afterburner_thrust_map": {
+          "type": "object",
+          "properties": {
+            "ab_percent":               { "type": "array", "items": { "type": "number" } },
+            "thrust_increment_kN":      { "type": "array", "items": { "type": "number" } },
+            "tsfc_wet_kg_per_kN_hr":    { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "partial_throttle_map":   { "type": "object" },
+        "notes":                  { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "efficiency_curves": {
+      "type": "object",
+      "required": ["thermal_efficiency_map"],
+      "properties": {
+        "thermal_efficiency_map": {
+          "type": "object",
+          "properties": {
+            "throttle_percent":    { "type": "array", "items": { "type": "number" } },
+            "rpm":                 { "type": "array", "items": { "type": "number" } },
+            "eta_thermal":         { "type": "array", "items": { "type": "number" } },
+            "eta_thermal_dry":     { "type": "array", "items": { "type": "number" } },
+            "eta_thermal_wot":     { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "propulsive_efficiency_map": {
+          "type": "object",
+          "properties": {
+            "mach_number":         { "type": "array", "items": { "type": "number" } },
+            "eta_propulsive":      { "type": "array", "items": { "type": "number" } },
+            "eta_propulsive_dry":  { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "overall_efficiency_map": {
+          "type": "object",
+          "properties": {
+            "mach_number":    { "type": "array", "items": { "type": "number" } },
+            "eta_overall":    { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "volumetric_efficiency_map": { "type": "object" },
+        "compressor_map":            { "type": "object" },
+        "compressor_map_hpc":        { "type": "object" },
+        "turbine_efficiency":        { "type": "object" },
+        "mechanical_efficiency":     { "type": "number", "minimum": 0, "maximum": 1 },
+        "gear_efficiency":           { "type": "number" },
+        "trapping_efficiency":       { "type": "number" },
+        "combustion_efficiency":     { "type": "number" },
+        "propulsive_efficiency":     { "type": "string" },
+        "best_efficiency_rpm":       { "type": "number" },
+        "best_efficiency_throttle_pct": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+
+    "fuel_consumption_model": {
+      "type": "object",
+      "required": ["model_type", "reference_condition"],
+      "properties": {
+        "model_type": {
+          "type": "string",
+          "enum": [
+            "polynomial_sfc",
+            "TSFC_polynomial",
+            "TSFC_polynomial_with_AB",
+            "TSFC_polynomial_cruise_optimised",
+            "BSFC_map_with_corrections",
+            "electric_kWh_per_km",
+            "hybrid_composite"
+          ]
+        },
+        "reference_condition":       { "type": "string" },
+        "sfc_reference_kg_per_kwh":  { "type": "number" },
+        "bsfc_reference_g_per_kwh":  { "type": "number" },
+        "tsfc_reference_kg_per_kN_hr": { "type": "number" },
+        "tsfc_dry_reference_kg_per_kN_hr": { "type": "number" },
+        "tsfc_wet_reference_kg_per_kN_hr": { "type": "number" },
+        "tsfc_cruise_reference_kg_per_kN_hr": { "type": "number" },
+        "altitude_correction":       { "type": "object" },
+        "temperature_correction":    { "type": "object" },
+        "mach_correction":           { "type": "object" },
+        "idle_fuel_flow_kg_per_hr":  { "type": "number" },
+        "startup_fuel_kg":           { "type": "number" },
+        "best_range_rpm":            { "type": "number" },
+        "best_endurance_rpm":        { "type": "number" },
+        "best_endurance_throttle_percent": { "type": "number" },
+        "recommended_operating_point": { "type": "string" },
+        "ab_lightup_time_s":         { "type": "number" },
+        "HF_fuel_derate_percent":    { "type": "number" },
+        "design_life_note":          { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "thermal_limits": {
+      "type": "object",
+      "required": ["thermal_time_constant_s"],
+      "properties": {
+        "TET_max_continuous_K":      { "type": "number" },
+        "TET_max_30s_K":             { "type": "number" },
+        "TET_max_5min_K":            { "type": "number" },
+        "TET_max_2min_K":            { "type": "number" },
+        "TET_max_transient_5s_K":    { "type": "number" },
+        "TET_max_transient_10s_K":   { "type": "number" },
+        "TET_max_short_K":           { "type": "number" },
+        "EGT_max_continuous_K":      { "type": "number" },
+        "EGT_max_dry_K":             { "type": "number" },
+        "EGT_max_wet_K":             { "type": "number" },
+        "EGT_max_start_K":           { "type": "number" },
+        "EGT_max_K":                 { "type": "number" },
+        "compressor_discharge_temp_max_K": { "type": "number" },
+        "HPC_exit_temp_max_K":       { "type": "number" },
+        "compressor_exit_temp_max_K":{ "type": "number" },
+        "AB_flame_temp_max_K":       { "type": "number" },
+        "bearing_oil_temp_max_C":    { "type": "number" },
+        "gearbox_oil_temp_max_C":    { "type": "number" },
+        "bearing_temp_max_C":        { "type": "number" },
+        "nacelle_temp_max_C":        { "type": "number" },
+        "rotor_housing_max_C":       { "type": "number" },
+        "end_plate_coolant_max_C":   { "type": "number" },
+        "exhaust_port_max_C":        { "type": "number" },
+        "oil_temp_max_C":            { "type": "number" },
+        "apex_seal_temp_max_C":      { "type": "number" },
+        "CHT_max_C":                 { "type": "number" },
+        "exhaust_plenum_max_C":      { "type": "number" },
+        "cooling_system":            { "type": "string" },
+        "cooling_fan_parasitic_kw":  { "type": "number" },
+        "cooling_type":              { "type": "string" },
+        "heat_rejection_to_oil_kw":  { "type": "number" },
+        "thermal_time_constant_s":   { "type": "number", "minimum": 0 },
+        "thermal_time_constant_dry_s": { "type": "number" },
+        "thermal_time_constant_wet_s": { "type": "number" },
+        "overheat_recovery_required": { "type": "boolean" },
+        "overheat_recovery_idle_minutes": { "type": "number" },
+        "design_life_hours":         { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+
+    "operating_envelope": {
+      "type": "object",
+      "required": ["altitude_max_m", "ambient_temp_range_C"],
+      "properties": {
+        "altitude_max_m":            { "type": "number" },
+        "altitude_rated_m":          { "type": "number" },
+        "mach_max":                  { "type": "number" },
+        "ambient_temp_range_C": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[min_C, max_C]"
+        },
+        "humidity_max_percent":      { "type": "number" },
+        "g_load_limits":             { "type": "object" },
+        "rated_conditions":          { "type": "string" },
+        "power_derate":              { "type": "object" },
+        "thrust_deck":               { "type": "object" },
+        "start_envelope":            { "type": "object" },
+        "supersonic_performance":    { "type": "object" },
+        "cruise_optimized_altitude_m": { "type": "number" },
+        "cruise_optimized_mach":     { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+
+    "bsfc_map_2d": {
+      "type": "object",
+      "description": "2D BSFC/TSFC map for interpolation. Matrix rows correspond to primary axis (power/throttle), columns to secondary axis (altitude).",
+      "required": ["description"],
+      "properties": {
+        "description":         { "type": "string" },
+        "power_fraction":      { "type": "array", "items": { "type": "number" } },
+        "throttle_fraction":   { "type": "array", "items": { "type": "number" } },
+        "throttle_percent":    { "type": "array", "items": { "type": "number" } },
+        "rpm":                 { "type": "array", "items": { "type": "number" } },
+        "altitude_m":          { "type": "array", "items": { "type": "number" } },
+        "bsfc_matrix":         { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+        "tsfc_matrix":         { "type": "array", "items": { "type": "array", "items": { "type": "number" } } },
+        "tsfc_matrix_dry":     { "type": "array", "items": { "type": "array", "items": { "type": "number" } } }
+      },
+      "additionalProperties": false
+    },
+
+    "generator_compatibility": {
+      "type": "object",
+      "required": ["hybrid_mode"],
+      "properties": {
+        "pad_type":                  { "type": "string" },
+        "pto_max_power_kw":          { "type": "number" },
+        "pto_rpm":                   { "type": "number" },
+        "compatible_generators": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "hybrid_mode":               { "type": "string" },
+        "recommended_operating_point": { "type": "string" },
+        "recommended_operating_rpm": { "type": "number" },
+        "battery_buffer_recommended": { "type": "boolean" },
+        "buffer_capacity_kwh_min":   { "type": "number" },
+        "noise_notes":               { "type": "string" },
+        "notes":                     { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "sizing_parameters": {
+      "type": "object",
+      "required": ["dry_weight_kg"],
+      "properties": {
+        "length_mm":               { "type": "number" },
+        "width_mm":                { "type": "number" },
+        "height_mm":               { "type": "number" },
+        "diameter_mm":             { "type": "number" },
+        "fan_diameter_mm":         { "type": "number" },
+        "max_diameter_mm":         { "type": "number" },
+        "dry_weight_kg":           { "type": "number" },
+        "cg_from_intake_mm":       { "type": "number" },
+        "cg_from_fan_face_mm":     { "type": "number" },
+        "cg_from_front_mm":        { "type": "number" },
+        "inlet_diameter_mm":       { "type": "number" },
+        "intake_dia_mm":           { "type": "number" },
+        "exhaust_diameter_mm":     { "type": "number" },
+        "exhaust_dia_mm":          { "type": "number" },
+        "nozzle_type":             { "type": "string" },
+        "mount_interface":         { "type": "string" },
+        "frontal_area_m2":         { "type": "number" },
+        "volume_m3":               { "type": "number" },
+        "inlet_total_pressure_recovery": { "type": "number", "minimum": 0, "maximum": 1 },
+        "vibration_signature":     { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "maintenance": {
+      "type": "object",
+      "required": ["mttr_hours", "line_replaceable_units"],
+      "properties": {
+        "TBO_hours":               { "type": ["number", "null"] },
+        "hot_section_inspection_hours": { "type": "number" },
+        "AB_section_inspection_hours": { "type": "number" },
+        "oil_change_hours":        { "type": "number" },
+        "borescope_interval_hours": { "type": "number" },
+        "apex_seal_replace_hours": { "type": "number" },
+        "spark_plug_interval_hours": { "type": "number" },
+        "carbon_clean_hours":      { "type": "number" },
+        "design_life_hours":       { "type": "number" },
+        "design_life_cycles":      { "type": "number" },
+        "mttr_hours":              { "type": "number" },
+        "line_replaceable_units": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "known_issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "FADEC": {
+          "type": "object",
+          "properties": {
+            "channels":       { "type": "integer" },
+            "authority":      { "type": "string" },
+            "reversion_mode": { "type": "string" }
+          }
+        },
+        "ECU": {
+          "type": "object",
+          "properties": {
+            "channels":       { "type": "integer" },
+            "authority":      { "type": "string" },
+            "reversion_mode": { "type": "string" }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

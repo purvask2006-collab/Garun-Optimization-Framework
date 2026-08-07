@@ -1,0 +1,52 @@
+{
+  "$schema_note": "Interactive (non-sidebar) widgets used on pages 3-5. Sidebar/input-form widgets are defined separately in sidebar.json.",
+  "widgets": [
+    {
+      "id": "phase_selector",
+      "page": "mission_simulation",
+      "widget": "st.selectbox",
+      "label": "Zoom to phase",
+      "options": ["Full mission", "Takeoff", "Climb", "Cruise", "Loiter", "Descent", "Land"],
+      "default": "Full mission",
+      "behavior": "Filters/zooms all 5 subplots on Page 3 to the selected segment's start/end timestamps, using mission.SegmentResult boundaries.",
+      "linked_charts": ["altitude_vs_time", "speed_vs_time", "power_balance", "soc_vs_time", "fuel_remaining_vs_time"]
+    },
+    {
+      "id": "generation_slider",
+      "page": "optimization",
+      "widget": "st.slider",
+      "label": "Show generation N",
+      "min": 0,
+      "max_source": "n_gen from algorithms.json active profile",
+      "default": "max (final generation)",
+      "behavior": "Replays result.history[N].opt.get('F') from pymoo's saved optimization history (already captured via save_history=True in run_optimization()) -- no recomputation needed, just re-plotting a stored generation's population.",
+      "linked_charts": ["pareto_front_3d"]
+    },
+    {
+      "id": "pareto_point_click",
+      "page": "optimization",
+      "widget": "plotly_click_event",
+      "label": "Click a Pareto-front point to inspect that design",
+      "behavior": "On click, extracts that point's (battery_kwh, engine_kw, motor_kw) design variables and re-feeds them into mission.build_mission_profile(), then re-renders Page 3's five subplots for that specific design. Classic 'linked views' cross-page interaction.",
+      "linked_page": "mission_simulation"
+    },
+    {
+      "id": "controller_toggle",
+      "page": "energy_management",
+      "widget": "st.multiselect",
+      "label": "Compare controllers",
+      "options": ["Rule-based", "Static-optimized", "RL-adaptive"],
+      "default": ["Rule-based", "Static-optimized", "RL-adaptive"],
+      "behavior": "Controls which of the three strategies' power-split plots and bar-chart entries are shown."
+    },
+    {
+      "id": "generate_report_button",
+      "page": "report",
+      "widget": "st.button",
+      "label": "Generate PDF Report",
+      "behavior": "Triggers reporting/report_writer.py: fills a Jinja2 HTML template with the current session's computed values and plots, then converts to PDF via WeasyPrint.",
+      "output": "st.download_button for the generated PDF/HTML file"
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.2 Pages 3-6 (conversation-derived, not yet implemented in code)"
+}

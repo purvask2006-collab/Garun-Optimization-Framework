@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "dataset": "HAL Ecosystem Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "data_as_of": "August 2026",
+    "note": "Compiled from public defence-news reporting, Wikipedia, and HAL statements available as of Aug 2026. Program timelines in this sector shift frequently -- treat dates as directional, not contractual, and re-verify before citing to a panel."
+  },
+  "items": [
+    {
+      "id": "htfe_25",
+      "project": "HAL HTFE-25 (Hindustan Turbo Fan Engine)",
+      "purpose": "Indigenous afterburning turbofan for trainers, business jets, and UAVs up to 9 tonnes (twin-engine config)",
+      "status": "Under development; 2 core engines + 1 technology demonstrator built; progress has lagged original 2025 target, now moving toward endurance testing per 2026 tender activity",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Power source for single-engine trainer jets, business jets, and UAVs up to 5 tonnes (9 tonnes twin-engine)",
+      "technology": [
+        "Afterburning turbofan core",
+        "Indigenous casing/gearbox fabrication (recently outsourced to private industry)"
+      ],
+      "power_generation": "25 kN thrust class, afterburning turbofan",
+      "platform": "Applicable to fixed-wing trainers, UAVs, light jets",
+      "description": "First run December 2015; an internally-funded HAL program (outside formal MoD review), which has contributed to its slower pace versus externally-mandated programs. Potentially relevant to future GARUN-class UAV propulsion if scaled or adapted."
+    },
+    {
+      "id": "htse_1200",
+      "project": "HAL HTSE-1200 (Hindustan Turbo Shaft Engine)",
+      "purpose": "Indigenous turboshaft to replace imported Shakti/Ardiden engines in HAL's helicopter fleet",
+      "status": "5 prototype engines under fabrication; core achieved 100% RPM milestone; deliveries slated from mid-2025, moving into endurance/certification testing through 2026",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Powerplant for 3-8 tonne class helicopters (Dhruv, Rudra, Prachand, LUH)",
+      "technology": [
+        "Joint HAL Engine Division (Koraput) / DMRL development",
+        "High-altitude cold and hot weather trials completed (Leh, South Pullu, Khardung La)"
+      ],
+      "power_generation": "~1200 kW class turboshaft",
+      "platform": "Applicable to Dhruv, Rudra, Prachand, LUH helicopter family",
+      "description": "First run February 2018; positioned as India's path to full engine independence for its indigenous helicopter fleet, reducing reliance on the license-built Shakti/Ardiden engine."
+    },
+    {
+      "id": "shakti_ardiden",
+      "project": "Shakti (Ardiden 1H1)",
+      "purpose": "Current-generation turboshaft powering HAL's operational helicopter fleet",
+      "status": "Operational, in service (license-built via HAL/Safran joint venture)",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Powerplant for Dhruv, Rudra, Prachand, and LUH",
+      "technology": [
+        "Twin-engine configuration standard across fleet"
+      ],
+      "power_generation": "~1000-1200 kW class turboshaft",
+      "platform": "Dhruv/Rudra/Prachand/LUH helicopter family",
+      "description": "The Safran-designed, HAL-license-built engine that HTSE-1200 is intended to eventually supersede for full indigenization."
+    },
+    {
+      "id": "ge_f404_in20",
+      "project": "GE F404-GE-IN20",
+      "purpose": "Imported turbofan powering the Tejas Mk1/Mk1A fighter fleet",
+      "status": "Operational but a recurring supply-chain bottleneck; delivery delays repeatedly cited as the primary constraint on Tejas Mk1A production rate",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Powerplant for Tejas Mk1A",
+      "technology": [
+        "Afterburning turbofan, US General Electric design"
+      ],
+      "power_generation": "~85 kN class afterburning turbofan",
+      "platform": "Tejas Mk1/Mk1A",
+      "description": "Import dependency here is the direct driver behind HAL's indigenous HTFE-25/HTSE-1200 push and the broader 'engine self-reliance' narrative across HAL's current program set."
+    },
+    {
+      "id": "ge_f414_ins6",
+      "project": "GE F414-INS6",
+      "purpose": "Higher-thrust turbofan selected for the Tejas Mk2",
+      "status": "Selected/contracted; not yet flight-integrated as Tejas Mk2 prototype assembly is ongoing",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Powerplant for Tejas Mk2 (Medium Weight Fighter)",
+      "technology": [
+        "Afterburning turbofan, US General Electric design",
+        "Transfer-of-technology (ToT) discussions ongoing for future domestic production"
+      ],
+      "power_generation": "~98 kN thrust class afterburning turbofan",
+      "platform": "Tejas Mk2",
+      "description": "A significantly higher-thrust engine than the F404, enabling the Mk2's larger MTOW (~17.5 tonnes) and expanded payload."
+    },
+    {
+      "id": "kaveri_dry",
+      "project": "Kaveri (dry derivative / \"Kaveri 2.0\")",
+      "purpose": "Revived non-afterburning derivative of India's original fighter-engine program, repurposed for unmanned platform propulsion",
+      "status": "Certification targeted late 2026 for the Ghatak UCAV application",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Propulsion for the DRDO Ghatak stealth UCAV",
+      "technology": [
+        "Non-afterburning turbojet derivative",
+        "Developed by DRDO's Gas Turbine Research Establishment (GTRE)"
+      ],
+      "power_generation": "Dry (non-afterburning) turbojet",
+      "platform": "Ghatak UCAV",
+      "description": "The original Kaveri program was shelved as a Tejas fighter engine roughly 25 years ago; its revival as an unmanned-platform powerplant is a notable case of programmatic pivot from a failed manned application to a viable unmanned one -- directly relevant precedent for framing GARUN's own propulsion-architecture flexibility."
+    },
+    {
+      "id": "amca_engine_120kn",
+      "project": "AMCA 120 kN-class Engine (competitive proposal stage)",
+      "purpose": "Future high-thrust engine for AMCA Mk1 and potentially future Tejas Mk2 variants",
+      "status": "Competitive proposal stage; Rolls-Royce has submitted a final proposal offering full IP transfer and core testing by 2030, contingent on a 2026 agreement",
+      "engine": "N/A (this IS the engine)",
+      "mission": "Powerplant for India's 5th-generation Advanced Medium Combat Aircraft (AMCA)",
+      "technology": [
+        "Full technology-transfer / IP-sharing negotiation",
+        "120 kN thrust class"
+      ],
+      "power_generation": "~120 kN class afterburning turbofan (proposed)",
+      "platform": "AMCA (and potentially future Tejas Mk2 variants)",
+      "description": "Represents the next major decision point in India's engine self-reliance strategy, alongside the indigenous GTRE/DRDO effort."
+    }
+  ]
+}

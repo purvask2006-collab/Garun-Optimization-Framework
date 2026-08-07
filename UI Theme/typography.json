@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "description": "Type system: a technical monospace for telemetry/data (the dashboard's real content) and a clean sans for UI chrome/labels, so the two never blur into each other on a data-dense screen.",
+  "font_families": {
+    "data": {
+      "family": "IBM Plex Mono",
+      "fallback": "ui-monospace, 'JetBrains Mono', monospace",
+      "role": "All numeric readouts: endurance_hr, mtow_kg, soc, fuel_remaining_kg, power_kw — anything a judge should be able to scan like a HUD."
+    },
+    "ui": {
+      "family": "Inter",
+      "fallback": "-apple-system, 'Segoe UI', sans-serif",
+      "role": "Labels, nav, body copy, panel titles, tooltips."
+    }
+  },
+  "scale": {
+    "metric_hero": {"size_px": 40, "weight": 600, "family": "data", "line_height": 1.1, "letter_spacing_em": -0.01},
+    "metric_secondary": {"size_px": 22, "weight": 500, "family": "data", "line_height": 1.2, "letter_spacing_em": 0},
+    "panel_title": {"size_px": 14, "weight": 600, "family": "ui", "line_height": 1.3, "letter_spacing_em": 0.04, "text_transform": "uppercase"},
+    "body": {"size_px": 14, "weight": 400, "family": "ui", "line_height": 1.5, "letter_spacing_em": 0},
+    "label": {"size_px": 11, "weight": 500, "family": "ui", "line_height": 1.4, "letter_spacing_em": 0.03, "text_transform": "uppercase"},
+    "caption": {"size_px": 12, "weight": 400, "family": "ui", "line_height": 1.4, "letter_spacing_em": 0, "color_ref": "text.secondary"},
+    "data_table": {"size_px": 13, "weight": 400, "family": "data", "line_height": 1.5, "letter_spacing_em": 0}
+  },
+  "usage_notes": [
+    "metric_hero is for the top-line Key Metrics panel (endurance, MTOW, fuel burn) — this is the dashboard's 'hero' moment per the design brief, so it gets the largest, most confident treatment.",
+    "panel_title's uppercase + letter-spacing gives the six panels (Key Metrics, Pareto Front, Mission Profile, Battery SoC, Constraint Checker, Assumptions) a consistent 'instrument label' feel without needing icons to differentiate them.",
+    "Never use the data family for prose — it should read as 'this number was measured/computed', not decoration."
+  ]
+}

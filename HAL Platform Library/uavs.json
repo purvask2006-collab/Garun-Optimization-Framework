@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "dataset": "HAL Ecosystem Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "data_as_of": "August 2026",
+    "note": "Compiled from public defence-news reporting, Wikipedia, and HAL statements available as of Aug 2026. Program timelines in this sector shift frequently -- treat dates as directional, not contractual, and re-verify before citing to a panel."
+  },
+  "items": [
+    {
+      "id": "cats_warrior_1t",
+      "project": "CATS Warrior (1-tonne class)",
+      "purpose": "Loyal-wingman unmanned combat air vehicle (UCAV) for manned-unmanned teaming",
+      "status": "Full-scale airframe engine-integrated, ground runs completed; MUM-T datalink checks ongoing; first flight targeted 2027",
+      "engine": "Turbojet/turbofan (integration confirmed by HAL CMD, 2026; exact engine not publicly finalized)",
+      "mission": "Escort/strike alongside Tejas fighters, MUM-T control from up to ~150 km",
+      "technology": [
+        "Manned-Unmanned Teaming (MUM-T) datalink",
+        "Autonomous flight control"
+      ],
+      "power_generation": "Single jet engine",
+      "platform": "Unmanned combat air vehicle, part of Combat Air Teaming System (CATS)",
+      "description": "HAL's flagship loyal-wingman program, designed to fly alongside a Tejas 'mothership' for scouting, decoy, and strike roles."
+    },
+    {
+      "id": "cats_warrior_10t",
+      "project": "CATS Warrior (10-tonne stealth variant)",
+      "purpose": "High-altitude long-endurance stealth UCAV / strategic strike asset",
+      "status": "Preliminary design phase; government approval expected 2026; first flight projected 2030-32",
+      "engine": "Not yet finalized (larger jet-class engine required)",
+      "mission": "Counter high-altitude adversary UAVs, strategic ISR/strike, stealth bomber-gap coverage",
+      "technology": [
+        "Stealth shaping",
+        "HALE endurance design"
+      ],
+      "power_generation": "Single jet engine, larger thrust class than the 1-tonne variant",
+      "platform": "Heavy unmanned combat air vehicle",
+      "description": "Positions HAL against systems like Boeing's MQ-28 Ghost Bat and China's GJ-11 in the emerging loyal-wingman/stealth-UCAV category."
+    },
+    {
+      "id": "tapas_bh201",
+      "project": "TAPAS-BH-201 (Rustom-2)",
+      "purpose": "Medium-Altitude Long-Endurance (MALE) ISR UAV",
+      "status": "Prototype flight testing; HAL manufacturing first production batch; 76 units planned across Army (60), Air Force (12), Navy (4)",
+      "engine": "Piston/turbo engine (twin-engine derivative of Rustom-1 airframe)",
+      "mission": "ISR (intelligence, surveillance, reconnaissance); demonstrated altitude ~27,500 ft, endurance ~18 hrs, payload up to 350 kg",
+      "technology": [
+        "Autonomous Take-Off and Landing (ATOL)",
+        "GAGAN satellite navigation integration"
+      ],
+      "power_generation": "Twin-engine (piston/turbo class)",
+      "platform": "MALE-class fixed-wing UAV",
+      "description": "DRDO/ADE-designed MALE UAV with HAL as production partner; directly comparable in mission profile to GARUN's PS1 hybrid-electric MALE UAV target class."
+    },
+    {
+      "id": "archer_ng",
+      "project": "Archer-NG",
+      "purpose": "Armed MALE UAV derived from the Rustom-1 airframe",
+      "status": "Development stage; BEL selected as L1 bidder for manufacturing/assembly of initial units",
+      "engine": "Derivative of Rustom-1 powerplant configuration",
+      "mission": "Armed ISR strike; payload up to 300 kg, service ceiling ~30,000 ft; planned integration of laser-guided rockets, bombs, loitering munitions",
+      "technology": [
+        "Weaponized payload integration",
+        "Shared DRDO/ADE ground control station with TAPAS-BH-201"
+      ],
+      "power_generation": "Turbojet (Archer SR-UAV lineage) / turboprop-class for NG variant",
+      "platform": "MALE-class armed UAV",
+      "description": "Positioned by the Ministry of Defence as complementary to imported MALE UAV procurement, alongside TAPAS-BH-201."
+    },
+    {
+      "id": "rustom_1",
+      "project": "DRDO Rustom-1",
+      "purpose": "Baseline tactical UAV; precursor airframe for the Rustom/TAPAS/Archer family",
+      "status": "Prototype flight testing complete; superseded operationally by TAPAS-BH-201 and Archer-NG derivatives",
+      "engine": "Piston engine, single",
+      "mission": "Tactical ISR; endurance ~10 hrs, range ~200 km, altitude up to 20,000 ft",
+      "technology": [
+        "Derived from Rutan Long-EZ airframe concept"
+      ],
+      "power_generation": "Single piston engine",
+      "platform": "Tactical-class fixed-wing UAV",
+      "description": "The foundational airframe from which TAPAS-BH-201, Archer, and Archer-NG were all developed."
+    },
+    {
+      "id": "ghatak_ucav",
+      "project": "DRDO Ghatak",
+      "purpose": "Stealth unmanned combat air vehicle (flying-wing UCAV)",
+      "status": "Development stage; propulsion certification (Kaveri dry-derivative engine) targeted late 2026",
+      "engine": "Kaveri dry-engine derivative (GTRE)",
+      "mission": "Deep-strike stealth combat missions",
+      "technology": [
+        "Flying-wing stealth airframe",
+        "Indigenous dry-turbojet propulsion"
+      ],
+      "power_generation": "Single non-afterburning turbojet (Kaveri derivative)",
+      "platform": "Stealth flying-wing UCAV",
+      "description": "India's most ambitious indigenous stealth-UCAV effort, notable for reviving the Kaveri engine program as a dry (non-afterburning) unmanned-platform powerplant rather than for the manned-fighter role it originally targeted."
+    },
+    {
+      "id": "male_procurement_program",
+      "project": "IAF MALE-Class UAV Procurement Programme",
+      "purpose": "Large-scale MALE UAV acquisition combining imports and indigenous complementary platforms",
+      "status": "Active vendor competition, ~24 vendors competing as of early 2026 reporting",
+      "engine": "Varies by competing platform",
+      "mission": "Persistent ISR and armed MALE capability at scale",
+      "technology": [
+        "Mixed indigenous/import sourcing strategy"
+      ],
+      "power_generation": "Varies by platform",
+      "platform": "MALE-class UAV (multiple competing designs)",
+      "description": "The indigenous TAPAS-BH-201 and Archer-NG programs are positioned by the Ministry of Defence as complementary to this larger procurement effort, not substitutes for it -- directly relevant context for PS1's own MALE-class hybrid-electric propulsion framing."
+    }
+  ]
+}

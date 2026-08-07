@@ -1,0 +1,32 @@
+{
+  "$schema_note": "IMPORTANT: NSGA-II itself is a Pareto-dominance-based algorithm and does NOT use scalar objective weights during the search -- it optimizes all objectives simultaneously via non-dominated sorting and crowding distance, not a weighted sum. These weights are used ONLY in the post-optimization 'knee-point' design-selection stage (pick_knee_design() in main.py), where a single preferred design must be chosen from the Pareto front for reporting/benchmarking.",
+  "search_algorithm_weighting": "none -- pure Pareto dominance (see algorithms.json)",
+  "knee_point_selection_weights": {
+    "method": "normalized_euclidean_distance_to_target",
+    "weights": {
+      "mtow_kg": 0.5,
+      "endurance_hr": 0.5,
+      "fuel_kg": 0.0
+    },
+    "current_implementation_note": "main.py's pick_knee_design() currently computes distance using only mtow_kg and endurance_hr (implicitly equal-weighted at 0.5/0.5), and does not include fuel_kg in the distance metric at all. This file documents that AS the current behavior -- fuel_kg's weight of 0.0 reflects what the code does today, not a recommendation. If fuel burn should factor into knee selection, both this file and pick_knee_design() need to be updated together.",
+    "target_reference_point": {
+      "mtow_kg": 418.0,
+      "endurance_hr": 7.7
+    }
+  },
+  "alternative_weighting_schemes_not_yet_implemented": [
+    {
+      "name": "mission_efficiency_weighted",
+      "description": "Would prioritize fuel_kg and endurance_hr over MTOW, for programs where mass is less constrained than mission performance (e.g., a HALE-class extension).",
+      "weights": { "mtow_kg": 0.2, "endurance_hr": 0.5, "fuel_kg": 0.3 },
+      "status": "not_implemented"
+    },
+    {
+      "name": "mass_constrained_weighted",
+      "description": "Would prioritize MTOW compliance above all else, for programs closer to a hard structural/payload ceiling.",
+      "weights": { "mtow_kg": 0.7, "endurance_hr": 0.2, "fuel_kg": 0.1 },
+      "status": "not_implemented"
+    }
+  ],
+  "source": "main.py :: pick_knee_design()"
+}

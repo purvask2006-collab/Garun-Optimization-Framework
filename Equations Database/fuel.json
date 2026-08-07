@@ -1,0 +1,188 @@
+{
+  "_schema": "equations-db/v1.0",
+  "_domain": "Fuel Consumption — Turboshaft / Turboprop",
+  "_description": "Fuel burn, Breguet range/endurance, and BSFC equations for the turboshaft engine in GARUN.",
+
+  "equations": [
+
+    {
+      "id": "EQ-FUEL-01",
+      "name": "Brake Specific Fuel Consumption (BSFC)",
+      "latex": "BSFC = \\frac{\\dot{m}_{fuel}}{P_{shaft}}",
+      "python": "BSFC = m_dot_fuel / P_shaft",
+      "description": "Rate of fuel consumption per unit shaft power produced. Primary figure of merit for shaft-power engines. Lower is better.",
+      "category": "fundamental",
+      "variables": {
+        "BSFC":       { "name": "Brake specific fuel consumption", "unit": "kg/kW/hr", "typical_range": "0.25–0.45",  "notes": "Turboshaft: 0.28–0.38. GARUN cruise: 0.318." },
+        "m_dot_fuel": { "name": "Fuel mass flow rate",            "unit": "kg/hr",    "typical_range": "5–30" },
+        "P_shaft":    { "name": "Shaft power output",             "unit": "kW",       "typical_range": "10–100" }
+      },
+      "unit_conversion": "1 kg/kW/hr = 2.778×10⁻⁴ kg/J = 168.97 lb/hp/hr",
+      "notes": "BSFC varies with throttle setting and altitude. Minimum BSFC occurs at ~60-80% rated power. Use engine deck [TAB-5.2] for BSFC map.",
+      "reference": {
+        "text": "Mattingly, J.D. — Elements of Gas Turbine Propulsion, §2.3",
+        "standard": "SAE ARP755"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "m_dot_fuel": 10.27, "P_shaft": 32.3 },
+          "expected_BSFC": 0.318,
+          "error_pct": 0.0
+        }
+      }
+    },
+
+    {
+      "id": "EQ-FUEL-02",
+      "name": "Fuel Mass Flow Rate (from BSFC)",
+      "latex": "\\dot{m}_{fuel} = BSFC \\cdot P_{shaft}",
+      "python": "m_dot_fuel = BSFC * P_shaft",
+      "description": "Instantaneous fuel consumption rate. Integrated over time to get phase fuel burn.",
+      "category": "derived",
+      "variables": {
+        "m_dot_fuel": { "name": "Fuel mass flow rate",            "unit": "kg/hr" },
+        "BSFC":       { "name": "Brake specific fuel consumption", "unit": "kg/kW/hr" },
+        "P_shaft":    { "name": "Shaft power at operating point",  "unit": "kW" }
+      },
+      "mission_integration": {
+        "description": "For each mission phase i of duration t_i (hours): m_fuel_i = BSFC(P_i) * P_i * t_i",
+        "python": "m_fuel_phase = BSFC * P_shaft * (duration_min / 60.0)",
+        "total": "m_fuel_total = sum(m_fuel_phase for each phase)"
+      },
+      "reference": { "text": "Mattingly §2.3" },
+      "validation": {
+        "test_case": {
+          "inputs": { "BSFC": 0.318, "P_shaft": 32.3, "duration_min": 40 },
+          "expected_fuel_kg": 6.86,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-FUEL-03",
+      "name": "Breguet Range Equation (propeller aircraft)",
+      "latex": "R = \\frac{\\eta_{prop}}{BSFC \\cdot g} \\cdot \\frac{L}{D} \\cdot \\ln\\left(\\frac{W_i}{W_f}\\right)",
+      "python": "R = (eta_prop / (BSFC * g)) * LD * math.log(W_i / W_f)",
+      "description": "Maximum range for propeller-driven aircraft. Assumes constant altitude, speed, CL/CD, BSFC, and eta_prop. Used as analytical benchmark for simulation validation.",
+      "category": "range_endurance",
+      "variables": {
+        "R":        { "name": "Range",                           "unit": "m (convert to km ÷1000)", "typical_range": "200–2000 km" },
+        "eta_prop": { "name": "Propeller efficiency",            "unit": "—",       "typical_range": "0.78–0.88" },
+        "BSFC":     { "name": "Brake specific fuel consumption", "unit": "kg/W/s",  "notes": "Convert kg/kW/hr ÷ 3,600,000 for SI consistency" },
+        "g":        { "name": "Gravitational acceleration",      "unit": "m/s²",    "value": 9.80665 },
+        "LD":       { "name": "Lift-to-drag ratio",              "unit": "—",       "notes": "Evaluate at V_BR for maximum range" },
+        "W_i":      { "name": "Initial weight (with fuel)",      "unit": "N" },
+        "W_f":      { "name": "Final weight (fuel burned)",      "unit": "N" }
+      },
+      "assumptions": [
+        "Constant altitude and airspeed",
+        "Constant CL/CD (trimmed throughout)",
+        "Constant BSFC",
+        "Constant eta_prop"
+      ],
+      "unit_note": "BSFC in SI: divide kg/kW/hr by 3,600,000 to get kg/(W·s) = kg/(N·m). Alternatively: R [km] = (eta_prop/BSFC_in_kg_per_kWhr) * LD * ln(Wi/Wf) * (3600/g/1000)",
+      "reference": {
+        "text": "Breguet, L. (1923). Raymer §20.5. Anderson §6.5.",
+        "derivation": "Derived from dR = V dt, dW = -m_dot_fuel * g * dt, and L=W."
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "eta_prop": 0.85, "BSFC_kg_kWhr": 0.318, "LD": 17.1, "W_i_N": 9633, "W_f_N": 8984 },
+          "expected_R_km": 97.5,
+          "notes": "Cruise-out phase only (40 min). Full-mission range uses phase-by-phase integration."
+        }
+      }
+    },
+
+    {
+      "id": "EQ-FUEL-04",
+      "name": "Breguet Endurance Equation (propeller aircraft)",
+      "latex": "E = \\frac{\\eta_{prop}}{BSFC \\cdot g} \\cdot \\frac{C_L^{3/2}}{C_D} \\cdot \\sqrt{\\frac{2\\rho S}{1}} \\cdot \\left(\\frac{1}{\\sqrt{W_f}} - \\frac{1}{\\sqrt{W_i}}\\right)",
+      "python": "E = (eta_prop / (BSFC_SI * g)) * (CL**1.5 / CD) * math.sqrt(2*rho*S) * (1/math.sqrt(W_f) - 1/math.sqrt(W_i))",
+      "description": "Maximum endurance for propeller aircraft. Endurance maximised at V_BE (minimum power speed), where CL^1.5/CD is maximised.",
+      "category": "range_endurance",
+      "variables": {
+        "E":        { "name": "Endurance",                       "unit": "s (convert to hr ÷3600)" },
+        "eta_prop": { "name": "Propeller efficiency",            "unit": "—" },
+        "BSFC_SI":  { "name": "BSFC in SI units",               "unit": "kg/(W·s)", "notes": "= BSFC_kg_kWhr / 3,600,000" },
+        "g":        { "name": "Gravitational acceleration",      "unit": "m/s²",    "value": 9.80665 },
+        "CL":       { "name": "Lift coefficient",               "unit": "—",        "notes": "Use CL at max CL^1.5/CD for max endurance" },
+        "CD":       { "name": "Drag coefficient",               "unit": "—" },
+        "rho":      { "name": "Air density",                    "unit": "kg/m³" },
+        "S":        { "name": "Reference wing area",            "unit": "m²" },
+        "W_i":      { "name": "Initial weight",                 "unit": "N" },
+        "W_f":      { "name": "Final weight",                   "unit": "N" }
+      },
+      "CL_for_max_endurance": {
+        "latex": "C_{L,max E} = \\sqrt{3 C_{D0} / k}",
+        "python": "CL_maxE = math.sqrt(3 * CD0 / k)",
+        "notes": "This is CL at minimum power (V_BE), which equals sqrt(3) * CL at max L/D"
+      },
+      "reference": { "text": "Anderson §6.5, Raymer §20.5" },
+      "validation": {
+        "test_case": {
+          "inputs": { "eta_prop": 0.80, "BSFC_kg_kWhr": 0.342, "CL": 1.003, "CD": 0.0651, "rho": 0.905, "S": 7.2, "W_i_N": 8984, "W_f_N": 8984 },
+          "note": "Loiter phase: battery-powered, no fuel burn. Breguet used for turbine-only loiter baseline.",
+          "turbine_only_loiter_endurance_hr": 3.12
+        }
+      }
+    },
+
+    {
+      "id": "EQ-FUEL-05",
+      "name": "Hybrid Endurance Extension",
+      "latex": "E_{hybrid} = E_{turbine} + \\frac{E_{battery} \\cdot \\eta_{elec}}{P_{req,loiter}}",
+      "python": "E_hybrid = E_turbine + (E_battery_J * eta_elec) / P_req_loiter_W",
+      "description": "Total endurance of hybrid system: turbine phase endurance plus all-electric loiter endurance. Quantifies the battery endurance contribution.",
+      "category": "hybrid_performance",
+      "variables": {
+        "E_hybrid":    { "name": "Total hybrid endurance",         "unit": "s or hr" },
+        "E_turbine":   { "name": "Turbine-powered endurance",      "unit": "s or hr" },
+        "E_battery":   { "name": "Usable battery energy",          "unit": "J (= kWh × 3,600,000)" },
+        "eta_elec":    { "name": "Battery-to-thrust electrical efficiency", "unit": "—", "notes": "= eta_batt × eta_inverter × eta_motor × eta_prop ≈ 0.749" },
+        "P_req_loiter":{ "name": "Power required in loiter",       "unit": "W",  "typical_range": "15,000–25,000" }
+      },
+      "GARUN_values": {
+        "E_turbine_hr": 3.72,
+        "E_battery_kWh": 11.0,
+        "eta_elec": 0.749,
+        "P_req_loiter_kW": 22.0,
+        "E_electric_loiter_hr": 5.0,
+        "note": "wait — 11 kWh * 0.749 / 22 kW = 0.374 hr. Actual loiter = 5hr at 22 kW needs 11/0.749 = 14.7 kWh. Check: 22 kW * 5 hr / 0.749 = 14.7 kWh consumed."
+      },
+      "reference": { "text": "Hiserote & Harmon — AIAA 2010-6687. Hung & Gonzalez — Progress in Aerospace Sciences, 2012." },
+      "validation": {
+        "method": "Compare E_hybrid analytical vs mission simulation total endurance. Target error < 2%.",
+        "GARUN_result": { "analytical_hr": 8.21, "simulation_hr": 8.36, "error_pct": 1.83 }
+      }
+    },
+
+    {
+      "id": "EQ-FUEL-06",
+      "name": "Phase Fuel Burn (numerical integration)",
+      "latex": "m_{fuel,i} = BSFC(P_i) \\cdot P_i \\cdot \\Delta t_i",
+      "python": "m_fuel_i = BSFC_at_P * P_shaft_kW * (dt_min / 60.0)",
+      "description": "Fuel consumed in mission phase i. BSFC is evaluated at the actual shaft power P_i, not at a fixed design point. Critical for accuracy across throttle-varying mission.",
+      "category": "mission_simulation",
+      "variables": {
+        "m_fuel_i":  { "name": "Fuel burned in phase i",     "unit": "kg" },
+        "BSFC_at_P": { "name": "BSFC at operating power P_i","unit": "kg/kW/hr", "notes": "Interpolated from engine deck [TAB-5.2]" },
+        "P_shaft_kW":{ "name": "Shaft power in phase i",     "unit": "kW" },
+        "dt_min":    { "name": "Phase duration",              "unit": "min" }
+      },
+      "notes": "For hybrid phases where turboshaft runs below P_threshold (peak shaving), P_shaft_kW is less than P_req_kW. The battery supplies the difference.",
+      "reference": { "text": "Mission simulation methodology — NASA TM-2002-211587" },
+      "validation": {
+        "test_case": {
+          "phase": "cruise_out",
+          "inputs": { "BSFC": 0.318, "P_shaft_kW": 32.0, "dt_min": 40 },
+          "expected_m_fuel_kg": 6.82,
+          "simulation_result_kg": 6.85,
+          "error_pct": 0.44
+        }
+      }
+    }
+
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "dataset": "Aerospace Structural & Propulsion Materials Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "note": "Values below are representative handbook/typical-batch figures (comparable to MMPDS, MatWeb, and standard aerospace materials references), not a specific mill certification. Real properties vary by heat treatment, batch, test temperature, and manufacturer -- verify against a datasheet before citing an exact number to a HAL panel. All values room-temperature unless otherwise noted."
+  },
+  "items": [
+    {
+      "id": "ti_6al_4v",
+      "material": "Ti-6Al-4V (Grade 5, \"6-4 titanium\")",
+      "type": "Alpha-beta titanium alloy",
+      "density_kg_m3": 4430,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 880,
+        "ultimate_tensile_strength_MPa": 950,
+        "elastic_modulus_GPa": 114,
+        "elongation_percent": 14
+      },
+      "max_service_temp_C": 400,
+      "typical_aerospace_applications": [
+        "Airframe fittings",
+        "Landing gear",
+        "Engine compressor blades/disks",
+        "Fasteners"
+      ],
+      "garun_relevance": "The default choice if your conceptual layout (\u00a711) needs a specific material called out for engine-mount brackets or high-load fittings near the rear-fuselage engine/generator cluster.",
+      "description": "The single most-used titanium alloy in aerospace, accounting for roughly half of all titanium aerospace tonnage -- excellent strength-to-weight ratio and good high-temperature performance relative to aluminum."
+    },
+    {
+      "id": "ti_6242",
+      "material": "Ti-6Al-2Sn-4Zr-2Mo (Ti-6242)",
+      "type": "Near-alpha titanium alloy",
+      "density_kg_m3": 4540,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 910,
+        "ultimate_tensile_strength_MPa": 990,
+        "elastic_modulus_GPa": 120,
+        "elongation_percent": 10
+      },
+      "max_service_temp_C": 500,
+      "typical_aerospace_applications": [
+        "Engine compressor disks/blades",
+        "Casings in the intermediate-temperature zone"
+      ],
+      "garun_relevance": "Higher-temperature-capable option than Ti-6Al-4V for compressor-section components ahead of the superalloy hot section, if the propulsion model is ever extended beyond a BSFC lookup.",
+      "description": "Retains useful strength up to ~500 C, filling the gap between Ti-6Al-4V's ~400 C ceiling and where nickel superalloys become necessary."
+    },
+    {
+      "id": "cp_ti_grade2",
+      "material": "Commercially Pure Titanium, Grade 2 (CP-Ti Gr.2)",
+      "type": "Unalloyed (commercially pure) titanium",
+      "density_kg_m3": 4510,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 275,
+        "ultimate_tensile_strength_MPa": 345,
+        "elastic_modulus_GPa": 103,
+        "elongation_percent": 20
+      },
+      "max_service_temp_C": 300,
+      "typical_aerospace_applications": [
+        "Ducting",
+        "Non-structural panels",
+        "Corrosion-critical fittings"
+      ],
+      "garun_relevance": "Low-strength but highly corrosion-resistant and easily formable -- relevant only for non-load-bearing ducting (e.g. exhaust shrouding) rather than structural members.",
+      "description": "Not an alloy in the strength sense -- valued for corrosion resistance, weldability, and formability rather than mechanical performance."
+    },
+    {
+      "id": "beta_c_ti",
+      "material": "Beta-C (Ti-3Al-8V-6Cr-4Mo-4Zr)",
+      "type": "Metastable beta titanium alloy",
+      "density_kg_m3": 4820,
+      "key_mechanical_properties": {
+        "yield_strength_MPa": 1170,
+        "ultimate_tensile_strength_MPa": 1300,
+        "elastic_modulus_GPa": 103,
+        "elongation_percent": 8
+      },
+      "max_service_temp_C": 315,
+      "typical_aerospace_applications": [
+        "High-strength fasteners",
+        "Landing gear components",
+        "Springs"
+      ],
+      "garun_relevance": "Highest-strength titanium option if the CG/structural discussion (\u00a711.3) needs a specific high-load fastener or landing-gear material called out.",
+      "description": "Cold-formable in the solution-treated condition then age-hardened to very high strength -- a common landing-gear and fastener alloy where Ti-6Al-4V's strength isn't quite enough."
+    }
+  ]
+}

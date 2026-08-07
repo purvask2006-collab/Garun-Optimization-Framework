@@ -1,0 +1,174 @@
+{
+  "_schema": "equations-db/v1.0",
+  "_domain": "Aerodynamics — Drag",
+  "_description": "Drag polar, power required, and thrust equations. Foundation of all propulsion sizing calculations.",
+
+  "equations": [
+
+    {
+      "id": "EQ-DRAG-01",
+      "name": "Drag Polar",
+      "latex": "C_D = C_{D0} + \\frac{C_L^2}{\\pi A R e}",
+      "python": "CD = CD0 + (CL**2) / (math.pi * AR * e)",
+      "description": "Parabolic drag polar. Splits total drag into zero-lift (parasite) drag and induced (lift-dependent) drag. Central equation for all performance calculations.",
+      "category": "fundamental",
+      "variables": {
+        "CD":  { "name": "Total drag coefficient",         "unit": "—",    "typical_range": "0.03–0.12" },
+        "CD0": { "name": "Zero-lift drag coefficient",     "unit": "—",    "typical_range": "0.015–0.035", "notes": "Parasite drag. Dominated by wetted area and surface finish." },
+        "CL":  { "name": "Lift coefficient",               "unit": "—",    "typical_range": "0.3–1.5" },
+        "AR":  { "name": "Aspect ratio",                   "unit": "—",    "typical_range": "3–20",       "notes": "= wingspan² / wing_area" },
+        "e":   { "name": "Oswald span efficiency factor",  "unit": "—",    "typical_range": "0.7–0.95",   "notes": "1.0 = elliptical (theoretical maximum). Real wings: 0.7–0.9." }
+      },
+      "induced_drag_factor": {
+        "definition": "k = 1 / (pi * AR * e)",
+        "python": "k = 1 / (math.pi * AR * e)",
+        "GARUN_value": 0.03872,
+        "notes": "Polar simplifies to CD = CD0 + k*CL²"
+      },
+      "reference": {
+        "text": "Prandtl lifting line theory. Anderson §5.4, Raymer §12.6",
+        "standard": "ESDU 76003"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "CD0": 0.026, "CL": 0.72, "AR": 10.03, "e": 0.82 },
+          "expected_CD": 0.0461,
+          "computed_CD": 0.0461,
+          "error_pct": 0.0
+        },
+        "cross_check": "LD = CL/CD = 0.72/0.0461 = 15.6 (consistent with LD_cruise = 17.1 at CL_best_LD)"
+      }
+    },
+
+    {
+      "id": "EQ-DRAG-02",
+      "name": "Maximum L/D Ratio",
+      "latex": "\\left(\\frac{L}{D}\\right)_{max} = \\frac{1}{2\\sqrt{C_{D0} \\cdot k}}",
+      "python": "LD_max = 1 / (2 * math.sqrt(CD0 * k))",
+      "description": "Maximum aerodynamic efficiency. Occurs when induced drag equals parasite drag (CL = sqrt(CD0/k)).",
+      "category": "optimum_condition",
+      "variables": {
+        "LD_max": { "name": "Maximum lift-to-drag ratio",    "unit": "—",    "typical_range": "12–30" },
+        "CD0":    { "name": "Zero-lift drag coefficient",    "unit": "—" },
+        "k":      { "name": "Induced drag factor",           "unit": "—",    "notes": "k = 1/(pi*AR*e)" }
+      },
+      "CL_at_LD_max": {
+        "latex": "C_{L,max L/D} = \\sqrt{\\frac{C_{D0}}{k}}",
+        "python": "CL_best = math.sqrt(CD0 / k)"
+      },
+      "reference": { "text": "Anderson §5.5" },
+      "validation": {
+        "test_case": {
+          "inputs": { "CD0": 0.026, "k": 0.03872 },
+          "expected_LD_max": 18.2,
+          "expected_CL_best": 0.819,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-DRAG-03",
+      "name": "Drag Force",
+      "latex": "D = \\frac{1}{2} \\rho V^2 S C_D",
+      "python": "D = 0.5 * rho * V**2 * S * CD",
+      "description": "Total aerodynamic drag force. In level flight equals thrust required.",
+      "category": "fundamental",
+      "variables": {
+        "D":   { "name": "Drag force",              "unit": "N",      "typical_range": "200–1500" },
+        "rho": { "name": "Air density",             "unit": "kg/m³" },
+        "V":   { "name": "True airspeed",           "unit": "m/s" },
+        "S":   { "name": "Reference wing area",     "unit": "m²" },
+        "CD":  { "name": "Total drag coefficient",  "unit": "—" }
+      },
+      "reference": { "text": "Anderson §5.2" },
+      "validation": {
+        "test_case": {
+          "inputs": { "rho": 0.905, "V": 55.0, "S": 7.2, "CD": 0.0461 },
+          "expected_D_N": 574.4,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-DRAG-04",
+      "name": "Thrust Required (level flight)",
+      "latex": "T_{req} = \\frac{1}{2}\\rho V^2 S \\left[C_{D0} + \\frac{\\left(\\frac{2W}{\\rho V^2 S}\\right)^2}{\\pi A R e}\\right]",
+      "python": "T_req = 0.5*rho*V**2*S*CD0 + (W**2) / (0.5*rho*V**2*S*math.pi*AR*e)",
+      "description": "Thrust required for steady level flight, expanded with drag polar substitution. Directly computes T_req from flight condition without separately computing CL and CD.",
+      "category": "derived",
+      "variables": {
+        "T_req": { "name": "Thrust required",              "unit": "N",     "typical_range": "200–1500" },
+        "rho":   { "name": "Air density",                  "unit": "kg/m³" },
+        "V":     { "name": "True airspeed",                "unit": "m/s" },
+        "S":     { "name": "Reference wing area",          "unit": "m²" },
+        "CD0":   { "name": "Zero-lift drag coefficient",   "unit": "—" },
+        "W":     { "name": "Aircraft weight",              "unit": "N" },
+        "AR":    { "name": "Aspect ratio",                 "unit": "—" },
+        "e":     { "name": "Oswald efficiency",            "unit": "—" }
+      },
+      "notes": "Two terms: term1 = parasite drag force (increases with V²), term2 = induced drag force (decreases with V²). Minimum thrust (= maximum L/D) at crossover.",
+      "reference": { "text": "Anderson §5.6" },
+      "validation": {
+        "test_case": {
+          "inputs": { "rho": 0.905, "V": 55.0, "S": 7.2, "CD0": 0.026, "W": 9633, "AR": 10.03, "e": 0.82 },
+          "expected_T_req_N": 575.0,
+          "error_pct": 0.2
+        }
+      }
+    },
+
+    {
+      "id": "EQ-DRAG-05",
+      "name": "Power Required",
+      "latex": "P_{req} = \\frac{T_{req} \\cdot V}{\\eta_{prop}}",
+      "python": "P_req = (T_req * V) / eta_prop",
+      "description": "Shaft power required from propulsion system to maintain level flight at speed V. Divides by propeller efficiency to get shaft power from thrust power.",
+      "category": "propulsion_sizing",
+      "variables": {
+        "P_req":    { "name": "Power required at shaft",    "unit": "W or kW",  "typical_range": "10–80 kW" },
+        "T_req":    { "name": "Thrust required",            "unit": "N" },
+        "V":        { "name": "True airspeed",              "unit": "m/s" },
+        "eta_prop": { "name": "Propeller efficiency",       "unit": "—",         "typical_range": "0.75–0.90", "notes": "Function of advance ratio J = V/(n*D)" }
+      },
+      "expanded_form": {
+        "latex": "P_{req} = \\frac{1}{\\eta_{prop}}\\left[\\frac{1}{2}\\rho V^3 S C_{D0} + \\frac{kW^2}{\\frac{1}{2}\\rho V S}\\right]",
+        "notes": "First term (parasite power) grows with V³. Second term (induced power) falls with V. Minimum power at V_BE."
+      },
+      "reference": { "text": "Anderson §5.6, Raymer §17.3" },
+      "validation": {
+        "test_case": {
+          "inputs": { "T_req": 575.0, "V": 55.0, "eta_prop": 0.85 },
+          "expected_P_req_kW": 37.2,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-DRAG-06",
+      "name": "Rate of Climb",
+      "latex": "ROC = \\frac{P_{avail} - P_{req}}{W}",
+      "python": "ROC = (P_avail - P_req) / W",
+      "description": "Rate of climb from excess power. P_avail = engine shaft power available. Used to size turboshaft for climb phase requirement.",
+      "category": "performance",
+      "variables": {
+        "ROC":     { "name": "Rate of climb",                "unit": "m/s",  "typical_range": "2–8" },
+        "P_avail": { "name": "Power available from engine",  "unit": "W" },
+        "P_req":   { "name": "Power required for level flight", "unit": "W" },
+        "W":       { "name": "Aircraft weight",              "unit": "N" }
+      },
+      "sizing_use": "Rearrange: P_avail = P_req + ROC * W. Given required ROC and known P_req, computes minimum engine power.",
+      "reference": { "text": "Anderson §6.3" },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_avail": 62000, "P_req": 37200, "W": 9633 },
+          "expected_ROC_ms": 2.57,
+          "error_pct": 0.1
+        }
+      }
+    }
+
+  ]
+}

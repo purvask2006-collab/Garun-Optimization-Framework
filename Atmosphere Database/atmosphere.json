@@ -1,0 +1,265 @@
+{
+  "meta": {
+    "dataset": "ISA Standard Atmosphere Reference (Troposphere, 0-11 km)",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "primary_reference": "ICAO Doc 7488/3 (1993); Anderson, Introduction to Flight, 8th Ed., Ch. 3; Raymer, Aircraft Design: A Conceptual Approach, 6th Ed., Appendix A",
+    "note": "All values below are exact analytical ISA troposphere values (not the simplified density approximation), computed directly from the governing equations in the 'formulas' block. They match your blueprint's own \u00a75.1 validation checkpoints to full precision: rho(0 m) = 1.225 kg/m3 and rho(11,000 m) = 0.3639 kg/m3. Valid ONLY for 0-11,000 m (the troposphere); above 11 km the ISA model switches to an isothermal stratosphere layer not included in this table, since it's outside GARUN's stated cruise-altitude range (3,000-10,000 m)."
+  },
+  "constants": {
+    "T0_sea_level_temperature_K": 288.15,
+    "P0_sea_level_pressure_Pa": 101325.0,
+    "RHO0_sea_level_density_kg_m3": 1.225,
+    "L_temperature_lapse_rate_K_per_m": 0.0065,
+    "g_standard_gravity_m_s2": 9.80665,
+    "R_specific_gas_constant_J_per_kgK": 287.058,
+    "gamma_ratio_of_specific_heats": 1.4,
+    "mu0_reference_dynamic_viscosity_Pa_s": 1.789e-05,
+    "sutherland_constant_K": 110.4
+  },
+  "formulas": {
+    "temperature": "T(h) = T0 - L*h                          [valid 0-11,000 m]",
+    "pressure": "P(h) = P0 * (T(h)/T0)^(g/(R*L))",
+    "density": "rho(h) = P(h) / (R*T(h))                  [ideal gas law]",
+    "density_simplified_approx": "rho(h) ~= 1.225 * (1 - 2.25577e-5*h)^4.2559   [matches Raymer App. A to 4 sig figs -- this is the closed-form your blueprint's pack_sizing.py should use]",
+    "speed_of_sound": "a(h) = sqrt(gamma * R * T(h))",
+    "dynamic_viscosity_sutherland": "mu(T) = mu0 * (T0+C)/(T+C) * (T/T0)^1.5    [Sutherland's law, C=110.4 K for air]",
+    "reynolds_number": "Re = rho * V * c / mu(T)                 [c = characteristic length, e.g. mean chord]"
+  },
+  "validation_checkpoints": [
+    {
+      "altitude_m": 0,
+      "expected_density_kg_m3": 1.225,
+      "acceptance_criterion": "Any implementation disagreeing by more than 0.1% has a bug (per blueprint \u00a75.1).",
+      "computed_here_kg_m3": 1.22498
+    },
+    {
+      "altitude_m": 11000,
+      "expected_density_kg_m3": 0.3639,
+      "acceptance_criterion": "Any implementation disagreeing by more than 0.1% has a bug (per blueprint \u00a75.1).",
+      "computed_here_kg_m3": 0.36392
+    }
+  ],
+  "cruise_altitude_band_note": "GARUN's stated cruise-altitude decision variable range is 3,000-10,000 m (blueprint \u00a77.1 decision variable table) with a default design point of 5,000 m -- every value in this table's 3000-10000 m rows is directly usable in pack_sizing.py without needing the simplified density approximation formula at all, since these are already the exact ISA values.",
+  "reynolds_number_worked_example": {
+    "description": "Reproduces the blueprint's own \u00a75.1 worked example: Re at cruise altitude 5 km, V=69.4 m/s, assumed mean chord c~=0.4 m",
+    "altitude_m": 5000,
+    "velocity_m_s": 69.4,
+    "assumed_chord_m": 0.4,
+    "density_kg_m3": 0.73611,
+    "dynamic_viscosity_Pa_s": 1.628e-05,
+    "reynolds_number": 1255362.0,
+    "flow_regime_note": "Subsonic, fully turbulent regardless of the exact Re value in this range -- NACA 4-series polars remain applicable either way.",
+    "discrepancy_flag": "Your blueprint states Re ~= 1.8e6 for this exact condition. Computing it here with the correct altitude-adjusted viscosity (Sutherland's law at T=255.65 K, not sea-level mu0) gives Re ~= 1.26e6 instead -- about 30% lower. This doesn't change the flow-regime conclusion (still turbulent, NACA polars still apply), but if a HAL/IIT reviewer asks you to walk through this calculation live (as your own blueprint's Part 12 rehearsal notes anticipate), recompute it from mu(T) at altitude rather than mu0 at sea level -- that's the likely source of the original ~1.8e6 figure."
+  },
+  "altitude_table": [
+    {
+      "altitude_m": 0,
+      "temperature_K": 288.15,
+      "temperature_C": 15.0,
+      "pressure_Pa": 101325.0,
+      "density_kg_m3": 1.22498,
+      "speed_of_sound_m_s": 340.3,
+      "dynamic_viscosity_Pa_s": 1.789e-05
+    },
+    {
+      "altitude_m": 500,
+      "temperature_K": 284.9,
+      "temperature_C": 11.75,
+      "pressure_Pa": 95460.9,
+      "density_kg_m3": 1.16725,
+      "speed_of_sound_m_s": 338.37,
+      "dynamic_viscosity_Pa_s": 1.773e-05
+    },
+    {
+      "altitude_m": 1000,
+      "temperature_K": 281.65,
+      "temperature_C": 8.5,
+      "pressure_Pa": 89874.8,
+      "density_kg_m3": 1.11163,
+      "speed_of_sound_m_s": 336.44,
+      "dynamic_viscosity_Pa_s": 1.757e-05
+    },
+    {
+      "altitude_m": 1500,
+      "temperature_K": 278.4,
+      "temperature_C": 5.25,
+      "pressure_Pa": 84556.3,
+      "density_kg_m3": 1.05805,
+      "speed_of_sound_m_s": 334.49,
+      "dynamic_viscosity_Pa_s": 1.742e-05
+    },
+    {
+      "altitude_m": 2000,
+      "temperature_K": 275.15,
+      "temperature_C": 2.0,
+      "pressure_Pa": 79495.5,
+      "density_kg_m3": 1.00648,
+      "speed_of_sound_m_s": 332.53,
+      "dynamic_viscosity_Pa_s": 1.726e-05
+    },
+    {
+      "altitude_m": 2500,
+      "temperature_K": 271.9,
+      "temperature_C": -1.25,
+      "pressure_Pa": 74682.9,
+      "density_kg_m3": 0.95685,
+      "speed_of_sound_m_s": 330.56,
+      "dynamic_viscosity_Pa_s": 1.71e-05
+    },
+    {
+      "altitude_m": 3000,
+      "temperature_K": 268.65,
+      "temperature_C": -4.5,
+      "pressure_Pa": 70109.0,
+      "density_kg_m3": 0.90911,
+      "speed_of_sound_m_s": 328.58,
+      "dynamic_viscosity_Pa_s": 1.693e-05
+    },
+    {
+      "altitude_m": 3500,
+      "temperature_K": 265.4,
+      "temperature_C": -7.75,
+      "pressure_Pa": 65764.6,
+      "density_kg_m3": 0.86322,
+      "speed_of_sound_m_s": 326.59,
+      "dynamic_viscosity_Pa_s": 1.677e-05
+    },
+    {
+      "altitude_m": 4000,
+      "temperature_K": 262.15,
+      "temperature_C": -11.0,
+      "pressure_Pa": 61640.8,
+      "density_kg_m3": 0.81912,
+      "speed_of_sound_m_s": 324.58,
+      "dynamic_viscosity_Pa_s": 1.661e-05
+    },
+    {
+      "altitude_m": 4500,
+      "temperature_K": 258.9,
+      "temperature_C": -14.25,
+      "pressure_Pa": 57728.9,
+      "density_kg_m3": 0.77677,
+      "speed_of_sound_m_s": 322.56,
+      "dynamic_viscosity_Pa_s": 1.644e-05
+    },
+    {
+      "altitude_m": 5000,
+      "temperature_K": 255.65,
+      "temperature_C": -17.5,
+      "pressure_Pa": 54020.5,
+      "density_kg_m3": 0.73611,
+      "speed_of_sound_m_s": 320.53,
+      "dynamic_viscosity_Pa_s": 1.628e-05
+    },
+    {
+      "altitude_m": 5500,
+      "temperature_K": 252.4,
+      "temperature_C": -20.75,
+      "pressure_Pa": 50507.4,
+      "density_kg_m3": 0.6971,
+      "speed_of_sound_m_s": 318.49,
+      "dynamic_viscosity_Pa_s": 1.611e-05
+    },
+    {
+      "altitude_m": 6000,
+      "temperature_K": 249.15,
+      "temperature_C": -24.0,
+      "pressure_Pa": 47181.6,
+      "density_kg_m3": 0.65969,
+      "speed_of_sound_m_s": 316.43,
+      "dynamic_viscosity_Pa_s": 1.594e-05
+    },
+    {
+      "altitude_m": 6500,
+      "temperature_K": 245.9,
+      "temperature_C": -27.25,
+      "pressure_Pa": 44035.5,
+      "density_kg_m3": 0.62384,
+      "speed_of_sound_m_s": 314.36,
+      "dynamic_viscosity_Pa_s": 1.578e-05
+    },
+    {
+      "altitude_m": 7000,
+      "temperature_K": 242.65,
+      "temperature_C": -30.5,
+      "pressure_Pa": 41061.4,
+      "density_kg_m3": 0.5895,
+      "speed_of_sound_m_s": 312.28,
+      "dynamic_viscosity_Pa_s": 1.561e-05
+    },
+    {
+      "altitude_m": 7500,
+      "temperature_K": 239.4,
+      "temperature_C": -33.75,
+      "pressure_Pa": 38252.1,
+      "density_kg_m3": 0.55662,
+      "speed_of_sound_m_s": 310.18,
+      "dynamic_viscosity_Pa_s": 1.544e-05
+    },
+    {
+      "altitude_m": 8000,
+      "temperature_K": 236.15,
+      "temperature_C": -37.0,
+      "pressure_Pa": 35600.5,
+      "density_kg_m3": 0.52517,
+      "speed_of_sound_m_s": 308.07,
+      "dynamic_viscosity_Pa_s": 1.526e-05
+    },
+    {
+      "altitude_m": 8500,
+      "temperature_K": 232.9,
+      "temperature_C": -40.25,
+      "pressure_Pa": 33099.7,
+      "density_kg_m3": 0.49509,
+      "speed_of_sound_m_s": 305.94,
+      "dynamic_viscosity_Pa_s": 1.509e-05
+    },
+    {
+      "altitude_m": 9000,
+      "temperature_K": 229.65,
+      "temperature_C": -43.5,
+      "pressure_Pa": 30743.1,
+      "density_kg_m3": 0.46635,
+      "speed_of_sound_m_s": 303.8,
+      "dynamic_viscosity_Pa_s": 1.492e-05
+    },
+    {
+      "altitude_m": 9500,
+      "temperature_K": 226.4,
+      "temperature_C": -46.75,
+      "pressure_Pa": 28524.2,
+      "density_kg_m3": 0.4389,
+      "speed_of_sound_m_s": 301.64,
+      "dynamic_viscosity_Pa_s": 1.474e-05
+    },
+    {
+      "altitude_m": 10000,
+      "temperature_K": 223.15,
+      "temperature_C": -50.0,
+      "pressure_Pa": 26436.9,
+      "density_kg_m3": 0.41271,
+      "speed_of_sound_m_s": 299.47,
+      "dynamic_viscosity_Pa_s": 1.457e-05
+    },
+    {
+      "altitude_m": 10500,
+      "temperature_K": 219.9,
+      "temperature_C": -53.25,
+      "pressure_Pa": 24475.0,
+      "density_kg_m3": 0.38773,
+      "speed_of_sound_m_s": 297.28,
+      "dynamic_viscosity_Pa_s": 1.439e-05
+    },
+    {
+      "altitude_m": 11000,
+      "temperature_K": 216.65,
+      "temperature_C": -56.5,
+      "pressure_Pa": 22632.6,
+      "density_kg_m3": 0.36392,
+      "speed_of_sound_m_s": 295.07,
+      "dynamic_viscosity_Pa_s": 1.421e-05
+    }
+  ]
+}

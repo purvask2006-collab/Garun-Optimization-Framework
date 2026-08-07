@@ -1,0 +1,8 @@
+{
+  "name": "Garun HAL Aerospace Dashboard",
+  "description": "Garun HAL aerospace engineering dashboard and hybrid propulsion platform system",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "$schema": "https://aerospace-battery-db.org/schema/v1.0",
+  "meta": {
+    "id": "LIFEPO4-26650-AE",
+    "revision": "1.1.0",
+    "created": "2026-08-06",
+    "chemistry": "Lithium Iron Phosphate",
+    "full_name": "Lithium Iron Phosphate (LFP)",
+    "application_class": "aerospace",
+    "certifications": ["DO-311A", "MIL-PRF-32565", "UL-1642"],
+    "sim_compat": ["MATLAB/Simscape", "Simulink", "OpenModelica", "Dymola", "AMESim"],
+    "notes": "Preferred for safety-critical and high-cycle applications: ground support, cubesat power buses, hybrid propulsion energy buffers. Thermal stability is primary advantage over NMC."
+  },
+
+  "electrical": {
+    "nominal_voltage_V": 3.20,
+    "min_voltage_V": 2.50,
+    "max_voltage_V": 3.65,
+    "open_circuit_voltage_V": 3.30,
+    "capacity_Ah": 60.0,
+    "capacity_Wh": 192.0,
+    "specific_energy_Wh_kg": 180,
+    "energy_density_Wh_L": 420,
+    "specific_power_W_kg": 1600,
+    "peak_power_W_kg": 3200,
+    "internal_resistance_mOhm": {
+      "DC": 1.0,
+      "AC_1kHz": 0.7
+    },
+    "self_discharge_percent_per_month": 2.0,
+    "soc_curve": {
+      "description": "OCV vs SOC lookup table at 25°C, 0.05C rate — NOTE: LFP plateau is very flat between 20–90% SOC",
+      "units": { "soc": "fraction [0–1]", "ocv": "V" },
+      "soc":  [0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45,
+               0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00],
+      "ocv":  [2.50, 2.78, 2.98, 3.10, 3.18, 3.22, 3.24, 3.25, 3.26, 3.27,
+               3.27, 3.28, 3.29, 3.30, 3.31, 3.33, 3.37, 3.42, 3.48, 3.55, 3.65],
+      "temperature_correction_mV_per_degC": -0.5,
+      "soc_estimation_note": "OCV-based SOC is unreliable in 20–90% window; use Coulomb counting + EKF"
+    },
+    "charging": {
+      "protocol": "CC-CV",
+      "max_charge_rate_C": 1.0,
+      "standard_charge_rate_C": 0.3,
+      "cv_cutoff_current_C": 0.05,
+      "max_charge_voltage_V": 3.65,
+      "recommended_soc_range": [0.10, 1.00],
+      "storage_soc": 0.50,
+      "precharge_cutoff_V": 2.80,
+      "precharge_rate_C": 0.05
+    },
+    "discharging": {
+      "max_continuous_discharge_C": 5.0,
+      "max_pulse_discharge_C": 15.0,
+      "pulse_duration_max_s": 10,
+      "cutoff_voltage_V": 2.50
+    },
+    "efficiency": {
+      "coulombic_percent": 99.8,
+      "roundtrip_energy_percent": 97.0,
+      "efficiency_vs_crate": {
+        "c_rates": [0.2, 0.5, 1.0, 2.0, 5.0],
+        "efficiency_percent": [99.0, 98.2, 97.0, 95.5, 92.0]
+      }
+    }
+  },
+
+  "thermal": {
+    "units": { "temperature": "°C", "power": "W", "heat": "J" },
+    "operating_range_C": { "min": -30, "max": 65 },
+    "storage_range_C": { "min": -40, "max": 60 },
+    "charge_range_C": { "min": 0, "max": 55 },
+    "optimal_range_C": { "min": 15, "max": 45 },
+    "thermal_runaway_onset_C": 272,
+    "thermal_runaway_propagation_risk": "very_low",
+    "safety_advantage": "Olivine crystal structure releases no oxygen on decomposition — no self-sustaining fire propagation",
+    "heat_generation_model": {
+      "type": "Bernardi",
+      "joule_heating_W_at_1C": 3.6,
+      "entropic_coefficient_dU_dT_V_per_K": -0.00010
+    },
+    "specific_heat_capacity_J_kgK": 1100,
+    "thermal_conductivity": {
+      "radial_W_mK": 0.9,
+      "axial_W_mK": 28.0
+    },
+    "thermal_resistance_C_per_W": 0.6,
+    "capacity_fade_per_degC_above_45": 0.005,
+    "low_temp_capacity_derating": {
+      "temperature_C": [-30, -20, -10, 0, 10, 25],
+      "available_capacity_fraction": [0.42, 0.58, 0.72, 0.83, 0.93, 1.00]
+    }
+  },
+
+  "lifecycle": {
+    "cycle_life_to_80pct_eol": 4000,
+    "cycle_conditions": {
+      "dod_percent": 80,
+      "c_rate_charge": 0.3,
+      "c_rate_discharge": 1.0,
+      "temperature_C": 25
+    },
+    "calendar_life_years": 15,
+    "storage_calendar_life_years": 20,
+    "capacity_fade_model": {
+      "type": "power_law",
+      "equation": "Q_loss = a * N^b",
+      "coefficients": { "a": 0.0018, "b": 0.52 },
+      "variables": { "N": "cycle number", "Q_loss": "fraction of capacity lost" }
+    },
+    "resistance_growth_model": {
+      "type": "linear",
+      "percent_per_100_cycles": 0.5
+    },
+    "dod_cycle_life_table": {
+      "description": "Cycle life vs depth of discharge",
+      "dod_percent": [20,    40,    60,    80,    100],
+      "cycles":      [20000, 12000, 7000,  4000,  2000]
+    },
+    "eol_criteria": {
+      "capacity_retention_percent": 80,
+      "max_resistance_growth_percent": 100
+    }
+  },
+
+  "physical": {
+    "form_factor": "prismatic",
+    "dimensions_mm": { "length": 173, "width": 115, "height": 22 },
+    "weight_g": 1067,
+    "volume_L": 0.438,
+    "terminal_material": "aluminum_positive_copper_negative",
+    "case_material": "aluminum_alloy",
+    "ip_rating": "IP67"
+  },
+
+  "cost": {
+    "currency": "USD",
+    "unit_cost_per_cell": 65,
+    "cost_per_Wh": 0.34,
+    "cost_per_kWh_pack_estimate": 420,
+    "nre_factors": "Lower raw material cost vs NMC; cobalt-free supply chain advantage for defense procurement"
+  },
+
+  "sim_parameters": {
+    "equivalent_circuit_model": {
+      "type": "2RC_Thevenin",
+      "R0_Ohm": 0.0010,
+      "R1_Ohm": 0.0004,
+      "C1_F": 5500,
+      "R2_Ohm": 0.0002,
+      "C2_F": 25000,
+      "parameter_source": "HPPC test at 25°C, BOL",
+      "soc_estimation_note": "Use EKF or AEKF; pure OCV-SOC lookup is inaccurate for LFP"
+    },
+    "p2d_model_ref": "Doyle-Fuller-Newman, electrode params in lifepo4_p2d_params.json",
+    "state_variables": ["SOC", "temperature_C", "cycle_count", "Q_fade_fraction"],
+    "time_step_recommendation_s": 1
+  }
+}

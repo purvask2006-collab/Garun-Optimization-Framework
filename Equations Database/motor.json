@@ -1,0 +1,166 @@
+{
+  "_schema": "equations-db/v1.0",
+  "_domain": "Electric Motor — PMSM Model",
+  "_description": "Permanent Magnet Synchronous Motor equations: torque, power, efficiency, speed, and thermal models.",
+
+  "equations": [
+
+    {
+      "id": "EQ-MOT-01",
+      "name": "Motor Shaft Power",
+      "latex": "P_{shaft} = \\tau \\cdot \\omega = \\tau \\cdot \\frac{2\\pi n}{60}",
+      "python": "P_shaft_W = torque_Nm * (2 * math.pi * n_rpm / 60)",
+      "description": "Mechanical power output at the motor shaft. Product of torque and angular velocity.",
+      "category": "fundamental",
+      "variables": {
+        "P_shaft": { "name": "Shaft power",               "unit": "W",     "typical_range": "10,000–65,000" },
+        "tau":     { "name": "Shaft torque",               "unit": "N·m",   "typical_range": "50–350" },
+        "omega":   { "name": "Angular velocity",           "unit": "rad/s", "notes": "= 2π * n_rpm / 60" },
+        "n_rpm":   { "name": "Rotational speed",           "unit": "rpm",   "typical_range": "1000–3000", "notes": "For GARUN: 2000 rpm" }
+      },
+      "reference": { "text": "Chapman, S.J. — Electric Machinery Fundamentals, §7.2. McGraw-Hill." },
+      "validation": {
+        "test_case": {
+          "inputs": { "torque_Nm": 262, "n_rpm": 2000 },
+          "expected_P_shaft_kW": 54.87,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-MOT-02",
+      "name": "Motor Torque from Current (PMSM)",
+      "latex": "\\tau = \\frac{3}{2} \\cdot p \\cdot \\lambda_f \\cdot I_q",
+      "python": "torque = (3/2) * p * lambda_f * I_q",
+      "description": "Electromagnetic torque produced by PMSM. Proportional to q-axis current I_q (torque-producing component). d-axis current I_d = 0 for maximum torque per ampere (MTPA) control.",
+      "category": "electromagnetic",
+      "variables": {
+        "tau":      { "name": "Electromagnetic torque",      "unit": "N·m" },
+        "p":        { "name": "Number of pole pairs",        "unit": "—",     "notes": "Integer. Typical: 4–12 for aerospace motor." },
+        "lambda_f": { "name": "Permanent magnet flux linkage","unit": "Wb",   "notes": "Material and geometry dependent. From motor datasheet." },
+        "I_q":      { "name": "q-axis current",              "unit": "A",     "notes": "Torque-producing current. Controlled by inverter." }
+      },
+      "simplified_form": {
+        "description": "For control purposes, use motor torque constant Kt",
+        "latex": "\\tau = K_t \\cdot I",
+        "python": "torque = Kt * I",
+        "Kt_relation": "Kt = (3/2) * p * lambda_f   [N·m/A]"
+      },
+      "reference": { "text": "Mohan, N. — Power Electronics, §16. Wiley." },
+      "validation": {
+        "test_case": {
+          "inputs": { "Kt_Nm_per_A": 2.18, "I_A": 120 },
+          "expected_torque_Nm": 261.6,
+          "notes": "At cruise: P=55kW, n=2000rpm → τ=262Nm → I=262/2.18=120A"
+        }
+      }
+    },
+
+    {
+      "id": "EQ-MOT-03",
+      "name": "Motor Efficiency",
+      "latex": "\\eta_{motor} = \\frac{P_{shaft}}{P_{electrical}} = \\frac{P_{shaft}}{P_{shaft} + P_{copper} + P_{iron} + P_{mech}}",
+      "python": "eta_motor = P_shaft / (P_shaft + P_copper + P_iron + P_mech)",
+      "description": "Motor efficiency accounting for copper (I²R), iron (eddy current + hysteresis), and mechanical (bearing, windage) losses.",
+      "category": "efficiency",
+      "variables": {
+        "eta_motor":  { "name": "Motor efficiency",            "unit": "—",    "typical_range": "0.90–0.97" },
+        "P_shaft":    { "name": "Mechanical output power",    "unit": "W" },
+        "P_copper":   { "name": "Copper (I²R) losses",        "unit": "W",    "notes": "= I² × R_stator. Dominant at high load." },
+        "P_iron":     { "name": "Iron losses",                "unit": "W",    "notes": "Eddy current + hysteresis. Dominant at high speed, low load." },
+        "P_mech":     { "name": "Mechanical losses",          "unit": "W",    "notes": "Bearing friction, windage. Typically < 1% of rated power." }
+      },
+      "copper_loss_model": {
+        "latex": "P_{copper} = 3 \\cdot I^2 \\cdot R_{phase}",
+        "python": "P_copper = 3 * I**2 * R_phase"
+      },
+      "simplified_efficiency_map": {
+        "description": "In practice, use measured efficiency map: eta_motor(P, n) from datasheet",
+        "GARUN_values": {
+          "at_rated_kW_2000rpm": 0.95,
+          "at_50pct_kW_2000rpm": 0.93,
+          "at_25pct_kW_2000rpm": 0.89
+        }
+      },
+      "reference": { "text": "Miller, T.J.E. — Brushless Permanent Magnet and Reluctance Motor Drives. OUP, 1989." },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_shaft_kW": 55, "P_copper_W": 1512, "P_iron_W": 680, "P_mech_W": 308 },
+          "expected_eta": 0.950,
+          "error_pct": 0.1
+        }
+      }
+    },
+
+    {
+      "id": "EQ-MOT-04",
+      "name": "Motor Electrical Power Input",
+      "latex": "P_{electrical} = \\frac{P_{shaft}}{\\eta_{motor}}",
+      "python": "P_elec = P_shaft / eta_motor",
+      "description": "Electrical power consumed by motor from inverter. Used to calculate current draw from DC bus and battery.",
+      "category": "power_balance",
+      "variables": {
+        "P_electrical": { "name": "Electrical power input",  "unit": "W" },
+        "P_shaft":      { "name": "Required shaft power",    "unit": "W" },
+        "eta_motor":    { "name": "Motor efficiency",        "unit": "—" }
+      },
+      "chain": "P_req (propulsion) → P_shaft_motor = P_req/eta_prop → P_elec_motor = P_shaft/eta_motor → P_inverter_in = P_elec/eta_inverter → P_battery = P_inv_in",
+      "reference": { "text": "Standard power conversion chain" },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_shaft_kW": 22, "eta_motor": 0.95 },
+          "expected_P_elec_kW": 23.16,
+          "error_pct": 0.0
+        }
+      }
+    },
+
+    {
+      "id": "EQ-MOT-05",
+      "name": "Back-EMF (PMSM)",
+      "latex": "E_{emf} = K_e \\cdot \\omega = K_e \\cdot \\frac{2\\pi n}{60}",
+      "python": "E_emf = Ke * (2 * math.pi * n_rpm / 60)",
+      "description": "Back electromotive force generated by rotating permanent magnets. Determines minimum DC bus voltage required. V_bus > E_emf + I*R_stator.",
+      "category": "electromagnetic",
+      "variables": {
+        "E_emf": { "name": "Back-EMF",                      "unit": "V" },
+        "Ke":    { "name": "Back-EMF constant",             "unit": "V/(rad/s)", "notes": "= Kt in SI units. Equal numerically." },
+        "omega": { "name": "Angular velocity",              "unit": "rad/s" },
+        "n_rpm": { "name": "Rotational speed",              "unit": "rpm" }
+      },
+      "DC_bus_constraint": "V_DC_bus >= E_emf + I * R_stator + V_inverter_drop",
+      "reference": { "text": "Chapman §7.3" },
+      "validation": {
+        "test_case": {
+          "inputs": { "Ke": 1.91, "n_rpm": 2000 },
+          "expected_E_emf_V": 399.5,
+          "notes": "V_DC_bus=400V. E_emf=399.5V → margin = 0.5V (inverter compensates via PWM duty cycle)"
+        }
+      }
+    },
+
+    {
+      "id": "EQ-MOT-06",
+      "name": "Motor Heat Generation",
+      "latex": "Q_{motor} = P_{electrical} - P_{shaft} = P_{shaft} \\cdot \\frac{1 - \\eta_{motor}}{\\eta_{motor}}",
+      "python": "Q_motor = P_shaft * (1 - eta_motor) / eta_motor",
+      "description": "Heat rejected by motor. Sum of copper, iron, and mechanical losses. Drives cooling system sizing.",
+      "category": "thermal",
+      "variables": {
+        "Q_motor":   { "name": "Motor heat dissipation", "unit": "W",  "typical_range": "500–3000" },
+        "P_shaft":   { "name": "Shaft power",            "unit": "W" },
+        "eta_motor": { "name": "Motor efficiency",       "unit": "—" }
+      },
+      "reference": { "text": "Energy conservation: Q = P_in - P_out" },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_shaft_kW": 55, "eta_motor": 0.95 },
+          "expected_Q_motor_kW": 2.89,
+          "notes": "At cruise: Q = 55 × (1-0.95)/0.95 = 2.89 kW heat → cooling flow required"
+        }
+      }
+    }
+
+  ]
+}

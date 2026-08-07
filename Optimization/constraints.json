@@ -1,0 +1,80 @@
+{
+  "$schema_note": "Hard constraints for GARUN's NSGA-II sizing problem, in pymoo's g(x) <= 0 convention. Values here MUST stay in sync with mission.py's CONSTRAINTS dict -- that is the single source of truth; this file mirrors it for the optimizer/dashboard configuration layer.",
+  "constraints": [
+    {
+      "id": "mtow_max",
+      "label": "MTOW does not exceed PS1 limit",
+      "form": "g0 = mtow_kg - mtow_kg_max <= 0",
+      "limit": 1000.0,
+      "unit": "kg",
+      "hard": true,
+      "source": "PS1 official requirement",
+      "implemented_in": "main.py :: HybridUAVSizingProblem._evaluate() (g0)"
+    },
+    {
+      "id": "payload_min",
+      "label": "Payload meets minimum requirement",
+      "form": "payload_kg >= payload_kg_min",
+      "limit": 200.0,
+      "unit": "kg",
+      "hard": true,
+      "source": "PS1 official requirement",
+      "implemented_in": "aircraft.py :: Aircraft.payload_mass_kg (fixed, not a free variable)",
+      "notes": "Currently fixed rather than enforced as an inequality, since payload is not a design variable in this version."
+    },
+    {
+      "id": "cruise_power_margin",
+      "label": "Required cruise power stays within engine rating plus a small hybrid-assist margin",
+      "form": "g1 = cruise_power_kw - engine_kw * 1.15 <= 0",
+      "margin_factor": 1.15,
+      "unit": "kW",
+      "hard": true,
+      "source": "main.py :: HybridUAVSizingProblem._evaluate() (g1)",
+      "notes": "The 1.15 factor allows a modest electric-assist contribution at cruise rather than requiring the generator alone to cover 100% of cruise power. See report Section 5 for why this margin is currently tight at PS1's 250 km/h cruise speed."
+    },
+    {
+      "id": "battery_soc_floor",
+      "label": "Battery SoC does not drop below the floor during the mission",
+      "form": "soft penalty added to g1: if min_soc < soc_min, g1 += (soc_min - min_soc) * 100.0",
+      "limit": 0.20,
+      "unit": "fraction",
+      "hard": false,
+      "enforcement": "soft_penalty",
+      "source": "mission.py :: CONSTRAINTS['soc_min']",
+      "implemented_in": "main.py :: HybridUAVSizingProblem._evaluate()",
+      "notes": "Implemented as a large penalty added to g1 rather than a fourth pymoo constraint, to keep n_constr consistent with the problem definition. Known current gap: the RL-adaptive fallback controller violates this at the chosen design point (see report Table 4) -- this constraint's penalty weight (100.0) may need tuning."
+    },
+    {
+      "id": "battery_soc_ceiling",
+      "label": "Battery SoC does not exceed the ceiling",
+      "limit": 0.90,
+      "unit": "fraction",
+      "hard": false,
+      "enforcement": "not_currently_enforced_as_constraint",
+      "source": "mission.py :: CONSTRAINTS['soc_max']",
+      "notes": "Used to protect against high-SoC lithium plating risk. Currently only enforced implicitly by physics.battery_discharge()'s clamping, not as an explicit optimizer constraint."
+    },
+    {
+      "id": "endurance_min_baseline",
+      "label": "Mission endurance meets baseline target",
+      "limit": 6.0,
+      "unit": "hr",
+      "hard": false,
+      "enforcement": "reported_not_enforced",
+      "source": "mission.py :: CONSTRAINTS['endurance_hr_min_baseline']",
+      "notes": "Checked and reported in the final validation table (mission.check_constraints()), but not fed into the optimizer as a hard g(x) constraint -- endurance is instead an objective to maximize."
+    },
+    {
+      "id": "endurance_target_with_rl",
+      "label": "Mission endurance meets RL-improvement target",
+      "limit": 7.7,
+      "unit": "hr",
+      "hard": false,
+      "enforcement": "reported_not_enforced",
+      "source": "mission.py :: CONSTRAINTS['endurance_hr_target_with_rl']"
+    }
+  ],
+  "n_constr_in_optimizer": 2,
+  "notes": "n_constr_in_optimizer=2 reflects only mtow_max (g0) and cruise_power_margin+soc_floor_penalty (g1) as passed to pymoo's ElementwiseProblem(n_constr=2). The remaining rows in this file are checked post-hoc by mission.check_constraints() and reported in the validation table, not enforced during the search itself.",
+  "source": "mission.py :: CONSTRAINTS, main.py :: HybridUAVSizingProblem"
+}

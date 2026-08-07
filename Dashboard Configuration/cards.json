@@ -1,0 +1,90 @@
+{
+  "$schema_note": "Summary metric cards (st.metric or equivalent) shown at the top of each page, giving an at-a-glance readout before the detailed charts/tables below.",
+  "cards": [
+    {
+      "page": "sizing_results",
+      "id": "wing_loading",
+      "label": "Wing loading",
+      "unit": "N/m\u00b2",
+      "source": "aircraft.Aircraft.weight_n / aircraft.Aircraft.wing_area_m2"
+    },
+    {
+      "page": "sizing_results",
+      "id": "power_loading",
+      "label": "Power loading",
+      "unit": "N/W",
+      "source": "aircraft.Aircraft.weight_n / (engine_rated_power_kw * 1000)"
+    },
+    {
+      "page": "sizing_results",
+      "id": "cruise_power_margin",
+      "label": "Cruise power vs. engine rating",
+      "display": "gauge",
+      "unit": "kW",
+      "source": "physics.required_power_drag_polar() vs. engine_rated_power_kw",
+      "status_thresholds": {
+        "green": "<= 90% of rated power",
+        "amber": "90-100% of rated power",
+        "red": "> 100% of rated power"
+      },
+      "notes": "This gauge is the interactive version of report Section 5's ~59kW-vs-60kW finding."
+    },
+    {
+      "page": "mission_simulation",
+      "id": "total_endurance",
+      "label": "Total endurance",
+      "unit": "hr",
+      "source": "mission.MissionProfile.endurance_hr"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "total_fuel_burn",
+      "label": "Total fuel burn",
+      "unit": "kg",
+      "source": "mission.MissionProfile.total_fuel_kg"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "min_soc_reached",
+      "label": "Minimum SoC reached",
+      "unit": "fraction",
+      "source": "min(s.end_soc for s in profile.segments)",
+      "status_thresholds": { "green": ">= 0.20", "red": "< 0.20" }
+    },
+    {
+      "page": "optimization",
+      "id": "pareto_front_size",
+      "label": "Pareto-optimal designs found",
+      "unit": "count",
+      "source": "len(result.F)"
+    },
+    {
+      "page": "optimization",
+      "id": "final_hypervolume",
+      "label": "Final hypervolume",
+      "unit": "dimensionless",
+      "source": "convergence_hv[-1]"
+    },
+    {
+      "page": "optimization",
+      "id": "chosen_design_summary",
+      "label": "Selected design (MTOW / fuel / endurance)",
+      "source": "pick_knee_design() output"
+    },
+    {
+      "page": "energy_management",
+      "id": "best_fuel_strategy",
+      "label": "Best fuel-burn strategy",
+      "source": "argmin(fuel_kg) across the three benchmarked strategies"
+    },
+    {
+      "page": "energy_management",
+      "id": "soc_violation_flag",
+      "label": "Any strategy violates SoC floor?",
+      "display": "boolean_badge",
+      "source": "any(r['min_soc'] < 0.20 for r in bench_results.values())",
+      "notes": "Currently True for RL-adaptive at the demo-settings chosen design (see report Table 4) -- this card should show that honestly, not be hidden or hardcoded to green."
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.2 (conversation-derived, not yet implemented in code)"
+}

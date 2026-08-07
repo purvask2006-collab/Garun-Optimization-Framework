@@ -1,0 +1,149 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "HTFE-25",
+  "metadata": {
+    "name": "HTFE-25 Turbofan Engine",
+    "type": "turbofan",
+    "variant": "low-bypass twin-spool",
+    "manufacturer": "GTRE / HAL (Notional — based on HTFE-25 programme)",
+    "application": ["trainer aircraft", "light combat UAV", "subsonic UCAV"],
+    "certification_basis": "DGCA CAR-21 military supplement",
+    "revision": "A4",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_thrust_kN": 25.0,
+    "rated_thrust_lbf": 5620,
+    "dry_weight_kg": 450,
+    "thrust_to_weight_ratio": 5.66,
+    "rpm_lpc_design": 9800,
+    "rpm_hpc_design": 17500,
+    "overall_pressure_ratio": 21.5,
+    "fan_pressure_ratio": 2.1,
+    "bypass_ratio": 2.9,
+    "turbine_entry_temperature_K": 1670,
+    "exhaust_gas_temperature_K": 740,
+    "mass_flow_kgs": 38,
+    "fuel_type": ["Jet-A1", "JP-8"],
+    "afterburner": false,
+    "lubrication": "synthetic MIL-PRF-23699 F",
+    "ignition": "dual surface-discharge igniter"
+  },
+  "performance_map": {
+    "description": "Net thrust vs throttle setting at ISA sea-level static",
+    "throttle_percent": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100],
+    "net_thrust_kN":    [0, 2.0, 4.5, 7.2, 10.5, 13.8, 17.0, 19.8, 21.5, 23.5, 24.3, 25.0],
+    "tsfc_kg_per_kN_hr": [0, 0.098, 0.091, 0.086, 0.081, 0.078, 0.076, 0.075, 0.073, 0.072, 0.071, 0.071],
+    "fan_efficiency":     [0, 0.76, 0.80, 0.83, 0.85, 0.86, 0.87, 0.875, 0.875, 0.87, 0.865, 0.86]
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "throttle_percent": [30, 40, 50, 60, 70, 80, 90, 95, 100],
+      "eta_thermal":      [0.24, 0.28, 0.32, 0.35, 0.37, 0.38, 0.385, 0.385, 0.382]
+    },
+    "propulsive_efficiency_map": {
+      "mach_number":      [0.0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.85],
+      "eta_propulsive":   [0.0, 0.52, 0.68, 0.78, 0.82, 0.84, 0.84]
+    },
+    "overall_efficiency_map": {
+      "mach_number":      [0.2, 0.4, 0.6, 0.7, 0.8, 0.85],
+      "eta_overall":      [0.20, 0.26, 0.30, 0.31, 0.32, 0.32]
+    },
+    "compressor_map_hpc": {
+      "design_PR": 21.5,
+      "isentropic_efficiency": 0.83,
+      "surge_margin_percent": 20,
+      "stall_margin_percent": 15
+    },
+    "turbine_efficiency": {
+      "HPT_isentropic": 0.88,
+      "LPT_isentropic": 0.90
+    }
+  },
+  "fuel_consumption_model": {
+    "model_type": "TSFC_polynomial",
+    "reference_condition": "ISA SL static, 100% rated",
+    "tsfc_reference_kg_per_kN_hr": 0.071,
+    "altitude_correction": {
+      "altitude_m":     [0, 3000, 6000, 9000, 11000, 12000],
+      "tsfc_multiplier": [1.00, 0.95, 0.91, 0.88, 0.86, 0.86]
+    },
+    "mach_correction": {
+      "mach":           [0.0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.85],
+      "tsfc_multiplier": [1.00, 1.02, 1.06, 1.11, 1.14, 1.17, 1.19]
+    },
+    "idle_fuel_flow_kg_per_hr": 95,
+    "startup_fuel_kg": 0.8
+  },
+  "thermal_limits": {
+    "TET_max_continuous_K": 1640,
+    "TET_max_5min_K": 1680,
+    "TET_max_transient_10s_K": 1720,
+    "EGT_max_continuous_K": 730,
+    "EGT_max_start_K": 850,
+    "HPC_exit_temp_max_K": 780,
+    "bearing_oil_temp_max_C": 155,
+    "nacelle_temp_max_C": 280,
+    "cooling_type": "film + transpiration HPT blades, TBC coating LPT",
+    "thermal_time_constant_s": 60
+  },
+  "operating_envelope": {
+    "altitude_max_m": 13000,
+    "mach_max": 0.95,
+    "ambient_temp_range_C": [-55, 50],
+    "g_load_limits": { "positive_g": 9.0, "negative_g": -3.0 },
+    "rated_conditions": "ISA SL static",
+    "thrust_deck": {
+      "description": "Max continuous thrust (kN) vs altitude (m) at various Mach",
+      "altitude_m": [0, 3000, 6000, 9000, 12000],
+      "mach_0.0":   [25.0, 20.8, 16.5, 12.0, 7.5],
+      "mach_0.4":   [22.5, 19.0, 15.2, 11.0, 6.8],
+      "mach_0.7":   [18.5, 16.0, 13.0, 9.5, 5.8],
+      "mach_0.85":  [15.0, 13.2, 10.8, 8.0, 4.8]
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "TSFC (kg/kN·hr) as function of throttle fraction and altitude",
+    "throttle_fraction": [0.4, 0.6, 0.8, 1.0],
+    "altitude_m": [0, 5000, 10000, 12000],
+    "tsfc_matrix": [
+      [0.081, 0.077, 0.074, 0.073],
+      [0.076, 0.073, 0.070, 0.069],
+      [0.073, 0.070, 0.067, 0.066],
+      [0.072, 0.069, 0.066, 0.065]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "SAE A 2-bolt",
+    "pto_max_power_kw": 30,
+    "pto_rpm": 8000,
+    "compatible_generators": ["30kW-PMSG-F01"],
+    "hybrid_mode": "not primary application — extraction only",
+    "battery_buffer_recommended": false
+  },
+  "sizing_parameters": {
+    "length_mm": 1830,
+    "fan_diameter_mm": 560,
+    "max_diameter_mm": 620,
+    "dry_weight_kg": 450,
+    "cg_from_fan_face_mm": 780,
+    "inlet_diameter_mm": 540,
+    "exhaust_diameter_mm": 380,
+    "mount_interface": "forward trunnion + rear steady bearing",
+    "frontal_area_m2": 0.302,
+    "inlet_total_pressure_recovery": 0.985
+  },
+  "maintenance": {
+    "TBO_hours": 1500,
+    "hot_section_inspection_hours": 500,
+    "oil_change_hours": 150,
+    "borescope_interval_hours": 300,
+    "mttr_hours": 8,
+    "line_replaceable_units": ["combustor module", "HPT stage 1 assembly", "FADEC", "oil filter"],
+    "FADEC": {
+      "channels": 2,
+      "authority": "full",
+      "reversion_mode": "hydromechanical backup"
+    }
+  }
+}

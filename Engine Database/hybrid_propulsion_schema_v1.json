@@ -1,0 +1,581 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://trinetra.aerospace/schemas/hybrid_propulsion_schema_v1.json",
+  "title": "Trinetra Aerospace Hybrid Propulsion System Schema v1",
+  "description": "Schema for defining, sizing, and analysing hybrid-electric propulsion systems. References engine_schema_v1 engine_ids for thermal components. Covers series, parallel, and series-parallel architectures for fixed-wing, rotary, and VTOL UAV platforms.",
+  "type": "object",
+  "required": [
+    "system_id", "metadata", "architecture", "thermal_unit", "electrical_unit",
+    "energy_storage", "power_management", "system_performance", "thermal_management",
+    "system_envelope", "control_system", "sizing_parameters", "maintenance"
+  ],
+  "additionalProperties": false,
+
+  "definitions": {
+
+    "power_curve": {
+      "type": "object",
+      "description": "Generic time- or flight-phase indexed power array.",
+      "required": ["axis_label", "axis_values", "power_kw"],
+      "properties": {
+        "axis_label":    { "type": "string" },
+        "axis_values":   { "type": "array", "items": { "type": "number" } },
+        "power_kw":      { "type": "array", "items": { "type": "number" } },
+        "notes":         { "type": "string" }
+      }
+    },
+
+    "operating_point": {
+      "type": "object",
+      "required": ["label", "thermal_power_kw", "electrical_power_kw", "battery_power_kw"],
+      "properties": {
+        "label":                 { "type": "string" },
+        "thermal_power_kw":      { "type": "number" },
+        "electrical_power_kw":   { "type": "number" },
+        "battery_power_kw":      { "type": "number", "description": "Positive = discharge, negative = charge" },
+        "soc_band":              { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "duration_min":          { "type": "number" },
+        "notes":                 { "type": "string" }
+      }
+    },
+
+    "efficiency_chain": {
+      "type": "object",
+      "description": "End-to-end efficiency breakdown from fuel energy to shaft/thrust.",
+      "required": ["chain_label"],
+      "properties": {
+        "chain_label":               { "type": "string" },
+        "thermal_eta":               { "type": "number", "minimum": 0, "maximum": 1 },
+        "generator_eta":             { "type": "number", "minimum": 0, "maximum": 1 },
+        "rectifier_eta":             { "type": "number", "minimum": 0, "maximum": 1 },
+        "inverter_eta":              { "type": "number", "minimum": 0, "maximum": 1 },
+        "motor_eta":                 { "type": "number", "minimum": 0, "maximum": 1 },
+        "battery_round_trip_eta":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "gearbox_eta":               { "type": "number", "minimum": 0, "maximum": 1 },
+        "overall_fuel_to_shaft_eta": { "type": "number", "minimum": 0, "maximum": 1 },
+        "notes":                     { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "properties": {
+
+    "$schema": { "type": "string" },
+
+    "system_id": {
+      "type": "string",
+      "description": "Unique system identifier.",
+      "pattern": "^[A-Z0-9_\\-]+$",
+      "examples": ["HPS-SERIES-60KW", "HPS-PARALLEL-GARUN", "HPS-TURBO-ELECTRIC-MOTHERSHIP"]
+    },
+
+    "metadata": {
+      "type": "object",
+      "required": ["name", "architecture_type", "platform_class", "design_mission", "revision", "last_updated"],
+      "properties": {
+        "name":               { "type": "string" },
+        "architecture_type": {
+          "type": "string",
+          "enum": ["series", "parallel", "series_parallel", "turbo_electric", "distributed_electric"]
+        },
+        "platform_class": {
+          "type": "string",
+          "enum": ["fixed_wing", "rotary_wing", "VTOL_tiltrotor", "VTOL_tailsitter", "hybrid_VTOL_fixed"]
+        },
+        "design_mission":     { "type": "string" },
+        "certification_basis": { "type": "string" },
+        "revision":           { "type": "string" },
+        "last_updated":       { "type": "string", "format": "date" },
+        "design_authority":   { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "architecture": {
+      "type": "object",
+      "required": ["type", "power_flow_description", "thermal_count", "motor_count"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["series", "parallel", "series_parallel", "turbo_electric", "distributed_electric"]
+        },
+        "power_flow_description": {
+          "type": "string",
+          "description": "Human-readable description of power flow paths."
+        },
+        "thermal_count":        { "type": "integer", "minimum": 1 },
+        "generator_count":      { "type": "integer", "minimum": 0 },
+        "motor_count":          { "type": "integer", "minimum": 1 },
+        "battery_pack_count":   { "type": "integer", "minimum": 0 },
+        "power_bus_topology":   { "type": "string", "enum": ["single_bus", "dual_bus", "ring_bus", "zonal"] },
+        "redundancy_level": {
+          "type": "string",
+          "enum": ["none", "partial", "full_dual", "full_triple"]
+        },
+        "failure_modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["failure", "effect", "mitigation"],
+            "properties": {
+              "failure":    { "type": "string" },
+              "effect":     { "type": "string" },
+              "mitigation": { "type": "string" }
+            }
+          }
+        },
+        "block_diagram_notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "thermal_unit": {
+      "type": "object",
+      "required": ["engine_id_ref", "quantity", "role"],
+      "description": "Reference to the ICE/turbine engine(s) in the engine database.",
+      "properties": {
+        "engine_id_ref": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "References engine_id in engine_schema_v1 entries."
+        },
+        "quantity":         { "type": "integer", "minimum": 1 },
+        "role": {
+          "type": "string",
+          "enum": ["primary_range_extender", "primary_thrust", "auxiliary_power", "backup_only"]
+        },
+        "nominal_operating_point_kw": { "type": "number" },
+        "operating_rpm":              { "type": "number" },
+        "fuel_tank_capacity_kg":      { "type": "number" },
+        "fuel_tank_capacity_L":       { "type": "number" },
+        "fuel_type_primary":          { "type": "string" },
+        "specific_fuel_consumption_kg_per_kwh": { "type": "number" },
+        "start_time_s":               { "type": "number" },
+        "warm_up_time_s":             { "type": "number" },
+        "cht_integration": {
+          "type": "object",
+          "description": "Combined heat and power integration parameters.",
+          "properties": {
+            "waste_heat_recoverable_kw": { "type": "number" },
+            "heat_to_cabin_kw":         { "type": "number" },
+            "heat_to_avionics_kw":      { "type": "number" }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "electrical_unit": {
+      "type": "object",
+      "required": ["generators", "motors"],
+      "properties": {
+        "generators": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "required": ["generator_id", "type", "rated_power_kw", "rated_rpm"],
+            "properties": {
+              "generator_id":           { "type": "string" },
+              "type": {
+                "type": "string",
+                "enum": ["PMSG", "WRIG", "SRM", "axial_flux_PMSG", "IDG"]
+              },
+              "rated_power_kw":         { "type": "number" },
+              "rated_rpm":              { "type": "number" },
+              "rated_voltage_V":        { "type": "number" },
+              "phase":                  { "type": "integer" },
+              "peak_efficiency":        { "type": "number" },
+              "efficiency_at_nominal":  { "type": "number" },
+              "weight_kg":              { "type": "number" },
+              "cooling":                { "type": "string" },
+              "protection_class":       { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "motors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["motor_id", "type", "rated_power_kw", "rated_rpm"],
+            "properties": {
+              "motor_id":               { "type": "string" },
+              "type": {
+                "type": "string",
+                "enum": ["PMSM", "BLDC", "induction", "axial_flux_PMSM", "SRM_motor"]
+              },
+              "rated_power_kw":         { "type": "number" },
+              "peak_power_kw":          { "type": "number" },
+              "rated_rpm":              { "type": "number" },
+              "rated_torque_Nm":        { "type": "number" },
+              "peak_torque_Nm":         { "type": "number" },
+              "rated_voltage_V":        { "type": "number" },
+              "phase":                  { "type": "integer" },
+              "peak_efficiency":        { "type": "number" },
+              "efficiency_at_nominal":  { "type": "number" },
+              "specific_power_kw_per_kg": { "type": "number" },
+              "weight_kg":              { "type": "number" },
+              "cooling":                { "type": "string" },
+              "protection_class":       { "type": "string" },
+              "quantity":               { "type": "integer" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "power_electronics": {
+          "type": "object",
+          "properties": {
+            "inverter_type":            { "type": "string" },
+            "inverter_rated_power_kw":  { "type": "number" },
+            "inverter_efficiency":      { "type": "number" },
+            "rectifier_efficiency":     { "type": "number" },
+            "dc_bus_voltage_V":         { "type": "number" },
+            "switching_frequency_kHz":  { "type": "number" },
+            "cooling":                  { "type": "string" },
+            "emc_class":                { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "energy_storage": {
+      "type": "object",
+      "required": ["type", "usable_capacity_kwh", "nominal_voltage_V"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["LiFePO4", "NMC", "NCA", "solid_state", "supercapacitor", "hybrid_battery_supercap", "none"]
+        },
+        "quantity_packs":            { "type": "integer" },
+        "usable_capacity_kwh":       { "type": "number" },
+        "total_capacity_kwh":        { "type": "number" },
+        "nominal_voltage_V":         { "type": "number" },
+        "max_voltage_V":             { "type": "number" },
+        "min_voltage_V":             { "type": "number" },
+        "continuous_discharge_C":    { "type": "number" },
+        "peak_discharge_C":          { "type": "number" },
+        "max_continuous_power_kw":   { "type": "number" },
+        "peak_power_kw":             { "type": "number" },
+        "peak_duration_s":           { "type": "number" },
+        "charge_rate_max_C":         { "type": "number" },
+        "specific_energy_wh_per_kg": { "type": "number" },
+        "specific_power_w_per_kg":   { "type": "number" },
+        "energy_density_wh_per_L":   { "type": "number" },
+        "weight_kg":                 { "type": "number" },
+        "volume_L":                  { "type": "number" },
+        "cycle_life_to_80pct_cap":   { "type": "integer" },
+        "calendar_life_years":       { "type": "number" },
+        "operating_temp_C":          { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "thermal_runaway_threshold_C": { "type": "number" },
+        "bms": {
+          "type": "object",
+          "description": "Battery Management System parameters.",
+          "properties": {
+            "type":                     { "type": "string" },
+            "soc_estimation_method":    { "type": "string", "enum": ["coulomb_counting", "EKF", "model_based", "lookup_table"] },
+            "balancing":                { "type": "string", "enum": ["passive", "active_resistive", "active_capacitive", "none"] },
+            "protection_functions":     { "type": "array", "items": { "type": "string" } },
+            "communication_protocol":  { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "soc_operating_window": {
+          "type": "object",
+          "description": "Safe operating SOC bounds.",
+          "properties": {
+            "min_soc_normal":       { "type": "number", "minimum": 0, "maximum": 1 },
+            "max_soc_normal":       { "type": "number", "minimum": 0, "maximum": 1 },
+            "min_soc_emergency":    { "type": "number", "minimum": 0, "maximum": 1 },
+            "reserve_energy_kwh":   { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        "degradation_model": {
+          "type": "object",
+          "properties": {
+            "capacity_fade_per_100_cycles_pct": { "type": "number" },
+            "high_temp_accel_factor_per_10C":   { "type": "number" },
+            "dod_vs_cycle_life": {
+              "type": "object",
+              "properties": {
+                "dod_pct":    { "type": "array", "items": { "type": "number" } },
+                "cycle_life": { "type": "array", "items": { "type": "integer" } }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "power_management": {
+      "type": "object",
+      "required": ["strategy", "operating_modes"],
+      "description": "Energy management strategy and operating mode definitions.",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "charge_depleting",
+            "charge_sustaining",
+            "power_split_rule_based",
+            "power_split_MPC",
+            "load_following",
+            "peak_shaving",
+            "combined_CD_CS"
+          ]
+        },
+        "operating_modes": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/definitions/operating_point" }
+        },
+        "efficiency_chains": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/efficiency_chain" }
+        },
+        "power_split_rules": {
+          "type": "object",
+          "description": "Rule-based power split logic thresholds.",
+          "properties": {
+            "thermal_min_power_kw":    { "type": "number" },
+            "thermal_max_power_kw":    { "type": "number" },
+            "battery_boost_soc_min":   { "type": "number" },
+            "battery_charge_soc_max":  { "type": "number" },
+            "thermal_only_below_power_kw": { "type": "number" },
+            "electric_only_below_power_kw": { "type": "number" },
+            "battery_emergency_reserve_kwh": { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        "transient_response": {
+          "type": "object",
+          "properties": {
+            "battery_ramp_rate_kw_per_s":    { "type": "number" },
+            "thermal_ramp_rate_kw_per_s":    { "type": "number" },
+            "motor_torque_rise_time_ms":     { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "system_performance": {
+      "type": "object",
+      "required": ["total_system_power_kw", "electric_only_range_km", "hybrid_range_km"],
+      "properties": {
+        "total_system_power_kw":      { "type": "number" },
+        "total_peak_power_kw":        { "type": "number" },
+        "electric_only_range_km":     { "type": "number" },
+        "electric_only_endurance_min": { "type": "number" },
+        "hybrid_range_km":            { "type": "number" },
+        "hybrid_endurance_hr":        { "type": "number" },
+        "specific_fuel_consumption_system_kg_per_kwh": { "type": "number" },
+        "system_power_to_weight_kw_per_kg": { "type": "number" },
+        "system_energy_density_kwh_per_kg": { "type": "number" },
+        "fuel_burn_hybrid_vs_thermal_only_pct_reduction": { "type": "number" },
+        "co2_reduction_pct":          { "type": "number" },
+        "performance_curves": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/power_curve" }
+        },
+        "mission_profile": {
+          "type": "object",
+          "description": "Standard design mission segments.",
+          "properties": {
+            "segments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "duration_min", "thermal_power_kw", "battery_power_kw"],
+                "properties": {
+                  "name":              { "type": "string" },
+                  "duration_min":      { "type": "number" },
+                  "altitude_m":        { "type": "number" },
+                  "airspeed_ktas":     { "type": "number" },
+                  "thermal_power_kw":  { "type": "number" },
+                  "battery_power_kw":  { "type": "number" },
+                  "motor_power_kw":    { "type": "number" },
+                  "soc_start":         { "type": "number" },
+                  "soc_end":           { "type": "number" },
+                  "fuel_burn_kg":      { "type": "number" },
+                  "notes":             { "type": "string" }
+                },
+                "additionalProperties": false
+              }
+            },
+            "total_fuel_burn_kg":  { "type": "number" },
+            "total_energy_kwh":    { "type": "number" },
+            "total_range_km":      { "type": "number" },
+            "total_endurance_hr":  { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "thermal_management": {
+      "type": "object",
+      "required": ["cooling_architecture"],
+      "description": "System-level thermal management for all heat-generating components.",
+      "properties": {
+        "cooling_architecture": {
+          "type": "string",
+          "enum": ["air_cooled", "liquid_cooled", "hybrid_air_liquid", "heat_pipe", "TMS_active"]
+        },
+        "coolant_type":                 { "type": "string" },
+        "coolant_flow_rate_Lpm":        { "type": "number" },
+        "radiator_area_m2":             { "type": "number" },
+        "total_heat_rejection_kw":      { "type": "number" },
+        "component_heat_loads": {
+          "type": "object",
+          "properties": {
+            "engine_kw":                { "type": "number" },
+            "generator_kw":             { "type": "number" },
+            "motor_kw":                 { "type": "number" },
+            "power_electronics_kw":     { "type": "number" },
+            "battery_kw":               { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        "max_ambient_for_full_power_C": { "type": "number" },
+        "derating_above_ambient_C": {
+          "type": "object",
+          "properties": {
+            "ambient_C":       { "type": "array", "items": { "type": "number" } },
+            "power_multiplier": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "battery_thermal_control": {
+          "type": "object",
+          "properties": {
+            "method": { "type": "string", "enum": ["passive", "active_cooling", "active_heating", "combined"] },
+            "target_temp_range_C": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "heating_power_kw":    { "type": "number" },
+            "cooling_power_kw":    { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "system_envelope": {
+      "type": "object",
+      "required": ["altitude_max_m", "ambient_temp_range_C"],
+      "properties": {
+        "altitude_max_m":              { "type": "number" },
+        "altitude_rated_m":            { "type": "number" },
+        "ambient_temp_range_C": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "mach_max":                    { "type": "number" },
+        "g_load_limits":               { "type": "object" },
+        "humidity_max_percent":        { "type": "number" },
+        "dust_ingestion_class":        { "type": "string" },
+        "vibration_qualification":     { "type": "string" },
+        "emi_qualification":           { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "control_system": {
+      "type": "object",
+      "required": ["hems_type", "communication_bus"],
+      "description": "Hybrid Energy Management System (HEMS) and control architecture.",
+      "properties": {
+        "hems_type": {
+          "type": "string",
+          "enum": ["rule_based", "fuzzy_logic", "DP_optimal", "MPC", "reinforcement_learning", "hybrid_RL_rule"]
+        },
+        "computation_platform":        { "type": "string" },
+        "update_rate_Hz":              { "type": "number" },
+        "communication_bus": {
+          "type": "string",
+          "enum": ["CAN", "CANopen", "ARINC429", "MIL_STD_1553", "Ethernet_AFDX", "MAVLink_serial"]
+        },
+        "communication_rate_kbps":     { "type": "number" },
+        "sensors_required": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "fault_detection": {
+          "type": "object",
+          "properties": {
+            "method":                    { "type": "string" },
+            "response_time_ms":          { "type": "number" },
+            "graceful_degradation_modes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "interfaces_with": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of avionics/flight-control systems this HEMS interfaces with."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sizing_parameters": {
+      "type": "object",
+      "required": ["total_system_weight_kg"],
+      "properties": {
+        "total_system_weight_kg":       { "type": "number" },
+        "thermal_unit_weight_kg":       { "type": "number" },
+        "generator_weight_kg":          { "type": "number" },
+        "motor_weight_kg":              { "type": "number" },
+        "battery_weight_kg":            { "type": "number" },
+        "power_electronics_weight_kg":  { "type": "number" },
+        "fuel_system_weight_kg":        { "type": "number" },
+        "structural_penalty_kg":        { "type": "number" },
+        "total_volume_m3":              { "type": "number" },
+        "cg_notes":                     { "type": "string" },
+        "installation_constraints":     { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "maintenance": {
+      "type": "object",
+      "required": ["system_mttr_hours"],
+      "properties": {
+        "system_mttr_hours":                { "type": "number" },
+        "thermal_unit_tbo_hours":           { "type": "number" },
+        "battery_replacement_cycles":       { "type": "integer" },
+        "battery_replacement_years":        { "type": "number" },
+        "scheduled_inspection_hours":       { "type": "number" },
+        "predictive_maintenance_features": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "data_logging": {
+          "type": "object",
+          "properties": {
+            "parameters_logged": { "type": "array", "items": { "type": "string" } },
+            "log_rate_Hz":       { "type": "number" },
+            "storage_GB":        { "type": "number" },
+            "telemetry":         { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

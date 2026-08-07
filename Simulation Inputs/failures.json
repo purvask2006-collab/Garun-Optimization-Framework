@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "description": "Library of subsystem failure modes for robustness/contingency testing. Standard reliability-engineering constructs (analogous to OEI/one-engine-inoperative analysis) — used to stress-test the power-split strategy, not to model any offensive capability.",
+  "compatible_engines": ["mission_simulator.py", "rl_balancing.py", "events.json"],
+  "failure_modes": [
+    {
+      "id": "engine_flameout",
+      "subsystem": "turboshaft",
+      "description": "Complete loss of turboshaft power output.",
+      "probability_per_flight_hour": 0.0005,
+      "effect": {
+        "power_available_kw_delta": -60,
+        "requires_power_source_override": "battery_primary"
+      },
+      "detection_time_s": 2,
+      "recommended_response": "Switch to battery-primary, reduce power demand to best-glide/loiter setting, initiate return-to-base."
+    },
+    {
+      "id": "generator_fault",
+      "subsystem": "generator",
+      "description": "Generator can no longer convert shaft power to usable electrical power (engine still running mechanically).",
+      "probability_per_flight_hour": 0.0003,
+      "effect": {
+        "power_available_kw_delta": -60,
+        "requires_power_source_override": "battery_primary"
+      },
+      "detection_time_s": 3,
+      "recommended_response": "Same electrical effect as engine_flameout even though engine keeps running; battery becomes sole electrical source."
+    },
+    {
+      "id": "battery_cell_fault",
+      "subsystem": "battery",
+      "description": "Partial loss of usable battery capacity from a failed cell group.",
+      "probability_per_flight_hour": 0.0002,
+      "effect": {
+        "capacity_pct_delta": -15,
+        "max_discharge_rate_pct_delta": -20
+      },
+      "detection_time_s": 5,
+      "recommended_response": "Recompute remaining endurance with derated capacity; tighten SoC reserve floor."
+    },
+    {
+      "id": "motor_fault_single",
+      "subsystem": "motor",
+      "description": "One electric motor in a multi-motor configuration fails or is shut down.",
+      "probability_per_flight_hour": 0.0004,
+      "effect": {
+        "thrust_pct_delta_per_motor_lost": -25,
+        "note": "Assumes 4-motor baseline; scale proportionally if motor_count differs."
+      },
+      "detection_time_s": 1,
+      "recommended_response": "Redistribute power across remaining motors; may require reduced airspeed/altitude."
+    },
+    {
+      "id": "battery_high_temp_derate",
+      "subsystem": "battery",
+      "description": "Battery temperature approaches thermal limit, forcing automatic power derate.",
+      "probability_per_flight_hour": 0.001,
+      "effect": {
+        "max_discharge_rate_pct_delta": -30
+      },
+      "trigger_condition": "battery_temp_c > thermal_limits_c.max - 10",
+      "detection_time_s": 10,
+      "recommended_response": "Shift power split toward engine; reduce climb rate or speed to lower current draw."
+    },
+    {
+      "id": "gps_loss",
+      "subsystem": "navigation",
+      "description": "Loss of GPS position fix.",
+      "probability_per_flight_hour": 0.002,
+      "effect": {
+        "power_available_kw_delta": 0,
+        "navigation_mode": "dead_reckoning"
+      },
+      "detection_time_s": 1,
+      "recommended_response": "No propulsion impact; flagged here since it affects mission-abort logic in events.json."
+    },
+    {
+      "id": "comms_loss",
+      "subsystem": "datalink",
+      "description": "Loss of command/control or telemetry datalink.",
+      "probability_per_flight_hour": 0.003,
+      "effect": {
+        "power_available_kw_delta": 0
+      },
+      "detection_time_s": 5,
+      "recommended_response": "Trigger lost-link RTB (return-to-base) profile per states.json ABORT transition."
+    }
+  ]
+}

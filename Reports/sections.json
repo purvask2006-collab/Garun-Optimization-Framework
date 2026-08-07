@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "description": "Reusable content-section building blocks. templates.json assembles these into full documents/decks so the same section (e.g. Assumptions) doesn't get written twice in slightly different words across README, pitch deck, and Judge FAQ.",
+  "compatible_engines": ["templates.json", "exports.json"],
+  "sections": [
+    {
+      "section_id": "problem_statement",
+      "title": "Problem Statement",
+      "description": "The HAL/AEROTHON challenge in the team's own words — what's being optimized and why it matters operationally.",
+      "required_inputs": ["mission requirements (missions/*.json)", "MTOW/payload constraints"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "150-250 words / 1 slide"
+    },
+    {
+      "section_id": "methodology",
+      "title": "Methodology",
+      "description": "The 4-layer framework: physics/sizing engine, mission simulator, NSGA-II optimizer, RL-adaptive controller.",
+      "required_inputs": ["defaults.json aircraft/engine/battery blocks", "optimizer_mdo.py design variables"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "300-400 words / 1-2 slides",
+      "review_required_by": "tech_1_physics_architect"
+    },
+    {
+      "section_id": "assumptions",
+      "title": "Assumptions",
+      "description": "Max 10 bullet assumptions (per PRD interface contract), each traceable to a source or a stated simplification.",
+      "required_inputs": ["defaults.json", "weather.json", "propeller_specifications.md"],
+      "owner": "tech_1_physics_architect",
+      "length_guidance": "max 10 bullets",
+      "format_note": "Each bullet should read as 'We assume X because Y' — not a bare number."
+    },
+    {
+      "section_id": "equations",
+      "title": "Equations Used",
+      "description": "Core governing equations in LaTeX, copied into README per PRD interface contract.",
+      "required_inputs": ["Brayton cycle / SFC relations", "energy balance across propulsion chain", "battery ECM"],
+      "owner": "tech_1_physics_architect",
+      "length_guidance": "as needed, README only — not for pitch deck"
+    },
+    {
+      "section_id": "validation",
+      "title": "Validation Method",
+      "description": "How results were checked for sanity: feasibility checks (cruise power < engine capacity), sensitivity tests, failure-injection robustness runs.",
+      "required_inputs": ["simulation/events.json example_scenarios", "simulation/states.json health_states"],
+      "owner": "tech_1_physics_architect",
+      "length_guidance": "200-300 words / 1 slide"
+    },
+    {
+      "section_id": "results",
+      "title": "Results",
+      "description": "Headline numbers: endurance, MTOW, fuel burn, and the improvement over baseline.",
+      "required_inputs": ["optimizer_mdo.py final solution JSON", "PRD interface contract solution block"],
+      "owner": "tech_2_optimization_engineer",
+      "length_guidance": "1 slide, chart-led, minimal text"
+    },
+    {
+      "section_id": "baseline_comparison",
+      "title": "Baseline Comparison Table",
+      "description": "Rule-based vs static-optimized vs RL-adaptive, matching the proposal's 6.5/7.1/7.7 hr table.",
+      "required_inputs": ["pareto_front data", "rl_balancing.py output"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "1 table, 1 slide"
+    },
+    {
+      "section_id": "sensitivity_analysis",
+      "title": "Sensitivity Analysis",
+      "description": "How results move if key assumptions (L/D, SFC, battery energy density) shift — pre-empts thermodynamics-professor-style challenge questions.",
+      "required_inputs": ["propeller_specifications.md", "defaults.json battery/engine blocks"],
+      "owner": "tech_1_physics_architect",
+      "length_guidance": "1 tornado chart / 1 slide"
+    },
+    {
+      "section_id": "hal_impact",
+      "title": "HAL Impact Narrative",
+      "description": "Operational relevance to HAL's actual UAV programs — endurance/fuel gains translated into mission-level value (loiter time, coverage area, sorties saved).",
+      "required_inputs": ["HAL context research", "results section numbers"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "30-second spoken version + 1 slide"
+    },
+    {
+      "section_id": "literature_review",
+      "title": "Literature Review",
+      "description": "3+ IEEE/AIAA papers on hybrid-electric UAV propulsion, positioned against this team's approach.",
+      "required_inputs": ["external paper research"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "1 comparison table"
+    },
+    {
+      "section_id": "how_to_run",
+      "title": "How to Run",
+      "description": "Exact commands to reproduce results — repo setup, script order, expected outputs.",
+      "required_inputs": ["pack_sizing.py, thermal_sim.py, optimizer_mdo.py, rl_balancing.py execution order"],
+      "owner": "tech_2_optimization_engineer",
+      "length_guidance": "README only, code block, no prose"
+    },
+    {
+      "section_id": "team",
+      "title": "Team",
+      "description": "Roles and contributions.",
+      "required_inputs": ["team roster"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "1 slide max"
+    },
+    {
+      "section_id": "references",
+      "title": "References",
+      "description": "Citations for all external data sources (engine data, battery datasheet, propeller data).",
+      "required_inputs": ["all data source citations"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "README only"
+    },
+    {
+      "section_id": "judge_faq",
+      "title": "Judge FAQ / Q&A Cheat Sheet",
+      "description": "Anticipated questions with scripted, defensible answers — includes the thermodynamics-professor question set as a subset.",
+      "required_inputs": ["all sections above, condensed"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "10 Q&A pairs minimum"
+    },
+    {
+      "section_id": "demo_script",
+      "title": "Demo Script",
+      "description": "Exact timestamped walkthrough of the live dashboard demo.",
+      "required_inputs": ["ui/ dashboard panel order", "golden-path scenario"],
+      "owner": "non_tech_2_pitch_lead",
+      "length_guidance": "timestamped, 3-5 min total"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+motor_id,load_fraction,efficiency,rpm_at_point,notes
+MOT-001,0.10,,,"idle/low load point"
+MOT-001,0.25,,,
+MOT-001,0.50,,,
+MOT-001,0.75,,,"typically peak efficiency region for aerospace PMSM"
+MOT-001,1.00,,,"rated/continuous load point"

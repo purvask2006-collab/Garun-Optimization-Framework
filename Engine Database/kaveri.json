@@ -1,0 +1,161 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "GTX-35VS-KAVERI",
+  "metadata": {
+    "name": "GTX-35VS Kaveri Turbofan",
+    "type": "turbofan",
+    "variant": "low-bypass twin-spool with afterburner",
+    "manufacturer": "GTRE, DRDO (Notional baseline — public domain parameters)",
+    "application": ["combat aircraft", "supersonic demonstrator"],
+    "certification_basis": "DRDO Aeronautical Test & Evaluation Centre (ATEC)",
+    "revision": "Mk1-Std",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_thrust_dry_kN": 52.0,
+    "rated_thrust_wet_kN": 73.5,
+    "dry_weight_kg": 1100,
+    "thrust_to_weight_ratio_dry": 4.82,
+    "thrust_to_weight_ratio_wet": 6.81,
+    "rpm_core_design": 14800,
+    "rpm_fan_design": 9200,
+    "overall_pressure_ratio": 21.5,
+    "fan_pressure_ratio": 3.4,
+    "bypass_ratio": 0.16,
+    "turbine_entry_temperature_K": 1700,
+    "exhaust_gas_temperature_K_dry": 780,
+    "exhaust_gas_temperature_K_wet": 1100,
+    "mass_flow_kgs": 77,
+    "fuel_type": ["Jet-A1", "JP-8"],
+    "afterburner": true,
+    "afterburner_fuel_multiplier": 2.1,
+    "lubrication": "synthetic MIL-PRF-23699 HTS",
+    "ignition": "dual high-energy + AB torch igniter"
+  },
+  "performance_map": {
+    "description": "Net thrust vs throttle (dry) and AB power at ISA SL static",
+    "mode": "dry",
+    "throttle_percent": [0, 20, 40, 60, 80, 90, 95, 100],
+    "net_thrust_kN":    [0, 8.0, 18.5, 30.0, 42.0, 48.0, 50.5, 52.0],
+    "tsfc_kg_per_kN_hr_dry": [0, 0.110, 0.100, 0.093, 0.088, 0.085, 0.084, 0.083],
+    "afterburner_thrust_map": {
+      "ab_percent": [0, 25, 50, 75, 100],
+      "thrust_increment_kN": [0, 5.0, 10.2, 16.5, 21.5],
+      "tsfc_wet_kg_per_kN_hr": [0.083, 0.138, 0.162, 0.180, 0.195]
+    }
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "throttle_percent": [40, 60, 80, 90, 100],
+      "eta_thermal_dry":  [0.22, 0.29, 0.35, 0.37, 0.38]
+    },
+    "propulsive_efficiency_map": {
+      "mach_number":      [0.0, 0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 1.8],
+      "eta_propulsive_dry": [0.0, 0.45, 0.58, 0.68, 0.75, 0.79, 0.82, 0.80]
+    },
+    "compressor_map": {
+      "design_PR": 21.5,
+      "isentropic_efficiency_HPC": 0.82,
+      "isentropic_efficiency_LPC": 0.84,
+      "surge_margin_percent": 16,
+      "stall_margin_percent": 12
+    },
+    "turbine_efficiency": {
+      "HPT_isentropic": 0.87,
+      "LPT_isentropic": 0.89
+    }
+  },
+  "fuel_consumption_model": {
+    "model_type": "TSFC_polynomial_with_AB",
+    "reference_condition": "ISA SL static, 100% dry",
+    "tsfc_dry_reference_kg_per_kN_hr": 0.083,
+    "tsfc_wet_reference_kg_per_kN_hr": 0.195,
+    "altitude_correction": {
+      "altitude_m":     [0, 5000, 10000, 15000, 18000],
+      "tsfc_multiplier": [1.00, 0.92, 0.84, 0.78, 0.75]
+    },
+    "mach_correction": {
+      "mach":           [0.0, 0.5, 0.8, 1.0, 1.5, 1.8],
+      "tsfc_multiplier": [1.00, 1.04, 1.10, 1.16, 1.25, 1.33]
+    },
+    "idle_fuel_flow_kg_per_hr": 290,
+    "startup_fuel_kg": 2.1,
+    "ab_lightup_time_s": 0.3
+  },
+  "thermal_limits": {
+    "TET_max_continuous_K": 1670,
+    "TET_max_5min_K": 1720,
+    "TET_max_transient_10s_K": 1760,
+    "EGT_max_dry_K": 760,
+    "EGT_max_wet_K": 1050,
+    "EGT_max_start_K": 900,
+    "AB_flame_temp_max_K": 2100,
+    "compressor_exit_temp_max_K": 820,
+    "bearing_oil_temp_max_C": 160,
+    "thermal_time_constant_dry_s": 55,
+    "thermal_time_constant_wet_s": 20,
+    "cooling_type": "multi-pass film cooling + TBC HPT, convergent-divergent AB nozzle"
+  },
+  "operating_envelope": {
+    "altitude_max_m": 16000,
+    "mach_max": 1.8,
+    "ambient_temp_range_C": [-55, 50],
+    "g_load_limits": { "positive_g": 9.0, "negative_g": -3.5 },
+    "rated_conditions": "ISA SL static",
+    "supersonic_performance": {
+      "mach_1.0_altitude_11000m_thrust_kN": 35.0,
+      "mach_1.5_altitude_11000m_thrust_kN_wet": 55.0
+    },
+    "thrust_deck": {
+      "altitude_m": [0, 5000, 10000, 15000],
+      "mach_0.0_dry_kN": [52.0, 43.5, 34.0, 22.0],
+      "mach_0.9_dry_kN": [40.0, 34.0, 27.0, 17.5],
+      "mach_1.5_wet_kN": [null, null, 65.0, 48.0]
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "TSFC dry (kg/kN·hr) vs throttle fraction and altitude",
+    "throttle_fraction": [0.5, 0.7, 0.9, 1.0],
+    "altitude_m": [0, 5000, 10000, 15000],
+    "tsfc_matrix_dry": [
+      [0.100, 0.092, 0.084, 0.078],
+      [0.093, 0.086, 0.078, 0.073],
+      [0.086, 0.079, 0.073, 0.068],
+      [0.083, 0.077, 0.070, 0.065]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "military — AGB accessory pad",
+    "pto_max_power_kw": 40,
+    "pto_rpm": 10000,
+    "compatible_generators": ["40kW-IDG-MIL-001"],
+    "hybrid_mode": "not applicable — combat engine",
+    "battery_buffer_recommended": false
+  },
+  "sizing_parameters": {
+    "length_mm": 3400,
+    "fan_diameter_mm": 910,
+    "max_diameter_mm": 980,
+    "dry_weight_kg": 1100,
+    "cg_from_fan_face_mm": 1400,
+    "inlet_diameter_mm": 880,
+    "exhaust_diameter_mm": 680,
+    "nozzle_type": "convergent-divergent variable area",
+    "mount_interface": "front frame trunnion + rear mount frame",
+    "frontal_area_m2": 0.65
+  },
+  "maintenance": {
+    "TBO_hours": 800,
+    "hot_section_inspection_hours": 200,
+    "AB_section_inspection_hours": 100,
+    "oil_change_hours": 100,
+    "borescope_interval_hours": 100,
+    "mttr_hours": 12,
+    "line_replaceable_units": ["HPT disc assembly", "combustor liner", "AB flameholder", "DECU module", "nozzle actuation"],
+    "FADEC": {
+      "channels": 3,
+      "authority": "full with DECU",
+      "reversion_mode": "hydromechanical with manual fuel trim"
+    }
+  }
+}

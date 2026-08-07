@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "dataset": "HAL Ecosystem Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "data_as_of": "August 2026",
+    "note": "Compiled from public defence-news reporting, Wikipedia, and HAL statements available as of Aug 2026. Program timelines in this sector shift frequently -- treat dates as directional, not contractual, and re-verify before citing to a panel."
+  },
+  "items": [
+    {
+      "id": "digital_mfg_precision",
+      "project": "Digital Manufacturing & Laser-Guided Precision Assembly",
+      "purpose": "Accelerate fighter-jet production timelines using digital tooling",
+      "status": "Actively deployed on Tejas Mk2 sub-assembly production",
+      "engine": "N/A",
+      "mission": "Compress design-to-production cycle time",
+      "technology": [
+        "Digital manufacturing",
+        "Laser-guided assembly alignment"
+      ],
+      "power_generation": "N/A",
+      "platform": "Tejas Mk2 (primary application)",
+      "description": "Directly analogous to GARUN's own value proposition of compressing weeks-long manual design cycles into automated, rapid iteration -- a strong parallel to draw for a HAL audience."
+    },
+    {
+      "id": "gan_aesa_radar",
+      "project": "GaN-based AESA Radar",
+      "purpose": "Next-generation active electronically scanned array radar using gallium-nitride semiconductor technology",
+      "status": "Discussed/proposed for Tejas Mk2 and AMCA avionics upgrades; not yet confirmed as integrated",
+      "engine": "N/A",
+      "mission": "Improved detection range and multi-target tracking",
+      "technology": [
+        "GaN semiconductor TRMs (transmit-receive modules)"
+      ],
+      "power_generation": "N/A",
+      "platform": "Tejas Mk2 / AMCA (proposed)",
+      "description": "Represents the avionics side of HAL's next-gen fighter roadmap, separate from the propulsion/structures focus of most other entries in this database."
+    },
+    {
+      "id": "mumt_datalink",
+      "project": "Manned-Unmanned Teaming (MUM-T) Datalink",
+      "purpose": "Enable a manned Tejas fighter to control multiple CATS Warrior drones",
+      "status": "Datalink checks ongoing as part of CATS Warrior development (2026)",
+      "engine": "N/A",
+      "mission": "Coordinated scouting, decoy, and strike operations from up to ~150 km control range",
+      "technology": [
+        "Secure datalink protocol",
+        "Autonomous drone flight control"
+      ],
+      "power_generation": "N/A",
+      "platform": "CATS Warrior + Tejas",
+      "description": "Central enabling technology for HAL's loyal-wingman concept."
+    },
+    {
+      "id": "rcs_reduction",
+      "project": "Radar Cross-Section (RCS) Reduction / Stealth Shaping",
+      "purpose": "Reduce radar detectability through airframe shaping and materials",
+      "status": "Partial implementation on Tejas Mk2; full implementation planned for AMCA and CATS Warrior 10-tonne variant",
+      "engine": "N/A",
+      "mission": "Improve survivability in contested airspace",
+      "technology": [
+        "Airframe shaping",
+        "Radar-absorbent materials (implied, not publicly detailed)"
+      ],
+      "power_generation": "N/A",
+      "platform": "Tejas Mk2, AMCA, CATS Warrior (10t)",
+      "description": "Spans HAL's full spectrum from '4.5-gen partial stealth' (Mk2) to 'full 5th-gen stealth' (AMCA) -- useful for framing a technology-maturity spectrum in a report."
+    },
+    {
+      "id": "engine_self_reliance_tech",
+      "project": "Indigenous Turbofan/Turboshaft Propulsion Technology",
+      "purpose": "Underlying engine-design and casing/gearbox fabrication capability behind HTFE-25 and HTSE-1200",
+      "status": "Advancing toward endurance/certification testing through 2026; casing fabrication recently outsourced to private industry to accelerate capability",
+      "engine": "N/A",
+      "mission": "Establish sustainable indigenous propulsion manufacturing base",
+      "technology": [
+        "High-altitude cold/hot weather trial protocols",
+        "Private-sector casing/gearbox supply chain"
+      ],
+      "power_generation": "N/A",
+      "platform": "HTFE-25 / HTSE-1200",
+      "description": "This is the technology theme most directly relevant to GARUN's propulsion-optimization thesis -- the same 'reduce import dependency through indigenous, purpose-fit propulsion design' logic applies at both HAL's full-scale engine level and GARUN's UAV-class hybrid-electric level."
+    },
+    {
+      "id": "atol_gagan_nav",
+      "project": "Autonomous Take-Off & Landing (ATOL) + GAGAN Satellite Navigation",
+      "purpose": "Enable fully autonomous UAV operation without manual pilot intervention for takeoff/landing",
+      "status": "Demonstrated successfully on TAPAS-BH-201",
+      "engine": "N/A",
+      "mission": "Reduce operator workload and enable autonomous MALE UAV missions",
+      "technology": [
+        "Autonomous flight control",
+        "GAGAN (GPS-Aided GEO Augmented Navigation) integration"
+      ],
+      "power_generation": "N/A",
+      "platform": "TAPAS-BH-201",
+      "description": "A proven indigenous capability directly relevant to any future autonomous flight-control ambitions for a GARUN-class platform."
+    },
+    {
+      "id": "hybrid_electric_propulsion_rd",
+      "project": "Hybrid-Electric / Advanced Propulsion Optimization R&D (emerging interest area)",
+      "purpose": "Explore hybrid-electric propulsion architectures for future UAV classes",
+      "status": "Emerging interest area, evidenced directly by HAL x IIT Indore's PS1 problem statement itself rather than by a named internal HAL program",
+      "engine": "N/A",
+      "mission": "Endurance-optimized hybrid propulsion for MALE-class UAVs",
+      "technology": [
+        "Multi-objective design optimization",
+        "RL-based energy management"
+      ],
+      "power_generation": "N/A",
+      "platform": "Conceptual MALE-class UAV",
+      "description": "This entry is intentionally framed as HAL's stated interest (via the PS1 problem statement) rather than a confirmed internal program -- be precise about this distinction if a mentor probes it, since it is the one entry in this database sourced from the hackathon brief rather than independent reporting."
+    }
+  ]
+}

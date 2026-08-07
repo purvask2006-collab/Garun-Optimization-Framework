@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "description": "Aerospace mission-control palette for the Streamlit dashboard. Base direction (NASA cyan on charcoal) is fixed by the PRD; everything else is derived to stay legible and disciplined around that one accent.",
+  "palette": {
+    "background": {
+      "base": "#0B0F19",
+      "raised": "#111827",
+      "panel": "#161D2E",
+      "panel_border": "#232B3D"
+    },
+    "accent": {
+      "primary": "#00D2FF",
+      "primary_dim": "#0A8CA8",
+      "primary_glow": "rgba(0, 210, 255, 0.25)"
+    },
+    "text": {
+      "primary": "#E8EDF4",
+      "secondary": "#8B96AB",
+      "muted": "#5A6478",
+      "on_accent": "#03141A"
+    },
+    "status": {
+      "nominal": "#00D2FF",
+      "degraded": "#F5A623",
+      "emergency": "#FF4D4D",
+      "abort": "#5A6478",
+      "note": "Maps 1:1 to simulation/states.json health_states (NOMINAL, DEGRADED, EMERGENCY, ABORT) so a single status color travels from the physics layer straight to the dashboard."
+    },
+    "data_series": {
+      "series_1_engine": "#00D2FF",
+      "series_2_battery": "#7C5CFF",
+      "series_3_combined": "#F5A623",
+      "series_4_baseline_comparison": "#5A6478",
+      "note": "series_4 is intentionally muted — used for 'rule-based baseline' comparison lines so the Pareto/endurance improvement reads visually without competing with the primary result."
+    },
+    "chart_grid": {
+      "gridline": "#1E2637",
+      "axis_label": "#5A6478",
+      "zero_line": "#232B3D"
+    }
+  },
+  "usage_notes": [
+    "Never place accent.primary text on background.panel below 4.5:1 contrast for body copy; use it for numerals, icons, and chart lines, not paragraph text.",
+    "status.nominal intentionally equals accent.primary — nominal is the 'unremarkable' state and should not visually compete with the brand accent; degraded/emergency are the colors that should draw the eye."
+  ]
+}

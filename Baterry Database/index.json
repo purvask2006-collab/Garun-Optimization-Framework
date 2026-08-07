@@ -1,0 +1,112 @@
+{
+  "$schema": "https://aerospace-battery-db.org/schema/v1.0",
+  "meta": {
+    "db_name": "Aerospace Battery Engineering Database",
+    "db_version": "1.0.0",
+    "created": "2026-08-06",
+    "description": "Modular battery property database for aerospace simulation and engineering. Compatible with MATLAB/Simscape, Simulink, OpenModelica, Dymola, AMESim.",
+    "units_convention": "SI unless annotated. Temperatures in °C. Energy in Wh. Power in W."
+  },
+
+  "chemistries": [
+    {
+      "id": "LION-NMC-622-AE",
+      "file": "lion.json",
+      "chemistry": "Lithium-Ion NMC622",
+      "trl": 9,
+      "specific_energy_Wh_kg": 265,
+      "cycle_life": 1500,
+      "temp_min_C": -20,
+      "temp_max_C": 60,
+      "thermal_runaway_risk": "medium",
+      "primary_use_case": "eVTOL, UAV, LEO satellite — best energy density"
+    },
+    {
+      "id": "LIFEPO4-26650-AE",
+      "file": "lifepo4.json",
+      "chemistry": "Lithium Iron Phosphate",
+      "trl": 9,
+      "specific_energy_Wh_kg": 180,
+      "cycle_life": 4000,
+      "temp_min_C": -30,
+      "temp_max_C": 65,
+      "thermal_runaway_risk": "very_low",
+      "primary_use_case": "Ground support, cubesat buses, safety-critical backup power"
+    },
+    {
+      "id": "SSB-SULFIDE-AE",
+      "file": "solid_state.json",
+      "chemistry": "Solid-State Lithium (Sulfide)",
+      "trl": 6,
+      "specific_energy_Wh_kg": 380,
+      "cycle_life": 800,
+      "temp_min_C": -10,
+      "temp_max_C": 100,
+      "thermal_runaway_risk": "very_low",
+      "primary_use_case": "Space vehicles, future eVTOL — highest energy density, pre-production"
+    },
+    {
+      "id": "LTO-NMC-AE",
+      "file": "lto.json",
+      "chemistry": "Lithium Titanate Oxide",
+      "trl": 8,
+      "specific_energy_Wh_kg": 90,
+      "cycle_life": 20000,
+      "temp_min_C": -40,
+      "temp_max_C": 65,
+      "thermal_runaway_risk": "low",
+      "primary_use_case": "Satellite power systems, avionics backup, high-cycle burst loads"
+    }
+  ],
+
+  "selection_guide": {
+    "highest_energy_density": "SSB-SULFIDE-AE (380 Wh/kg) — pre-production; else LION-NMC-622-AE (265 Wh/kg)",
+    "longest_cycle_life":     "LTO-NMC-AE (20,000 cycles)",
+    "best_safety_profile":    "LIFEPO4-26650-AE or SSB-SULFIDE-AE (olivine / solid electrolyte)",
+    "widest_temp_range":      "LTO-NMC-AE (-40°C to 65°C)",
+    "lowest_cost_per_Wh":     "LIFEPO4-26650-AE ($0.34/Wh)",
+    "highest_power_density":  "LTO-NMC-AE (8,000 W/kg peak)"
+  },
+
+  "field_schema": {
+    "description": "Common field definitions across all chemistry files",
+    "sections": {
+      "meta": "Identification, chemistry, certifications, simulation software compatibility",
+      "electrical": {
+        "voltage": "Nominal, min, max, OCV in Volts",
+        "capacity": "Ah and Wh at standard conditions",
+        "specific_energy": "Wh/kg and Wh/L (gravimetric and volumetric energy density)",
+        "specific_power": "W/kg continuous and peak",
+        "internal_resistance": "DC and AC mΩ at BOL, 25°C",
+        "soc_curve": "OCV vs SOC lookup table with temperature correction",
+        "charging": "Protocol, C-rate limits, voltage window, SOC recommendations",
+        "discharging": "C-rate limits, pulse specs, cutoff voltage",
+        "efficiency": "Coulombic %, roundtrip energy %, efficiency vs C-rate table"
+      },
+      "thermal": {
+        "operating_range": "Min/max operating, storage, and charge temperatures",
+        "thermal_runaway": "Onset temperature, propagation risk classification",
+        "heat_generation_model": "Bernardi model coefficients for simulation",
+        "specific_heat_capacity": "J/(kg·K) for thermal mass calculation",
+        "thermal_conductivity": "W/(m·K) radial and axial",
+        "derating_table": "Capacity fraction vs temperature at low temperature"
+      },
+      "lifecycle": {
+        "cycle_life": "Cycles to 80% EOL at specified conditions",
+        "calendar_life": "Years at storage SOC and temperature",
+        "capacity_fade_model": "Power-law coefficients for simulation",
+        "resistance_growth_model": "Linear growth rate per 100 cycles",
+        "dod_cycle_life_table": "Lookup table for variable DoD applications",
+        "eol_criteria": "Capacity retention % and resistance growth % thresholds"
+      },
+      "physical": "Dimensions, weight, form factor, enclosure rating",
+      "cost": "Cell cost, $/Wh, pack-level estimate, supply chain notes",
+      "sim_parameters": {
+        "ecm": "2RC Thévenin equivalent circuit model parameters (R0, R1, C1, R2, C2)",
+        "p2d_ref": "Reference to Doyle-Fuller-Newman physics-based model parameter files",
+        "state_variables": "List of state variables for solver initialization",
+        "time_step": "Recommended simulation timestep in seconds"
+      }
+    }
+  }
+}

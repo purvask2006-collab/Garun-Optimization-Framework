@@ -1,0 +1,145 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "MICRO-TS-60",
+  "metadata": {
+    "name": "MICRO-TS-60 Micro-Turboshaft",
+    "type": "turboshaft",
+    "variant": "single-stage radial-centrifugal single-spool",
+    "manufacturer": "Notional — representative of PBS TJ80 / AMT class",
+    "application": ["multirotor heavy UAV", "eVTOL range extender", "small UAS generator"],
+    "certification_basis": "EASA SC-RPAS / DGCA RPAS rules",
+    "revision": "C1",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_power_kw": 60,
+    "rated_power_shp": 80.4,
+    "dry_weight_kg": 16.5,
+    "power_to_weight_ratio": 3.64,
+    "rpm_design": 105000,
+    "rpm_output_shaft": 6000,
+    "gear_ratio": 17.5,
+    "compressor_ratio": 4.8,
+    "turbine_entry_temperature_K": 1200,
+    "exhaust_gas_temperature_K": 680,
+    "mass_flow_kgs": 0.85,
+    "bypass_ratio": 0,
+    "fuel_type": ["Jet-A1", "Jet-A", "JP-8", "diesel (limited ops)"],
+    "lubrication": "pressure-fed, wet-sump MIL-PRF-23699",
+    "ignition": "single glow-plug + spark assist"
+  },
+  "performance_map": {
+    "description": "Shaft power vs throttle at ISA SL",
+    "throttle_percent": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 105],
+    "shaft_power_kw":   [0, 3.5, 9.0, 16.5, 25.0, 34.5, 43.0, 51.0, 56.0, 59.0, 60.0, 63.0],
+    "sfc_kg_per_kwh":  [0, 0.70, 0.60, 0.52, 0.46, 0.42, 0.395, 0.375, 0.360, 0.355, 0.352, 0.360],
+    "notes": "105% is 2-minute emergency rating. Radial compressor efficiency peaks at 65-80% throttle."
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "throttle_percent": [30, 40, 50, 60, 70, 80, 90, 100],
+      "eta_thermal":      [0.12, 0.155, 0.17, 0.185, 0.195, 0.200, 0.203, 0.203]
+    },
+    "compressor_map": {
+      "type": "centrifugal single stage",
+      "design_point": { "PR": 4.8, "corrected_mass_flow_kgs": 0.85, "isentropic_efficiency": 0.76 },
+      "surge_margin_percent": 15,
+      "choke_margin_percent": 8
+    },
+    "turbine_efficiency": {
+      "radial_turbine_isentropic": 0.86
+    },
+    "gear_efficiency": 0.97,
+    "mechanical_efficiency": 0.975
+  },
+  "fuel_consumption_model": {
+    "model_type": "polynomial_sfc",
+    "reference_condition": "ISA SL, 100% rated",
+    "sfc_reference_kg_per_kwh": 0.352,
+    "altitude_correction": {
+      "altitude_m":     [0, 500, 1000, 2000, 3000],
+      "sfc_multiplier": [1.00, 1.03, 1.06, 1.14, 1.24]
+    },
+    "temperature_correction": {
+      "delta_isa_K":    [-20, -10, 0, 10, 20, 30],
+      "sfc_multiplier": [0.94, 0.97, 1.00, 1.04, 1.09, 1.16]
+    },
+    "idle_fuel_flow_kg_per_hr": 1.8,
+    "startup_fuel_kg": 0.05,
+    "best_endurance_throttle_percent": 72
+  },
+  "thermal_limits": {
+    "TET_max_continuous_K": 1180,
+    "TET_max_2min_K": 1230,
+    "TET_max_start_K": 1100,
+    "EGT_max_continuous_K": 660,
+    "EGT_max_start_K": 750,
+    "bearing_oil_temp_max_C": 120,
+    "exhaust_plenum_max_C": 450,
+    "cooling_type": "uncooled turbine wheel — ceramic-coated",
+    "thermal_time_constant_s": 18,
+    "heat_rejection_to_oil_kw": 4.5
+  },
+  "operating_envelope": {
+    "altitude_max_m": 4000,
+    "altitude_rated_m": 0,
+    "mach_max": 0.2,
+    "ambient_temp_range_C": [-30, 50],
+    "humidity_max_percent": 100,
+    "power_derate": {
+      "altitude_m":       [0, 500, 1000, 2000, 3000, 4000],
+      "available_power_kw": [60, 55.5, 51.0, 42.5, 34.5, 27.0]
+    },
+    "start_envelope": {
+      "min_ambient_temp_C": -20,
+      "max_wind_for_start_kts": 30,
+      "preheat_required_below_C": -10
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "BSFC (kg/kWh) as function of power fraction and altitude",
+    "power_fraction": [0.3, 0.5, 0.7, 0.9, 1.0],
+    "altitude_m": [0, 1000, 2000, 3000],
+    "bsfc_matrix": [
+      [0.52, 0.42, 0.375, 0.355],
+      [0.54, 0.44, 0.390, 0.370],
+      [0.57, 0.47, 0.418, 0.395],
+      [0.61, 0.51, 0.455, 0.430]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "custom flange — 4-bolt 100PCD",
+    "pto_max_power_kw": 60,
+    "pto_rpm": 6000,
+    "compatible_generators": ["60kW-PMSG-001", "50kW-PMSG-AXIAL-002"],
+    "hybrid_mode": "series — primary range-extender for electric UAV",
+    "recommended_operating_point": "70-80% throttle for best SFC in hybrid series mode",
+    "battery_buffer_recommended": true,
+    "buffer_capacity_kwh_min": 2.5
+  },
+  "sizing_parameters": {
+    "length_mm": 380,
+    "width_mm": 240,
+    "height_mm": 240,
+    "cg_from_intake_mm": 160,
+    "inlet_diameter_mm": 120,
+    "exhaust_diameter_mm": 80,
+    "mount_interface": "3-point rubber-isolated M8 studs",
+    "frontal_area_m2": 0.044,
+    "inlet_total_pressure_recovery": 0.96,
+    "volume_m3": 0.022
+  },
+  "maintenance": {
+    "TBO_hours": 500,
+    "hot_section_inspection_hours": 150,
+    "oil_change_hours": 50,
+    "borescope_interval_hours": 100,
+    "mttr_hours": 2,
+    "line_replaceable_units": ["turbine-compressor rotor assembly", "bearing cartridge", "ECU", "fuel nozzle"],
+    "ECU": {
+      "channels": 1,
+      "authority": "full electronic with manual override",
+      "reversion_mode": "fixed fuel schedule"
+    }
+  }
+}

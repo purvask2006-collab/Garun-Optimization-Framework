@@ -1,0 +1,29 @@
+{
+  "dataset": "HAL Ecosystem Database",
+  "version": "1.0",
+  "data_as_of": "August 2026",
+  "files": {
+    "projects.json": "Top-level program index (12 items). Cross-references aircraft/uavs/engines/technologies via related_ids.",
+    "aircraft.json": "Fixed-wing and rotary crewed platforms (8 items).",
+    "uavs.json": "Unmanned platforms, HAL + closely linked DRDO/ADE programs (7 items).",
+    "engines.json": "Propulsion programs, indigenous and key imported (7 items).",
+    "technologies.json": "Cross-cutting technology themes not tied to a single platform (7 items)."
+  },
+  "schema": {
+    "note": "All item objects share this common field set for consistent dashboard table/card rendering.",
+    "fields": {
+      "id": "string, unique slug within its file",
+      "project": "string, display name",
+      "purpose": "string",
+      "status": "string, current program status as of data_as_of",
+      "engine": "string, powerplant name or 'N/A' for engine-file entries",
+      "mission": "string",
+      "technology": "array of strings",
+      "power_generation": "string, thrust/power class or 'N/A'",
+      "platform": "string",
+      "description": "string, longer context note",
+      "related_ids": "(projects.json only) object mapping other file names to arrays of related item ids"
+    }
+  },
+  "usage_note": "Load this index first to discover available files and the shared schema, then fetch each file independently. projects.json.items[i].related_ids lets a dashboard build drill-down links from a top-level program card into its associated aircraft/uav/engine/technology detail entries."
+}

@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "dataset": "HAL Ecosystem Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "data_as_of": "August 2026",
+    "note": "Compiled from public defence-news reporting, Wikipedia, and HAL statements available as of Aug 2026. Program timelines in this sector shift frequently -- treat dates as directional, not contractual, and re-verify before citing to a panel."
+  },
+  "items": [
+    {
+      "id": "tejas_mk1a",
+      "project": "Tejas Mk1A",
+      "purpose": "Single-engine multirole light combat fighter for IAF frontline squadrons",
+      "status": "In production; 180 aircraft on order, ~15 delivered as of mid-2026, 20+ airframes complete awaiting engine/radar integration",
+      "engine": "GE F404-GE-IN20 (imported, turbofan)",
+      "mission": "Air superiority, ground attack, frontline fighter replacement for MiG-21 fleet",
+      "technology": [
+        "4th-gen fighter avionics",
+        "AESA radar integration",
+        "Digital fly-by-wire"
+      ],
+      "power_generation": "Single turbofan, afterburning",
+      "platform": "Fixed-wing, single-engine fighter",
+      "description": "HAL's flagship indigenous fighter program and largest current production commitment; delivery pace has been constrained by GE engine supply delays, prompting a ~Rs 10,000 crore HAL infrastructure expansion at Bengaluru and Nashik."
+    },
+    {
+      "id": "tejas_mk2",
+      "project": "Tejas Mk2 (Medium Weight Fighter)",
+      "purpose": "4.5-generation multirole fighter bridging Tejas Mk1A and the future AMCA",
+      "status": "Prototype structural assembly underway; first flight most recently targeted March-July 2027 (slipped from earlier 2026 estimates)",
+      "engine": "GE F414-INS6 (~98 kN thrust)",
+      "mission": "Extended-range multirole combat, larger payload (up to 6,500 kg) than Mk1A",
+      "technology": [
+        "Close-coupled canards",
+        "Digital/laser-guided precision manufacturing",
+        "Partial RCS reduction shaping"
+      ],
+      "power_generation": "Single turbofan, afterburning, higher thrust class than Mk1A",
+      "platform": "Fixed-wing, single-engine fighter, MTOW ~17.5 tonnes",
+      "description": "Positioned as the capability bridge to AMCA; program has slipped multiple times since its original 2022-23 target, most recently to a mid-2027 first flight per HAL's CMD at Farnborough 2026."
+    },
+    {
+      "id": "dhruv_alh",
+      "project": "HAL Dhruv (Advanced Light Helicopter)",
+      "purpose": "Multi-role utility helicopter for military and civil operators",
+      "status": "Operational, in service; civil 'Dhruv NG' variant expected certification by August 2026",
+      "engine": "Shakti (HAL/Safran Ardiden 1H1 turboshaft, license-built)",
+      "mission": "Utility transport, SAR, disaster response, VIP/heli-tourism (civil variant)",
+      "technology": [
+        "Glass cockpit avionics",
+        "Twin-engine configuration"
+      ],
+      "power_generation": "Twin turboshaft",
+      "platform": "5.5-tonne class helicopter",
+      "description": "HAL's most mature indigenous helicopter family; base airframe for the Rudra and Prachand derivatives. Civil Dhruv NG has orders from Pawan Hans pending certification."
+    },
+    {
+      "id": "rudra",
+      "project": "HAL Rudra",
+      "purpose": "Weaponized armed variant of the Dhruv ALH",
+      "status": "Operational, in service with Indian Army",
+      "engine": "Shakti (Ardiden 1H1 turboshaft)",
+      "mission": "Armed reconnaissance, close air support",
+      "technology": [
+        "Chin-mounted turret gun",
+        "Rocket/missile pylons"
+      ],
+      "power_generation": "Twin turboshaft",
+      "platform": "5.5-tonne class armed helicopter",
+      "description": "Weaponized Dhruv derivative fielded ahead of the purpose-built Prachand LCH."
+    },
+    {
+      "id": "prachand_lch",
+      "project": "HAL Prachand (Light Combat Helicopter)",
+      "purpose": "Dedicated attack helicopter for high-altitude and combat operations",
+      "status": "In production and delivery; 156 units on order across Army and Air Force",
+      "engine": "Shakti (Ardiden 1H1 turboshaft); HTSE-1200 proposed as future indigenous alternative",
+      "mission": "High-altitude attack, anti-armor, escort",
+      "technology": [
+        "Stealth shaping",
+        "Armor protection",
+        "High-altitude operation optimization"
+      ],
+      "power_generation": "Twin turboshaft",
+      "platform": "5.8-tonne class attack helicopter",
+      "description": "India's first indigenously designed and built dedicated attack helicopter, purpose-built for high-altitude operations (relevant to Siachen/Ladakh-type theatres)."
+    },
+    {
+      "id": "luh",
+      "project": "HAL Light Utility Helicopter (LUH)",
+      "purpose": "Replacement for the ageing Cheetah/Chetak helicopter fleet",
+      "status": "Nearing operational service; ~10 built, undergoing final military trials",
+      "engine": "HAL Shakti-derived turboshaft (single engine)",
+      "mission": "High-altitude reconnaissance and utility transport, replacing legacy light helicopters",
+      "technology": [
+        "Single-engine simplified powertrain",
+        "High-altitude performance tuning"
+      ],
+      "power_generation": "Single turboshaft",
+      "platform": "3-tonne class light helicopter",
+      "description": "Intended to replace India's oldest operational helicopter types; deliveries expected to begin as trials complete."
+    },
+    {
+      "id": "sj100",
+      "project": "HAL SJ-100 (SuperJet)",
+      "purpose": "Regional commercial jet airliner, localized for Indian manufacture",
+      "status": "Debuted publicly at Wings India 2026 (Hyderabad)",
+      "engine": "Twin turbofan (Yakovlev/UAC-derived design, undergoing localization)",
+      "mission": "Regional passenger transport, ~103 seats, ~3,500 km range",
+      "technology": [
+        "Localized systems integration",
+        "Aurus business-jet derivative variant"
+      ],
+      "power_generation": "Twin turbofan",
+      "platform": "Fixed-wing regional airliner",
+      "description": "Marks HAL's most significant return to civil airliner manufacturing since the Avro era; developed under Make in India localization of the Russian Superjet design."
+    },
+    {
+      "id": "h228",
+      "project": "Hindustan-228 (H-228)",
+      "purpose": "Light twin-turboprop for regional connectivity (UDAN scheme)",
+      "status": "In production and delivery; showcased at Wings India 2024 and 2026",
+      "engine": "Twin turboprop (imported powerplant, license-integrated)",
+      "mission": "Short-haul regional airliner, air taxi, medevac, aerial survey, cargo",
+      "technology": [
+        "Digital glass cockpit",
+        "Multi-role reconfigurable cabin"
+      ],
+      "power_generation": "Twin turboprop",
+      "platform": "Fixed-wing light utility transport",
+      "description": "HAL's indigenous light transport aircraft supporting India's regional air connectivity (UDAN) program."
+    }
+  ]
+}

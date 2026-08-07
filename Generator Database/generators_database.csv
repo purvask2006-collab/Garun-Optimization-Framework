@@ -1,0 +1,4 @@
+generator_id,manufacturer,model,ac_dc,voltage_v,rated_power_kw,efficiency_pct,weight_kg,cooling_type,frequency_hz,losses_kw,source,confidence,notes
+GEN-001,,,,,,,,,,,"TBD - cite datasheet","Low - placeholder","Example row: replace with real generator spec before optimizer integration. Leave frequency_hz blank for DC generators."
+GEN-002,,,,,,,,,,,,,
+GEN-003,,,,,,,,,,,,,

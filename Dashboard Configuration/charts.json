@@ -1,0 +1,115 @@
+{
+  "$schema_note": "Chart definitions per page. Where a chart already exists as a static Matplotlib output from main.py, that source PNG is noted -- the dashboard versions should be the interactive Plotly re-implementation of the same underlying data, not a new computation.",
+  "charts": [
+    {
+      "page": "sizing_results",
+      "id": "validation_table",
+      "type": "plotly_table",
+      "title": "PS1 Constraint Validation",
+      "columns": ["Constraint", "Requirement", "Value", "Status"],
+      "color_coding": { "PASS": "#90EE90", "FAIL": "#FF6B6B" },
+      "source": "mission.check_constraints()"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "altitude_vs_time",
+      "type": "plotly_line",
+      "title": "Altitude vs. time",
+      "x": "cumulative_time_hr",
+      "y": "altitude_m",
+      "annotations": "mission phase boundaries (takeoff/climb/cruise/loiter/descent/land)"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "speed_vs_time",
+      "type": "plotly_line",
+      "title": "Speed vs. time",
+      "x": "cumulative_time_hr",
+      "y": "speed_mps"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "power_balance",
+      "type": "plotly_line_multi",
+      "title": "Power balance",
+      "x": "cumulative_time_hr",
+      "series": ["power_required_w", "power_from_engine_w", "power_from_battery_w"]
+    },
+    {
+      "page": "mission_simulation",
+      "id": "soc_vs_time",
+      "type": "plotly_line",
+      "title": "Battery SoC vs. time",
+      "x": "cumulative_time_hr",
+      "y": "end_soc",
+      "shaded_bands": [
+        { "label": "Below floor", "y_min": 0.0, "y_max": 0.20, "color": "rgba(255,107,107,0.15)" },
+        { "label": "Above ceiling", "y_min": 0.90, "y_max": 1.0, "color": "rgba(255,107,107,0.15)" }
+      ],
+      "source": "mirrors soc_trajectory.png, made interactive"
+    },
+    {
+      "page": "mission_simulation",
+      "id": "fuel_remaining_vs_time",
+      "type": "plotly_line",
+      "title": "Fuel remaining vs. time",
+      "x": "cumulative_time_hr",
+      "y": "fuel_remaining_kg"
+    },
+    {
+      "page": "optimization",
+      "id": "pareto_front_3d",
+      "type": "plotly_scatter3d",
+      "title": "Pareto front: MTOW vs fuel burn vs endurance",
+      "x": "mtow_kg",
+      "y": "fuel_kg",
+      "z": "endurance_hr",
+      "highlight_point": "chosen knee-point design, in a distinct color",
+      "source": "mirrors pareto_front.png, made interactive with click events (see widgets.json :: pareto_point_click)"
+    },
+    {
+      "page": "optimization",
+      "id": "hypervolume_convergence",
+      "type": "plotly_line",
+      "title": "NSGA-II convergence",
+      "x": "generation",
+      "y": "hypervolume",
+      "source": "mirrors hypervolume_convergence.png, made interactive"
+    },
+    {
+      "page": "energy_management",
+      "id": "power_split_rule_based",
+      "type": "plotly_line",
+      "title": "Power split -- Rule-based",
+      "x": "mission_segment_index",
+      "series": ["power_from_engine_w", "power_from_battery_w"]
+    },
+    {
+      "page": "energy_management",
+      "id": "power_split_static_optimized",
+      "type": "plotly_line",
+      "title": "Power split -- Static-optimized",
+      "x": "mission_segment_index",
+      "series": ["power_from_engine_w", "power_from_battery_w"]
+    },
+    {
+      "page": "energy_management",
+      "id": "power_split_rl_adaptive",
+      "type": "plotly_line",
+      "title": "Power split -- RL-adaptive",
+      "x": "mission_segment_index",
+      "series": ["power_from_engine_w", "power_from_battery_w"],
+      "notes": "Per the dashboard spec's original intent, this plot's SoC dip toward the 20% floor was meant to be shown as evidence of 'smart aggressive extraction.' IMPORTANT: cross-check this framing against the technical report before shipping this chart -- the report currently flags this same dip (0.178) as a FAILED constraint, not a feature. Resolve which framing is accurate before this chart goes in front of judges (see prior conversation note)."
+    },
+    {
+      "page": "energy_management",
+      "id": "strategy_comparison_bar",
+      "type": "plotly_bar_grouped",
+      "title": "Endurance / MTOW / fuel burn by strategy",
+      "categories": ["Rule-based", "Static-optimized", "RL-adaptive"],
+      "metrics": ["endurance_hr", "fuel_kg", "min_soc"],
+      "source": "mirrors benchmark_comparison.png, made interactive"
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.2 (conversation-derived, not yet implemented in code)"
+}

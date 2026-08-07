@@ -1,0 +1,86 @@
+{
+  "$schema_note": "This is the FULL validation-engine constraint set, checked against a finalized design by mission.check_constraints() -- broader than optimization/constraints.json, which only lists the subset actively enforced INSIDE the NSGA-II search loop (n_constr=2). Every row here should appear in the final validation table (report Section 6.4 / Table 4). Keep 'enforced_during_search' accurate: it's what distinguishes an in-loop constraint from a post-hoc check.",
+  "constraints": [
+    {
+      "id": "mtow_max",
+      "label": "MTOW \u2264 1000 kg",
+      "category": "mass",
+      "limit_ref": "limits.json :: mtow_kg_max",
+      "enforced_during_search": true,
+      "hard": true,
+      "source": "PS1 official requirement"
+    },
+    {
+      "id": "payload_min",
+      "label": "Payload \u2265 200 kg",
+      "category": "mass",
+      "limit_ref": "limits.json :: payload_kg_min",
+      "enforced_during_search": false,
+      "hard": true,
+      "source": "PS1 official requirement",
+      "notes": "Currently fixed as a constant in aircraft.py rather than a free variable, so it's trivially always satisfied -- not actively enforced as an inequality."
+    },
+    {
+      "id": "battery_soc_floor",
+      "label": "Battery SoC \u2265 0.20 throughout mission",
+      "category": "battery",
+      "limit_ref": "limits.json :: soc_min",
+      "enforced_during_search": true,
+      "enforcement_mechanism": "soft_penalty_in_g1",
+      "hard": true,
+      "source": "Li-ion cell chemistry -- protects against over-discharge/voltage sag",
+      "known_violation": "RL-adaptive fallback controller violates this at the current chosen design point (min SoC 0.178) -- see report Table 4 and Section 6.3-6.4."
+    },
+    {
+      "id": "battery_soc_ceiling",
+      "label": "Battery SoC \u2264 0.90 throughout mission",
+      "category": "battery",
+      "limit_ref": "limits.json :: soc_max",
+      "enforced_during_search": false,
+      "enforcement_mechanism": "clamped_in_physics.battery_discharge()",
+      "hard": true,
+      "source": "Li-ion cell chemistry -- protects against high-SoC lithium plating risk"
+    },
+    {
+      "id": "cruise_power_margin",
+      "label": "Required cruise power \u2264 engine rating \u00d7 1.15 (hybrid-assist margin)",
+      "category": "propulsion",
+      "limit_ref": "limits.json :: cruise_power_margin_factor",
+      "enforced_during_search": true,
+      "hard": true,
+      "source": "main.py HybridUAVSizingProblem design choice",
+      "notes": "This is the constraint that surfaces the report's Section 5 finding: at PS1's 250 km/h, required power (~59 kW) sits right at the edge of the 60 kW engine rating with almost no margin."
+    },
+    {
+      "id": "endurance_baseline",
+      "label": "Endurance \u2265 6.0 hr (baseline target)",
+      "category": "mission_performance",
+      "limit_ref": "limits.json :: endurance_hr_min_baseline",
+      "enforced_during_search": false,
+      "enforcement_mechanism": "objective_to_maximize_not_a_constraint",
+      "hard": false,
+      "source": "GARUN internal target, derived from PS1 mission intent"
+    },
+    {
+      "id": "endurance_rl_target",
+      "label": "Endurance \u2265 7.7 hr (RL-improvement target)",
+      "category": "mission_performance",
+      "limit_ref": "limits.json :: endurance_hr_target_with_rl",
+      "enforced_during_search": false,
+      "hard": false,
+      "source": "Originally submitted proposal figure -- reference target, not independently re-derived by this codebase (see optimization/objectives.json :: reference_target_for_knee_selection)"
+    },
+    {
+      "id": "static_margin_range",
+      "label": "Static margin within 5-15% MAC",
+      "category": "stability",
+      "limit_ref": "limits.json :: static_margin_min / static_margin_max",
+      "enforced_during_search": false,
+      "enforcement_mechanism": "not_yet_implemented",
+      "hard": true,
+      "source": "Standard fixed-wing UAV stability requirement (see report Part 11.3 CG/AC discussion)",
+      "notes": "Currently only estimated by hand in the conceptual layout section (CG at 1.43m, AC needs to sit ~1.55-1.60m from nose for ~8% margin). Not yet a code-enforced check -- requires wing-position as an explicit design variable first."
+    }
+  ],
+  "source": "mission.py :: CONSTRAINTS and check_constraints(); optimization/constraints.json; report Part 11.3"
+}

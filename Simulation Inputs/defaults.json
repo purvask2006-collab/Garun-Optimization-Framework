@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "description": "Global default parameters for the mission simulator. Any field a mission JSON (missions/*.json) does not override falls back to these values.",
+  "compatible_engines": ["mission_simulator.py", "optimizer_mdo.py", "rl_balancing.py", "pack_sizing.py", "thermal_sim.py"],
+  "aircraft": {
+    "mtow_kg": 1000,
+    "empty_weight_kg": 550,
+    "default_payload_kg": 200,
+    "l_over_d_cruise": 16,
+    "wing_reference_area_m2": 6.2
+  },
+  "engine": {
+    "type": "turboshaft",
+    "rated_power_kw": 60,
+    "idle_power_kw": 5,
+    "sfc_cruise_g_per_kwh": 300,
+    "sfc_model": "constant",
+    "sfc_model_note": "Set to 'lookup_table' and provide a map once real engine data is available; see thermodynamics questions in prior deliverable."
+  },
+  "battery": {
+    "chemistry": "Li-ion NMC",
+    "energy_density_wh_per_kg": 250,
+    "nominal_voltage_v": 400,
+    "soc_min_pct": 20,
+    "soc_max_pct": 90,
+    "internal_resistance_mohm": 15,
+    "thermal_limits_c": {"min": 0, "max": 60},
+    "capacity_kwh_default": 20
+  },
+  "motor_generator": {
+    "motor_count_default": 2,
+    "motor_efficiency_pct": 92,
+    "generator_efficiency_pct": 94,
+    "max_rpm": 8000
+  },
+  "propeller": {
+    "diameter_m": 2.0,
+    "pitch_m": 0.9,
+    "blade_count": 3,
+    "material": "carbon_fiber_composite",
+    "eta_cruise_pct": 80,
+    "note": "See propeller_specifications.md for full parameter definitions and selection process."
+  },
+  "power_split_strategy_default": "rule_based",
+  "solver": {
+    "time_step_s": 1,
+    "integration_method": "RK4",
+    "max_sim_time_s": 43200,
+    "convergence_tolerance": 1e-4
+  },
+  "logging": {
+    "log_interval_s": 60,
+    "output_fields": ["time_min", "altitude_m", "power_kw", "soc", "fuel_remaining_kg", "speed_mps", "active_power_source"],
+    "note": "Field names match the dashboard interface contract's mission_profile schema (time_min, altitude_m, power_kw, soc) so optimizer output can be piped directly to the Streamlit dashboard without reshaping."
+  }
+}

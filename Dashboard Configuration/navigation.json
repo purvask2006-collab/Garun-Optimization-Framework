@@ -1,0 +1,63 @@
+{
+  "$schema_note": "Page flow for the GARUN Streamlit dashboard. Order matters -- each page's 'unlocked_by' field defines the one-way flow described in the dashboard architecture spec.",
+  "app_title": "GARUN -- Hybrid-Electric UAV Sizing & Optimization",
+  "navigation_mode": "streamlit_native_multipage",
+  "pages": [
+    {
+      "id": "mission_setup",
+      "order": 1,
+      "file": "pages/1_Mission_Setup.py",
+      "sidebar_label": "1. Mission Setup",
+      "icon": "airplane",
+      "unlocked_by": null,
+      "description": "Input form for mission requirements. Always accessible."
+    },
+    {
+      "id": "sizing_results",
+      "order": 2,
+      "file": "pages/2_Sizing_Results.py",
+      "sidebar_label": "2. Sizing Results",
+      "icon": "gauge",
+      "unlocked_by": "run_sizing_button",
+      "description": "Physics-derived sizing outputs and constraint validation table."
+    },
+    {
+      "id": "mission_simulation",
+      "order": 3,
+      "file": "pages/3_Mission_Simulation.py",
+      "sidebar_label": "3. Mission Simulation",
+      "icon": "chart-line",
+      "unlocked_by": "run_sizing_button",
+      "description": "Time-series playback of the full 6-segment mission."
+    },
+    {
+      "id": "optimization",
+      "order": 4,
+      "file": "pages/4_Optimization.py",
+      "sidebar_label": "4. Optimization",
+      "icon": "dna",
+      "unlocked_by": "run_optimization_button",
+      "description": "NSGA-II Pareto front and hypervolume convergence."
+    },
+    {
+      "id": "energy_management",
+      "order": 5,
+      "file": "pages/5_Energy_Management.py",
+      "sidebar_label": "5. Energy Management",
+      "icon": "battery",
+      "unlocked_by": "run_optimization_button",
+      "description": "Three-way rule-based / static-optimized / RL-adaptive controller benchmark.",
+      "requires_optional": "train_rl_button (falls back to rule-based policy if RL not trained)"
+    },
+    {
+      "id": "report",
+      "order": 6,
+      "file": "pages/6_Report.py",
+      "sidebar_label": "6. Report",
+      "icon": "file-earmark-pdf",
+      "unlocked_by": "run_optimization_button",
+      "description": "Generates and downloads the full engineering report (HTML/PDF)."
+    }
+  ],
+  "source": "Dashboard architecture spec, Section 10.1-10.2 (conversation-derived, not yet implemented in code)"
+}

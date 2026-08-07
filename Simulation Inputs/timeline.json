@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "description": "Master scheduler configuration: how the simulator advances time, how missions/*.json phases, simulation/events.json triggers, and simulation/weather.json presets all layer onto a single simulation clock, and what gets logged.",
+  "compatible_engines": ["mission_simulator.py", "optimizer_mdo.py"],
+  "integration": {
+    "method": "RK4",
+    "time_step_s": 1,
+    "adaptive_step": false,
+    "note": "Override via simulation/defaults.json solver block if a mission needs a different step size (e.g. finer resolution for takeoff/landing transients)."
+  },
+  "simulation_bounds": {
+    "min_duration_s": 60,
+    "max_duration_s": 43200,
+    "on_max_duration_exceeded": "terminate_and_flag_non_convergent"
+  },
+  "phase_sequencing": {
+    "source": "missions/<mission_id>.json -> phases[]",
+    "rule": "Phases execute strictly in array order. A phase with duration_s: null runs until a reserve floor in the mission's reserves block is hit (see missions/README.md), then the next phase begins.",
+    "on_phase_power_infeasible": "flag_constraint_violation_and_continue_or_abort_per_run_mode"
+  },
+  "event_layering": {
+    "source": "simulation/events.json -> event_library[]",
+    "rule": "Events are checked every time_step_s against their trigger condition. Multiple events may fire in the same phase. Failure-injection events persist their effect for the remainder of the run unless a recovery event is explicitly defined.",
+    "conflict_resolution": "If two events modify the same field in the same step, apply in event_library array order and log a warning."
+  },
+  "weather_layering": {
+    "source": "simulation/weather.json -> presets{} or mission-embedded weather block",
+    "rule": "Mission-embedded weather is the baseline for the full run; an environment_change event (see events.json) overrides it from its trigger point onward."
+  },
+  "checkpointing": {
+    "enabled": true,
+    "interval_s": 300,
+    "purpose": "Allows resuming/inspecting long optimizer runs (Layer 3) without rerunning the full mission from t=0."
+  },
+  "logging": {
+    "log_interval_s": 60,
+    "record_on_event": true,
+    "output_record_schema": {
+      "time_min": "float, minutes since mission start",
+      "phase_name": "string, current active phase",
+      "altitude_m": "float",
+      "power_kw": "float",
+      "soc": "float, 0-1 fraction (matches PRD dashboard contract, not soc_pct)",
+      "fuel_remaining_kg": "float",
+      "active_power_source": "string",
+      "health_status": "string, see states.json health_states"
+    },
+    "note": "This record schema is intentionally aligned with the dashboard interface contract's mission_profile array (time_min, altitude_m, power_kw, soc) defined in the PRD, so optimizer_mdo.py can export directly without a reshape step. soc here is a 0-1 fraction per the PRD example; states.json uses soc_pct (0-100) internally — convert at the logging boundary, not throughout the codebase."
+  }
+}

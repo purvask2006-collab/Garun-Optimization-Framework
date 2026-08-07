@@ -1,0 +1,306 @@
+{
+  "meta": {
+    "dataset": "HAL Ecosystem Database",
+    "version": "1.0",
+    "compiled_by": "GARUN Systems Engineering Team",
+    "compiled_for": "Aerothon 2026 | HAL x IIT Indore",
+    "data_as_of": "August 2026",
+    "note": "Compiled from public defence-news reporting, Wikipedia, and HAL statements available as of Aug 2026. Program timelines in this sector shift frequently -- treat dates as directional, not contractual, and re-verify before citing to a panel."
+  },
+  "items": [
+    {
+      "id": "tejas_mk1a_ramp",
+      "project": "Tejas Mk1A Production Ramp-Up",
+      "purpose": "Accelerate delivery of the 180-aircraft Tejas Mk1A order via infrastructure expansion",
+      "status": "Active; ~Rs 10,000 crore investment announced (2026) for Bengaluru/Nashik facility upgrades",
+      "engine": "GE F404-GE-IN20",
+      "mission": "IAF frontline fighter fleet modernization",
+      "technology": [
+        "New assembly lines",
+        "Digital manufacturing tooling"
+      ],
+      "power_generation": "Single turbofan (per aircraft)",
+      "platform": "Tejas Mk1A",
+      "description": "HAL's largest current production priority, with expansion explicitly framed as addressing prior delivery delays.",
+      "related_ids": {
+        "aircraft": [
+          "tejas_mk1a"
+        ],
+        "engines": [
+          "ge_f404_in20"
+        ],
+        "uavs": [],
+        "technologies": [
+          "digital_mfg_precision"
+        ]
+      }
+    },
+    {
+      "id": "tejas_mk2_program",
+      "project": "Tejas Mk2 / Medium Weight Fighter Program",
+      "purpose": "Develop a 4.5-gen fighter bridging Tejas Mk1A and AMCA",
+      "status": "Prototype assembly ongoing; first flight retargeted to mid-2027",
+      "engine": "GE F414-INS6",
+      "mission": "Extended multirole combat capability",
+      "technology": [
+        "Close-coupled canards",
+        "Digital/laser-guided precision manufacturing"
+      ],
+      "power_generation": "Single turbofan, higher thrust class than Mk1A",
+      "platform": "Tejas Mk2",
+      "description": "Repeatedly delayed since original 2022-23 targets; now HAL's second-largest fixed-wing priority after Mk1A production.",
+      "related_ids": {
+        "aircraft": [
+          "tejas_mk2"
+        ],
+        "engines": [
+          "ge_f414_ins6",
+          "amca_engine_120kn"
+        ],
+        "uavs": [],
+        "technologies": [
+          "digital_mfg_precision",
+          "rcs_reduction"
+        ]
+      }
+    },
+    {
+      "id": "amca_program",
+      "project": "Advanced Medium Combat Aircraft (AMCA)",
+      "purpose": "India's 5th-generation stealth fighter program",
+      "status": "In development under the Aeronautical Development Agency; HAL contributed early structural design work but is not the lead post-competitive-selection process",
+      "engine": "AMCA 120 kN-class engine (Rolls-Royce proposal under negotiation)",
+      "mission": "5th-generation air superiority and strike",
+      "technology": [
+        "Full stealth shaping",
+        "Internal weapons bay"
+      ],
+      "power_generation": "Twin turbofan (proposed)",
+      "platform": "AMCA",
+      "description": "HAL's role here is narrower than in its own programs (Tejas, LCH) -- worth noting precisely if a mentor asks, since HAL's CMD has publicly clarified the company is 'not presently involved' in the current competitive-selection phase.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [
+          "amca_engine_120kn"
+        ],
+        "uavs": [],
+        "technologies": [
+          "rcs_reduction"
+        ]
+      }
+    },
+    {
+      "id": "lch_prachand_deliveries",
+      "project": "LCH Prachand Production & Deliveries",
+      "purpose": "Field India's first indigenous dedicated attack helicopter at scale",
+      "status": "Production and delivery ongoing; 156 units on order (Army + Air Force)",
+      "engine": "Shakti (Ardiden 1H1); HTSE-1200 as future indigenous alternative",
+      "mission": "High-altitude attack and anti-armor operations",
+      "technology": [
+        "Stealth shaping",
+        "High-altitude performance tuning"
+      ],
+      "power_generation": "Twin turboshaft",
+      "platform": "HAL Prachand",
+      "description": "One of HAL's two largest current order books alongside Tejas Mk1A.",
+      "related_ids": {
+        "aircraft": [
+          "prachand_lch"
+        ],
+        "engines": [
+          "shakti_ardiden",
+          "htse_1200"
+        ],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "luh_program",
+      "project": "Light Utility Helicopter (LUH) Program",
+      "purpose": "Replace the ageing Cheetah/Chetak fleet",
+      "status": "Nearing operational service; final trials underway",
+      "engine": "HAL Shakti-derived single turboshaft",
+      "mission": "High-altitude reconnaissance and utility transport",
+      "technology": [
+        "Single-engine simplified powertrain"
+      ],
+      "power_generation": "Single turboshaft",
+      "platform": "HAL LUH",
+      "description": "Smaller in scale than the Prachand/Mk1A programs but operationally urgent given the age of the fleet it replaces.",
+      "related_ids": {
+        "aircraft": [
+          "luh"
+        ],
+        "engines": [],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "dhruv_family",
+      "project": "Dhruv Advanced Light Helicopter Family",
+      "purpose": "Sustain and expand HAL's most mature helicopter platform across military and civil variants",
+      "status": "Operational (military); civil Dhruv NG certification expected August 2026",
+      "engine": "Shakti (Ardiden 1H1)",
+      "mission": "Utility transport, armed reconnaissance (Rudra), civil transport (Dhruv NG)",
+      "technology": [
+        "Glass cockpit avionics"
+      ],
+      "power_generation": "Twin turboshaft",
+      "platform": "Dhruv / Rudra family",
+      "description": "The base platform from which Rudra and, indirectly, Prachand were derived.",
+      "related_ids": {
+        "aircraft": [
+          "dhruv_alh",
+          "rudra"
+        ],
+        "engines": [
+          "shakti_ardiden"
+        ],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "imrh_dbmrh",
+      "project": "Indian Multi-Role Helicopter (IMRH) & Deck-Based MRH (DBMRH)",
+      "purpose": "Next-generation multi-role helicopter co-developed with Safran, France, including a naval deck-based variant",
+      "status": "Development stage; dedicated test facility established at HAL",
+      "engine": "New joint-venture engine (HAL-Safran), under development",
+      "mission": "Multi-role transport (land and naval)",
+      "technology": [
+        "Joint international engine development"
+      ],
+      "power_generation": "Twin turboshaft (new JV engine)",
+      "platform": "IMRH / DBMRH",
+      "description": "A newer program with less public detail than Dhruv/Prachand, but notable as HAL's next major helicopter platform after the current family.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "cats_program",
+      "project": "Combat Air Teaming System (CATS) / CATS Warrior",
+      "purpose": "Establish HAL's loyal-wingman and stealth-UCAV capability across 1-tonne and 10-tonne variants",
+      "status": "1-tonne variant: engine-integrated, ground runs done, 2027 first flight target. 10-tonne variant: preliminary design, 2030-32 first flight target",
+      "engine": "Not fully finalized publicly",
+      "mission": "Manned-unmanned teaming with Tejas; strategic stealth strike (10-tonne variant)",
+      "technology": [
+        "MUM-T datalink",
+        "Stealth shaping (10-tonne variant)"
+      ],
+      "power_generation": "Single jet engine per variant",
+      "platform": "CATS Warrior (1-tonne and 10-tonne variants)",
+      "description": "HAL's most significant unmanned-systems program, positioning it against international loyal-wingman systems like the MQ-28 Ghost Bat.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [],
+        "uavs": [
+          "cats_warrior_1t",
+          "cats_warrior_10t"
+        ],
+        "technologies": [
+          "mumt_datalink"
+        ]
+      }
+    },
+    {
+      "id": "civil_return",
+      "project": "Civil Aviation Return: SJ-100 & H-228",
+      "purpose": "Re-enter commercial aircraft manufacturing after decades of absence",
+      "status": "Both platforms formally debuted at Wings India 2026",
+      "engine": "Twin turbofan (SJ-100), twin turboprop (H-228)",
+      "mission": "Regional airline service and UDAN regional connectivity",
+      "technology": [
+        "Localized systems integration"
+      ],
+      "power_generation": "Varies by platform",
+      "platform": "SJ-100 / Hindustan-228",
+      "description": "Described in industry coverage as India's 'most serious return to civil aircraft manufacturing since the Avro era.'",
+      "related_ids": {
+        "aircraft": [
+          "sj100",
+          "h228"
+        ],
+        "engines": [],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "rta_program",
+      "project": "HAL/NAL Regional Transport Aircraft (RTA)",
+      "purpose": "Develop an indigenous regional transport aircraft ecosystem",
+      "status": "Early stage; Embraer-Adani Aerospace & Defence MoU signed January 2026 to build supply chain, assembly, and indigenization roadmap",
+      "engine": "TBD",
+      "mission": "Regional transport, competing conceptually with ATR 72, Dash 8, and similar turboprop classes",
+      "technology": [
+        "Phased indigenization strategy"
+      ],
+      "power_generation": "TBD (twin turboprop class expected)",
+      "platform": "RTA (conceptual)",
+      "description": "Budget breakdown includes Rs 1,000 crore earmarked specifically for systems indigenization -- a useful data point if discussing India's broader localization strategy.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [],
+        "uavs": [],
+        "technologies": []
+      }
+    },
+    {
+      "id": "engine_self_reliance",
+      "project": "Indigenous Aero-Engine Self-Reliance Initiative",
+      "purpose": "Reduce dependency on imported engines (GE F404/F414, Safran Ardiden) across HAL's fixed-wing and rotary fleets",
+      "status": "Active across two parallel programs (HTFE-25 turbofan, HTSE-1200 turboshaft), both moving toward endurance/certification testing through 2026",
+      "engine": "HTFE-25 (fixed-wing/UAV), HTSE-1200 (rotary)",
+      "mission": "Long-term engine supply independence for HAL's aircraft and helicopter programs",
+      "technology": [
+        "Indigenous casing/gearbox fabrication",
+        "High-altitude trials program"
+      ],
+      "power_generation": "25 kN turbofan (HTFE-25) / ~1200 kW turboshaft (HTSE-1200)",
+      "platform": "Cross-platform (trainers, UAVs, helicopters)",
+      "description": "The single most directly relevant HAL initiative to GARUN's own thesis: reducing dependency on externally-sourced propulsion through indigenous, purpose-fit engine development -- a strong talking point for tying your PS1 solution to HAL's actual strategic priorities.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [
+          "htfe_25",
+          "htse_1200"
+        ],
+        "uavs": [],
+        "technologies": [
+          "engine_self_reliance_tech"
+        ]
+      }
+    },
+    {
+      "id": "male_uav_ecosystem",
+      "project": "MALE-Class UAV Procurement & Indigenous Complementary Platforms",
+      "purpose": "Field a large MALE UAV fleet combining import procurement with indigenous TAPAS-BH-201 and Archer-NG platforms",
+      "status": "Active vendor competition (~24 vendors) alongside ongoing indigenous platform development",
+      "engine": "Varies by platform",
+      "mission": "Persistent ISR and armed MALE capability",
+      "technology": [
+        "ATOL",
+        "GAGAN satellite navigation"
+      ],
+      "power_generation": "Varies by platform",
+      "platform": "TAPAS-BH-201, Archer-NG, and competing imported platforms",
+      "description": "The most directly comparable real-world program to GARUN's own PS1 target class (hybrid-electric MALE fixed-wing UAV) -- strong candidate for an opening context slide.",
+      "related_ids": {
+        "aircraft": [],
+        "engines": [],
+        "uavs": [
+          "tapas_bh201",
+          "archer_ng",
+          "male_procurement_program"
+        ],
+        "technologies": []
+      }
+    }
+  ]
+}

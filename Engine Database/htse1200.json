@@ -1,0 +1,145 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "HTSE-1200",
+  "metadata": {
+    "name": "HTSE-1200 Turboshaft Engine",
+    "type": "turboshaft",
+    "variant": "single-spool",
+    "manufacturer": "Hindustan Turbine Systems (Notional)",
+    "application": ["rotary-wing UAV", "VTOL platform", "ground power unit"],
+    "certification_basis": "DGCA CAR-21 / DEF STAN 00-971",
+    "revision": "B2",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_power_kw": 1200,
+    "rated_power_shp": 1609,
+    "dry_weight_kg": 185,
+    "power_to_weight_ratio": 6.49,
+    "rpm_design": 22000,
+    "rpm_output_shaft": 6000,
+    "compressor_ratio": 14.5,
+    "turbine_entry_temperature_K": 1550,
+    "exhaust_gas_temperature_K": 820,
+    "mass_flow_kgs": 5.8,
+    "bypass_ratio": 0,
+    "fuel_type": ["Jet-A1", "JP-8", "SAF-HEFA"],
+    "lubrication": "full-authority synthetic MIL-PRF-23699",
+    "ignition": "dual high-energy capacitive discharge"
+  },
+  "performance_map": {
+    "description": "Power output vs throttle setting at ISA sea-level conditions",
+    "throttle_percent": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100, 105],
+    "shaft_power_kw":   [0, 48, 108, 192, 312, 456, 612, 780, 936, 1068, 1140, 1200, 1260],
+    "sfc_kg_per_kwh":  [0, 0.42, 0.38, 0.35, 0.315, 0.295, 0.278, 0.268, 0.262, 0.260, 0.259, 0.258, 0.263],
+    "notes": "105% represents 30-second OEI contingency rating. SFC at 0% is start-bleed only."
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "throttle_percent": [30, 40, 50, 60, 70, 80, 90, 95, 100],
+      "eta_thermal":      [0.18, 0.22, 0.26, 0.29, 0.31, 0.33, 0.34, 0.345, 0.345]
+    },
+    "compressor_map": {
+      "design_point": { "PR": 14.5, "corrected_mass_flow_kgs": 5.8, "isentropic_efficiency": 0.84 },
+      "surge_margin_percent": 18,
+      "choke_margin_percent": 12,
+      "off_design_notes": "Map linearly interpolated; CFD map available on request"
+    },
+    "turbine_efficiency": {
+      "HPT_isentropic": 0.89,
+      "PT_isentropic": 0.91
+    },
+    "mechanical_efficiency": 0.985,
+    "propulsive_efficiency": "N/A — shaft output only"
+  },
+  "fuel_consumption_model": {
+    "model_type": "polynomial_sfc",
+    "reference_condition": "ISA SL, 100% rated",
+    "sfc_reference_kg_per_kwh": 0.258,
+    "altitude_correction": {
+      "description": "Multiply SFC by this factor for altitude (m)",
+      "breakpoints_m":     [0, 500, 1000, 2000, 3000, 4000],
+      "sfc_multiplier":    [1.00, 1.02, 1.04, 1.09, 1.15, 1.23]
+    },
+    "temperature_correction": {
+      "description": "ISA deviation (K) → SFC multiplier",
+      "delta_isa_K":      [-15, -10, -5, 0, 5, 10, 15, 20],
+      "sfc_multiplier":   [0.96, 0.97, 0.985, 1.00, 1.015, 1.03, 1.05, 1.08]
+    },
+    "idle_fuel_flow_kg_per_hr": 22,
+    "startup_fuel_kg": 0.35
+  },
+  "thermal_limits": {
+    "TET_max_continuous_K": 1530,
+    "TET_max_30s_K": 1570,
+    "TET_max_transient_5s_K": 1600,
+    "EGT_max_continuous_K": 810,
+    "EGT_max_start_K": 900,
+    "compressor_discharge_temp_max_K": 720,
+    "bearing_oil_temp_max_C": 135,
+    "gearbox_oil_temp_max_C": 120,
+    "cooling_system": "air-cooled HPT blades (internal passage), oil-cooled bearings",
+    "thermal_time_constant_s": 45
+  },
+  "operating_envelope": {
+    "altitude_max_m": 6000,
+    "altitude_rated_m": 0,
+    "mach_max": 0.3,
+    "ambient_temp_range_C": [-40, 55],
+    "humidity_max_percent": 100,
+    "rated_conditions": "ISA SL (288.15 K, 101.325 kPa)",
+    "power_derate": {
+      "description": "Rated power available as function of pressure altitude (ISA)",
+      "altitude_m":       [0, 1000, 2000, 3000, 4000, 5000, 6000],
+      "available_power_kw": [1200, 1120, 1035, 940, 840, 730, 610]
+    },
+    "start_envelope": {
+      "min_ambient_temp_C": -30,
+      "max_wind_for_start_kts": 45,
+      "aided_start_below_C": -10
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "BSFC (kg/kWh) as function of power fraction and altitude",
+    "power_fraction": [0.3, 0.5, 0.7, 0.9, 1.0],
+    "altitude_m": [0, 2000, 4000, 6000],
+    "bsfc_matrix": [
+      [0.350, 0.295, 0.268, 0.258],
+      [0.360, 0.303, 0.276, 0.265],
+      [0.374, 0.314, 0.288, 0.276],
+      [0.390, 0.328, 0.302, 0.290]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "SAE B 4-bolt",
+    "pto_max_power_kw": 60,
+    "pto_rpm": 6000,
+    "compatible_generators": ["60kW-PMSG-001", "45kW-WRIG-002"],
+    "hybrid_mode": "series — shaft drives generator only",
+    "battery_buffer_recommended": true
+  },
+  "sizing_parameters": {
+    "length_mm": 1050,
+    "width_mm": 480,
+    "height_mm": 520,
+    "cg_from_intake_mm": 440,
+    "inlet_diameter_mm": 310,
+    "exhaust_diameter_mm": 220,
+    "mount_interface": "4-point vibration-isolated 12mm studs",
+    "frontal_area_m2": 0.156,
+    "inlet_total_pressure_recovery": 0.97
+  },
+  "maintenance": {
+    "TBO_hours": 1200,
+    "hot_section_inspection_hours": 400,
+    "oil_change_hours": 100,
+    "borescope_interval_hours": 200,
+    "mttr_hours": 6,
+    "line_replaceable_units": ["combustor liner", "HPT nozzle guide vane", "accessory gearbox", "FADEC module"],
+    "FADEC": {
+      "channels": 2,
+      "authority": "full",
+      "reversion_mode": "hydromechanical"
+    }
+  }
+}

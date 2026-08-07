@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "description": "Document/deck templates assembled from sections.json. Each maps to a specific judge-facing or team-facing deliverable named in the PRD.",
+  "compatible_engines": ["sections.json", "exports.json"],
+  "templates": [
+    {
+      "template_id": "readme",
+      "name": "README.md",
+      "audience": "judges (technical depth), GitHub visitors",
+      "output_format": "markdown",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": ["tech_1_physics_architect", "tech_2_optimization_engineer"],
+      "required_sections": [
+        "problem_statement", "methodology", "assumptions", "equations",
+        "validation", "results", "baseline_comparison", "how_to_run",
+        "team", "references"
+      ],
+      "notes": "Per PRD: 'A README that reads like a technical paper' is a stated differentiator — most competing teams have empty repos."
+    },
+    {
+      "template_id": "pitch_deck",
+      "name": "Pitch Deck",
+      "audience": "judges, live presentation",
+      "output_format": "pptx",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": ["tech_1_physics_architect", "tech_2_optimization_engineer"],
+      "required_sections": [
+        "problem_statement", "methodology", "results", "baseline_comparison",
+        "sensitivity_analysis", "hal_impact", "team"
+      ],
+      "constraints": {
+        "max_slides": 10,
+        "max_bullets_per_slide": 6,
+        "rule": "1 chart per slide, no bullet walls (per PRD)"
+      }
+    },
+    {
+      "template_id": "judge_faq_doc",
+      "name": "Judge FAQ",
+      "audience": "internal — team prep only",
+      "output_format": "markdown",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": ["tech_1_physics_architect", "tech_2_optimization_engineer"],
+      "required_sections": ["judge_faq"],
+      "notes": "Living document, updated continuously per PRD Hours 6-14 ownership. Should absorb the thermodynamics-professor question set from the earlier deliverable as a starting subset."
+    },
+    {
+      "template_id": "demo_script_doc",
+      "name": "Demo Script",
+      "audience": "internal — presenter use during judging",
+      "output_format": "markdown",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": ["tech_1_physics_architect"],
+      "required_sections": ["demo_script"]
+    },
+    {
+      "template_id": "literature_review_doc",
+      "name": "Literature Review",
+      "audience": "judges (Engineering Justification scoring criterion)",
+      "output_format": "markdown",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": [],
+      "required_sections": ["literature_review"]
+    },
+    {
+      "template_id": "sensitivity_report",
+      "name": "Sensitivity & Validation Report",
+      "audience": "judges, thermodynamics faculty",
+      "output_format": "markdown",
+      "owner": "tech_1_physics_architect",
+      "reviewed_by": ["non_tech_2_pitch_lead"],
+      "required_sections": ["validation", "sensitivity_analysis"]
+    },
+    {
+      "template_id": "submission_form_draft",
+      "name": "Submission Form Draft",
+      "audience": "AEROTHON organizers",
+      "output_format": "markdown",
+      "owner": "non_tech_2_pitch_lead",
+      "reviewed_by": [],
+      "required_sections": ["problem_statement", "results", "team"],
+      "notes": "Finalized Hour 20-22 per PRD timeline; keep short, this is a form not a paper."
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "database_name": "Trinetra Aerospace Engine Database",
+  "version": "1.0.0",
+  "maintainer": "Trinetra Aerospace Technologies",
+  "last_updated": "2026-07-01",
+  "schema_refs": {
+    "engine_schema": "./schemas/engine_schema_v1.json",
+    "hybrid_schema": "./schemas/hybrid_propulsion_schema_v1.json"
+  },
+  "engines": [
+    {
+      "engine_id": "HTSE-1200",
+      "file": "./engines/htse1200.json",
+      "type": "turboshaft",
+      "rated_kw": 1200,
+      "rated_thrust_kN": null,
+      "weight_kg": 185,
+      "application": ["rotary-wing UAV", "VTOL", "ground power"],
+      "fuel": ["Jet-A1", "JP-8", "SAF-HEFA"],
+      "tbo_hours": 1200,
+      "generator_compatible": true,
+      "hybrid_capable": true,
+      "trl": 6
+    },
+    {
+      "engine_id": "HTFE-25",
+      "file": "./engines/htfe25.json",
+      "type": "turbofan",
+      "rated_kw": null,
+      "rated_thrust_kN": 25.0,
+      "weight_kg": 450,
+      "application": ["trainer", "light combat UAV", "subsonic UCAV"],
+      "fuel": ["Jet-A1", "JP-8"],
+      "tbo_hours": 1500,
+      "generator_compatible": true,
+      "hybrid_capable": false,
+      "trl": 5
+    },
+    {
+      "engine_id": "GTX-35VS-KAVERI",
+      "file": "./engines/kaveri.json",
+      "type": "turbofan",
+      "rated_kw": null,
+      "rated_thrust_kN_dry": 52.0,
+      "rated_thrust_kN_wet": 73.5,
+      "weight_kg": 1100,
+      "application": ["combat aircraft", "supersonic demonstrator"],
+      "fuel": ["Jet-A1", "JP-8"],
+      "tbo_hours": 800,
+      "generator_compatible": true,
+      "hybrid_capable": false,
+      "trl": 7
+    },
+    {
+      "engine_id": "MICRO-TS-60",
+      "file": "./engines/60kw_turboshaft.json",
+      "type": "turboshaft",
+      "rated_kw": 60,
+      "rated_thrust_kN": null,
+      "weight_kg": 16.5,
+      "application": ["multirotor heavy UAV", "eVTOL range extender", "portable generator"],
+      "fuel": ["Jet-A1", "JP-8", "diesel"],
+      "tbo_hours": 500,
+      "generator_compatible": true,
+      "hybrid_capable": true,
+      "trl": 7
+    },
+    {
+      "engine_id": "TJ-GENERIC-500",
+      "file": "./engines/turbojet_generic.json",
+      "type": "turbojet",
+      "rated_kw": null,
+      "rated_thrust_kN": 5.5,
+      "weight_kg": 22.5,
+      "application": ["cruise missile", "loitering munition", "expendable drone"],
+      "fuel": ["Jet-A1", "JP-8", "kerosene"],
+      "tbo_hours": null,
+      "design_life_hours": 8,
+      "generator_compatible": false,
+      "hybrid_capable": false,
+      "trl": 9
+    },
+    {
+      "engine_id": "WANKEL-UAV-20",
+      "file": "./engines/wankel.json",
+      "type": "wankel_rotary",
+      "rated_kw": 20,
+      "rated_thrust_kN": null,
+      "weight_kg": 5.8,
+      "application": ["fixed-wing MALE UAV", "VTOL range extender", "portable generator"],
+      "fuel": ["Jet-A1", "Jet-A", "diesel", "HF"],
+      "tbo_hours": 300,
+      "generator_compatible": true,
+      "hybrid_capable": true,
+      "trl": 8
+    }
+  ],
+  "hybrid_systems": [
+    {
+      "system_id": "HPS-SERIES-60KW",
+      "file": "./hybrid_systems/hps_series_60kw.json",
+      "architecture": "series",
+      "thermal_engine_ref": "MICRO-TS-60",
+      "total_power_kw": 80,
+      "platform": "fixed_wing",
+      "status": "reference_design"
+    }
+  ],
+  "lookup_tables": {
+    "by_type": {
+      "turboshaft": ["HTSE-1200", "MICRO-TS-60"],
+      "turbofan":   ["HTFE-25", "GTX-35VS-KAVERI"],
+      "turbojet":   ["TJ-GENERIC-500"],
+      "wankel_rotary": ["WANKEL-UAV-20"]
+    },
+    "by_power_class_kw": {
+      "0_to_30":    ["WANKEL-UAV-20"],
+      "30_to_100":  ["MICRO-TS-60"],
+      "100_to_500": [],
+      "500_plus":   ["HTSE-1200"]
+    },
+    "by_thrust_class_kN": {
+      "0_to_10":    ["TJ-GENERIC-500"],
+      "10_to_40":   ["HTFE-25"],
+      "40_plus":    ["GTX-35VS-KAVERI"]
+    },
+    "hybrid_ready": ["HTSE-1200", "MICRO-TS-60", "WANKEL-UAV-20"],
+    "heavy_fuel_capable": ["HTSE-1200", "MICRO-TS-60", "WANKEL-UAV-20", "TJ-GENERIC-500", "GTX-35VS-KAVERI", "HTFE-25"],
+    "expendable": ["TJ-GENERIC-500"]
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "$schema_note": "Single source-of-truth table of every numeric limit/threshold used across GARUN -- referenced by validation/constraints.json, dashboard/cards.json status_thresholds, and optimization/constraints.json. If a limit changes, update it here first, then propagate to mission.py's CONSTRAINTS dict (the actual code-level source of truth) and the referencing config files.",
+  "limits": {
+    "mtow_kg_max": {
+      "value": 1000.0,
+      "unit": "kg",
+      "source": "PS1 official requirement",
+      "code_ref": "mission.py :: CONSTRAINTS['mtow_kg_max']"
+    },
+    "payload_kg_min": {
+      "value": 200.0,
+      "unit": "kg",
+      "source": "PS1 official requirement",
+      "code_ref": "mission.py :: CONSTRAINTS['payload_kg_min']"
+    },
+    "soc_min": {
+      "value": 0.20,
+      "unit": "fraction",
+      "source": "Li-ion cell chemistry -- over-discharge/voltage-sag protection",
+      "code_ref": "physics.py :: SOC_MIN, mission.py :: CONSTRAINTS['soc_min']"
+    },
+    "soc_max": {
+      "value": 0.90,
+      "unit": "fraction",
+      "source": "Li-ion cell chemistry -- high-SoC lithium-plating protection",
+      "code_ref": "physics.py :: SOC_MAX, mission.py :: CONSTRAINTS['soc_max']"
+    },
+    "cruise_power_kw_max": {
+      "value": 60.0,
+      "unit": "kW",
+      "source": "PS1 baseline engine rating (design choice, not a PS1-mandated ceiling itself)",
+      "code_ref": "mission.py :: CONSTRAINTS['cruise_power_kw_max']"
+    },
+    "cruise_power_margin_factor": {
+      "value": 1.15,
+      "unit": "dimensionless",
+      "source": "main.py design choice -- allows modest electric-assist contribution at cruise",
+      "code_ref": "main.py :: HybridUAVSizingProblem._evaluate() (g1)"
+    },
+    "endurance_hr_min_baseline": {
+      "value": 6.0,
+      "unit": "hr",
+      "source": "GARUN internal target",
+      "code_ref": "mission.py :: CONSTRAINTS['endurance_hr_min_baseline']"
+    },
+    "endurance_hr_target_with_rl": {
+      "value": 7.7,
+      "unit": "hr",
+      "source": "Originally submitted proposal figure (reference only)",
+      "code_ref": "mission.py :: CONSTRAINTS['endurance_hr_target_with_rl']"
+    },
+    "static_margin_min": {
+      "value": 0.05,
+      "unit": "fraction of MAC",
+      "source": "Standard fixed-wing stability practice",
+      "code_ref": "report Part 11.3 -- not yet code-enforced"
+    },
+    "static_margin_max": {
+      "value": 0.15,
+      "unit": "fraction of MAC",
+      "source": "Standard fixed-wing stability practice",
+      "code_ref": "report Part 11.3 -- not yet code-enforced"
+    },
+    "battery_specific_energy_wh_per_kg": {
+      "value": 250.0,
+      "unit": "Wh/kg",
+      "source": "Representative aerospace-grade NMC pack figure (Battery University BU-205 + eVTOL/UAV sizing literature)",
+      "code_ref": "physics.py :: BATTERY_SPECIFIC_ENERGY_WH_PER_KG",
+      "confidence": "Medium -- literature representative value, not a specific cited cell datasheet"
+    },
+    "turboshaft_sfc_kg_per_kwh": {
+      "value": 0.28,
+      "unit": "kg/kWh",
+      "source": "Representative small-turboshaft cruise SFC, broadly consistent with PT6A-series published figures",
+      "code_ref": "physics.py :: SFC_TURBOSHAFT_KG_PER_KWH",
+      "confidence": "Low-Medium -- constant approximation, not a load-dependent BSFC map (see warnings.json :: bsfc_constant_not_map)"
+    },
+    "structural_weight_fraction": {
+      "value": 0.35,
+      "unit": "fraction of MTOW",
+      "source": "Rough-order UAV mass-buildup placeholder",
+      "code_ref": "main.py :: HybridUAVSizingProblem._estimate_mtow()",
+      "confidence": "Low -- see blueprint Appendix A, listed there as ~0.29 from historical composite UAV data; this codebase currently uses 0.35 -- RECONCILE before final submission"
+    },
+    "weight_growth_margin_recommended": {
+      "value": 0.15,
+      "unit": "fraction of empty weight",
+      "source": "Raymer \u00a76.5, standard design-maturation growth allowance",
+      "code_ref": "not yet implemented -- see warnings.json :: no_weight_growth_margin",
+      "status": "recommended_not_applied"
+    }
+  },
+  "known_inconsistency": {
+    "id": "structural_weight_fraction_mismatch",
+    "detail": "This file's structural_weight_fraction (0.35) does not match the blueprint's Appendix A cited value (~0.29 from historical composite UAV data). One of these needs to be corrected -- resolve before final submission, since a judge could reasonably cross-check the report against the blueprint's own assumptions appendix."
+  },
+  "source": "physics.py, aircraft.py, mission.py, main.py; cross-referenced against GARUN_Engineering_Blueprint.md Appendix A"
+}

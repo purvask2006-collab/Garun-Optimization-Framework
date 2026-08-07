@@ -1,0 +1,177 @@
+{
+  "$schema": "https://aerospace-battery-db.org/schema/v1.0",
+  "meta": {
+    "id": "SSB-SULFIDE-AE",
+    "revision": "0.9.1",
+    "created": "2026-08-06",
+    "chemistry": "Solid-State Lithium (Sulfide Electrolyte)",
+    "full_name": "All-Solid-State Lithium Metal Battery — Argyrodite Electrolyte",
+    "application_class": "aerospace",
+    "trl": 6,
+    "certifications_in_progress": ["DO-311A"],
+    "sim_compat": ["MATLAB/Simscape", "Simulink", "OpenModelica", "Dymola"],
+    "notes": "Emerging technology — parameter ranges reflect best-in-class prototype data as of 2026. Production cells expect +10% variance. Not recommended for flight-critical sole-source roles without heritage data. Excellent candidate for space applications due to no outgassing and wide vacuum compatibility."
+  },
+
+  "electrical": {
+    "nominal_voltage_V": 3.85,
+    "min_voltage_V": 3.00,
+    "max_voltage_V": 4.50,
+    "open_circuit_voltage_V": 3.90,
+    "capacity_Ah": 30.0,
+    "capacity_Wh": 115.5,
+    "specific_energy_Wh_kg": 380,
+    "energy_density_Wh_L": 900,
+    "specific_power_W_kg": 800,
+    "peak_power_W_kg": 1500,
+    "internal_resistance_mOhm": {
+      "DC": 4.5,
+      "AC_1kHz": 3.0,
+      "note": "Higher than liquid electrolyte at 25°C; improves sharply above 40°C"
+    },
+    "self_discharge_percent_per_month": 0.5,
+    "soc_curve": {
+      "description": "OCV vs SOC lookup table at 25°C, 0.05C rate",
+      "units": { "soc": "fraction [0–1]", "ocv": "V" },
+      "soc":  [0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45,
+               0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00],
+      "ocv":  [3.00, 3.25, 3.42, 3.54, 3.62, 3.68, 3.72, 3.76, 3.80, 3.83,
+               3.86, 3.89, 3.93, 3.97, 4.02, 4.08, 4.16, 4.25, 4.33, 4.42, 4.50],
+      "temperature_correction_mV_per_degC": -0.8
+    },
+    "charging": {
+      "protocol": "CC-CV with mandatory stack pressure monitoring",
+      "max_charge_rate_C": 0.5,
+      "standard_charge_rate_C": 0.2,
+      "cv_cutoff_current_C": 0.02,
+      "max_charge_voltage_V": 4.50,
+      "recommended_soc_range": [0.10, 0.95],
+      "storage_soc": 0.50,
+      "precharge_cutoff_V": 3.20,
+      "precharge_rate_C": 0.05,
+      "stack_pressure_requirement_MPa": { "min": 5.0, "max": 15.0 }
+    },
+    "discharging": {
+      "max_continuous_discharge_C": 1.0,
+      "max_pulse_discharge_C": 3.0,
+      "pulse_duration_max_s": 10,
+      "cutoff_voltage_V": 3.00
+    },
+    "efficiency": {
+      "coulombic_percent": 99.7,
+      "roundtrip_energy_percent": 94.0,
+      "efficiency_vs_crate": {
+        "c_rates": [0.1, 0.2, 0.5, 1.0],
+        "efficiency_percent": [97.5, 96.0, 93.5, 90.0],
+        "note": "Lower roundtrip efficiency due to higher ASR; gap closes at elevated temperature"
+      }
+    }
+  },
+
+  "thermal": {
+    "units": { "temperature": "°C", "power": "W", "heat": "J" },
+    "operating_range_C": { "min": -10, "max": 100 },
+    "storage_range_C": { "min": -40, "max": 70 },
+    "charge_range_C": { "min": 10, "max": 80 },
+    "optimal_range_C": { "min": 40, "max": 70 },
+    "thermal_runaway_onset_C": 350,
+    "thermal_runaway_propagation_risk": "very_low",
+    "safety_advantage": "Non-flammable solid electrolyte eliminates electrolyte fire risk; no liquid venting",
+    "vacuum_compatibility": "full — no outgassing; rated for LEO and GEO space environments",
+    "heat_generation_model": {
+      "type": "Bernardi",
+      "joule_heating_W_at_1C": 4.05,
+      "entropic_coefficient_dU_dT_V_per_K": -0.00030
+    },
+    "specific_heat_capacity_J_kgK": 750,
+    "thermal_conductivity": {
+      "in_plane_W_mK": 1.8,
+      "through_plane_W_mK": 0.7
+    },
+    "thermal_resistance_C_per_W": 1.5,
+    "capacity_fade_per_degC_above_80": 0.020,
+    "low_temp_capacity_derating": {
+      "temperature_C": [-10, 0, 10, 25, 40, 60],
+      "available_capacity_fraction": [0.45, 0.58, 0.72, 0.88, 0.97, 1.00],
+      "note": "SSB conductivity drops sharply below 10°C; pre-heating subsystem required for cold environments"
+    }
+  },
+
+  "lifecycle": {
+    "cycle_life_to_80pct_eol": 800,
+    "cycle_conditions": {
+      "dod_percent": 80,
+      "c_rate_charge": 0.2,
+      "c_rate_discharge": 0.5,
+      "temperature_C": 60,
+      "stack_pressure_MPa": 10
+    },
+    "calendar_life_years": 12,
+    "storage_calendar_life_years": 20,
+    "capacity_fade_model": {
+      "type": "power_law",
+      "equation": "Q_loss = a * N^b",
+      "coefficients": { "a": 0.0052, "b": 0.62 },
+      "variables": { "N": "cycle number", "Q_loss": "fraction of capacity lost" }
+    },
+    "resistance_growth_model": {
+      "type": "linear",
+      "percent_per_100_cycles": 2.8,
+      "note": "Dominated by Li-metal anode morphology changes; stack pressure management is key mitigation"
+    },
+    "failure_modes": [
+      "lithium_dendrite_short_circuit",
+      "interphase_delamination",
+      "electrolyte_cracking_under_pressure_cycling"
+    ],
+    "dod_cycle_life_table": {
+      "description": "Cycle life vs depth of discharge at 60°C, optimal pressure",
+      "dod_percent": [20,   40,   60,   80,   100],
+      "cycles":      [4000, 2000, 1200, 800,  400]
+    },
+    "eol_criteria": {
+      "capacity_retention_percent": 80,
+      "max_resistance_growth_percent": 150
+    }
+  },
+
+  "physical": {
+    "form_factor": "pouch_with_compression_fixture",
+    "dimensions_mm": { "length": 120, "width": 85, "height": 8 },
+    "weight_g": 304,
+    "volume_L": 0.082,
+    "stack_pressure_fixture_required": true,
+    "terminal_material": "aluminum_positive_copper_negative",
+    "case_material": "multilayer_polymer_laminate",
+    "ip_rating": "IP68",
+    "outgassing_class": "NASA_low_outgassing_ASTM_E595"
+  },
+
+  "cost": {
+    "currency": "USD",
+    "unit_cost_per_cell": 310,
+    "cost_per_Wh": 2.68,
+    "cost_per_kWh_pack_estimate": 3200,
+    "nre_factors": "Pre-production; pricing expected to decrease 40–60% by 2028 at scale",
+    "cost_drivers": ["sulfide electrolyte synthesis", "dry-room manufacturing", "Li metal anode processing"]
+  },
+
+  "sim_parameters": {
+    "equivalent_circuit_model": {
+      "type": "2RC_Thevenin_temperature_dependent",
+      "R0_Ohm_at_25C": 0.0045,
+      "R0_Ohm_at_60C": 0.0020,
+      "R1_Ohm": 0.0015,
+      "C1_F": 1800,
+      "R2_Ohm": 0.0010,
+      "C2_F": 9000,
+      "temperature_scaling_law": "Arrhenius: R(T) = R_ref * exp(Ea/R * (1/T - 1/T_ref))",
+      "activation_energy_eV": 0.38,
+      "parameter_source": "Prototype characterization at 60°C, BOL"
+    },
+    "p2d_model_ref": "Not available — use ECM; P2D requires solid-electrolyte diffusion coefficients",
+    "special_physics": ["contact_resistance_pressure_model", "lithium_plating_model"],
+    "state_variables": ["SOC", "temperature_C", "cycle_count", "stack_pressure_MPa", "Q_fade_fraction"],
+    "time_step_recommendation_s": 5
+  }
+}

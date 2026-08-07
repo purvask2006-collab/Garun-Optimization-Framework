@@ -1,0 +1,172 @@
+{
+  "$schema": "https://aerospace-battery-db.org/schema/v1.0",
+  "meta": {
+    "id": "LTO-NMC-AE",
+    "revision": "1.2.0",
+    "created": "2026-08-06",
+    "chemistry": "Lithium Titanate Oxide",
+    "full_name": "Lithium Titanate Oxide Anode / NMC Cathode (LTO)",
+    "application_class": "aerospace",
+    "certifications": ["DO-311A", "MIL-PRF-32565", "IEC-62133", "ARP4761"],
+    "sim_compat": ["MATLAB/Simscape", "Simulink", "OpenModelica", "Dymola", "AMESim"],
+    "notes": "Ultra-long cycle life and extreme temperature operation make LTO ideal for satellite power systems, avionics backup, and high-power burst loads. Trade-off is lowest specific energy of the four chemistries. Zero-strain anode (Li4Ti5O12) eliminates lithium plating — enabling sub-zero fast charge."
+  },
+
+  "electrical": {
+    "nominal_voltage_V": 2.30,
+    "min_voltage_V": 1.80,
+    "max_voltage_V": 2.85,
+    "open_circuit_voltage_V": 2.35,
+    "capacity_Ah": 40.0,
+    "capacity_Wh": 92.0,
+    "specific_energy_Wh_kg": 90,
+    "energy_density_Wh_L": 200,
+    "specific_power_W_kg": 3000,
+    "peak_power_W_kg": 8000,
+    "internal_resistance_mOhm": {
+      "DC": 0.6,
+      "AC_1kHz": 0.4,
+      "note": "Lowest internal resistance of all four chemistries; enables extreme pulse power"
+    },
+    "self_discharge_percent_per_month": 0.8,
+    "soc_curve": {
+      "description": "OCV vs SOC at 25°C, 0.05C rate — note: very flat profile, similar to LFP",
+      "units": { "soc": "fraction [0–1]", "ocv": "V" },
+      "soc":  [0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45,
+               0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00],
+      "ocv":  [1.80, 1.98, 2.10, 2.18, 2.22, 2.25, 2.27, 2.28, 2.29, 2.30,
+               2.30, 2.31, 2.32, 2.33, 2.34, 2.36, 2.40, 2.48, 2.58, 2.70, 2.85],
+      "temperature_correction_mV_per_degC": -0.3,
+      "soc_estimation_note": "Coulomb counting essential; OCV plateau too flat for reliable state estimation"
+    },
+    "charging": {
+      "protocol": "CC-CV",
+      "max_charge_rate_C": 10.0,
+      "standard_charge_rate_C": 1.0,
+      "cv_cutoff_current_C": 0.05,
+      "max_charge_voltage_V": 2.85,
+      "recommended_soc_range": [0.00, 1.00],
+      "storage_soc": 0.50,
+      "precharge_cutoff_V": 1.80,
+      "precharge_rate_C": 0.10,
+      "sub_zero_fast_charge_capable": true,
+      "sub_zero_charge_note": "Zero-strain anode prevents Li plating; 10C charging validated to -30°C with derating"
+    },
+    "discharging": {
+      "max_continuous_discharge_C": 10.0,
+      "max_pulse_discharge_C": 30.0,
+      "pulse_duration_max_s": 5,
+      "cutoff_voltage_V": 1.80
+    },
+    "efficiency": {
+      "coulombic_percent": 99.9,
+      "roundtrip_energy_percent": 98.5,
+      "efficiency_vs_crate": {
+        "c_rates": [0.2, 1.0, 5.0, 10.0, 20.0],
+        "efficiency_percent": [99.4, 98.5, 97.0, 95.0, 91.5]
+      }
+    }
+  },
+
+  "thermal": {
+    "units": { "temperature": "°C", "power": "W", "heat": "J" },
+    "operating_range_C": { "min": -40, "max": 65 },
+    "storage_range_C": { "min": -55, "max": 70 },
+    "charge_range_C": { "min": -30, "max": 55 },
+    "optimal_range_C": { "min": -20, "max": 40 },
+    "thermal_runaway_onset_C": 200,
+    "thermal_runaway_propagation_risk": "low",
+    "safety_advantage": "High-voltage zero-strain anode with no SEI formation; stable at high temperature",
+    "heat_generation_model": {
+      "type": "Bernardi",
+      "joule_heating_W_at_1C": 0.96,
+      "entropic_coefficient_dU_dT_V_per_K": -0.00008,
+      "note": "Minimal heat generation — TMS may need to add heat in cold environments rather than reject it"
+    },
+    "specific_heat_capacity_J_kgK": 950,
+    "thermal_conductivity": {
+      "radial_W_mK": 0.8,
+      "axial_W_mK": 20.0
+    },
+    "thermal_resistance_C_per_W": 0.5,
+    "capacity_fade_per_degC_above_50": 0.003,
+    "low_temp_capacity_derating": {
+      "temperature_C": [-40, -30, -20, -10, 0, 25],
+      "available_capacity_fraction": [0.70, 0.80, 0.88, 0.93, 0.97, 1.00],
+      "note": "Best low-temperature capacity retention of all four chemistries"
+    }
+  },
+
+  "lifecycle": {
+    "cycle_life_to_80pct_eol": 20000,
+    "cycle_conditions": {
+      "dod_percent": 80,
+      "c_rate_charge": 1.0,
+      "c_rate_discharge": 1.0,
+      "temperature_C": 25
+    },
+    "calendar_life_years": 20,
+    "storage_calendar_life_years": 25,
+    "capacity_fade_model": {
+      "type": "power_law",
+      "equation": "Q_loss = a * N^b",
+      "coefficients": { "a": 0.0008, "b": 0.44 },
+      "variables": { "N": "cycle number", "Q_loss": "fraction of capacity lost" }
+    },
+    "resistance_growth_model": {
+      "type": "linear",
+      "percent_per_100_cycles": 0.15,
+      "note": "Virtually no SEI growth — resistance growth is primarily cathode-side"
+    },
+    "dod_cycle_life_table": {
+      "description": "Cycle life vs depth of discharge",
+      "dod_percent": [20,     40,     60,     80,     100],
+      "cycles":      [100000, 60000,  35000,  20000,  10000]
+    },
+    "eol_criteria": {
+      "capacity_retention_percent": 80,
+      "max_resistance_growth_percent": 100
+    },
+    "space_radiation_tolerance": {
+      "total_dose_krad": 50,
+      "capacity_loss_at_50krad_percent": 3,
+      "note": "No liquid electrolyte; radiation induces minimal structural damage"
+    }
+  },
+
+  "physical": {
+    "form_factor": "prismatic",
+    "dimensions_mm": { "length": 130, "width": 75, "height": 32 },
+    "weight_g": 1022,
+    "volume_L": 0.312,
+    "terminal_material": "aluminum_both_terminals",
+    "case_material": "stainless_steel_316L",
+    "ip_rating": "IP68",
+    "outgassing_class": "NASA_low_outgassing_ASTM_E595"
+  },
+
+  "cost": {
+    "currency": "USD",
+    "unit_cost_per_cell": 120,
+    "cost_per_Wh": 1.30,
+    "cost_per_kWh_pack_estimate": 1500,
+    "nre_factors": "Higher cost per Wh than NMC/LFP; total cost of ownership often lower due to 20,000+ cycle life — fewer replacements",
+    "lifecycle_cost_advantage": "At 20,000 cycles vs 1,500 for NMC, LTO is ~4x cheaper per kWh-throughput for high-cycle applications"
+  },
+
+  "sim_parameters": {
+    "equivalent_circuit_model": {
+      "type": "2RC_Thevenin",
+      "R0_Ohm": 0.00060,
+      "R1_Ohm": 0.00020,
+      "C1_F": 8000,
+      "R2_Ohm": 0.00010,
+      "C2_F": 40000,
+      "parameter_source": "HPPC test at 25°C, BOL",
+      "note": "Very low impedance — ensure simulation timestep is ≤1s to capture fast dynamics"
+    },
+    "p2d_model_ref": "Doyle-Fuller-Newman, electrode params in lto_p2d_params.json",
+    "state_variables": ["SOC", "temperature_C", "cycle_count", "Q_fade_fraction", "radiation_dose_krad"],
+    "time_step_recommendation_s": 0.5
+  }
+}

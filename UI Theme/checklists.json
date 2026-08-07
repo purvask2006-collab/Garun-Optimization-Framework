@@ -1,0 +1,88 @@
+{
+  "$schema_note": "Pre-submission and pre-presentation checklists. Two families: engineering/technical readiness (from the blueprint's \u00a71.5) and team/presentation readiness (from the mentor playbook's Non-Tech readiness checklists). Check items off as completed -- do not mark 'complete' items that are still open in warnings.json.",
+  "checklists": [
+    {
+      "id": "minimum_credible_bar",
+      "title": "Minimum Credible Bar (must-have)",
+      "description": "The floor requirement to be taken seriously at all -- per the blueprint, judges will probe these first.",
+      "items": [
+        { "item": "Cruise power correctly computed at 250 km/h, stated altitude, with cited equations", "status": "done", "evidence": "report Section 5, physics.required_power_drag_polar()" },
+        { "item": "NSGA-II converges and produces a genuine, interpretable Pareto front (not a degenerate line)", "status": "done", "evidence": "report Figure 1-2, hypervolume_convergence.png shows real convergence" },
+        { "item": "RL power-split benchmarked against two baselines with quantified improvement", "status": "partial", "evidence": "Benchmarked (Table 3), but RL is currently the rule-based fallback, not a trained policy -- see warnings.json :: rl_controller_not_trained" },
+        { "item": "Validation table filled with real numbers, not placeholders", "status": "done", "evidence": "report Table 4" },
+        { "item": "Dashboard runs end-to-end without crashing", "status": "not_started", "evidence": "Dashboard is currently only specified (dashboard/*.json configs), not implemented as running Streamlit code" },
+        { "item": "All assumptions cited (not guessed)", "status": "partial", "evidence": "Most are cited (physics.py, aircraft.py docstrings); structural_weight_fraction inconsistency and L/D=16 vs drag-polar mismatch remain open -- see warnings.json" }
+      ]
+    },
+    {
+      "id": "differentiating_bar",
+      "title": "Differentiating Bar (shortlist vs. winner)",
+      "description": "What separates a shortlisted project from a winning one, per the blueprint.",
+      "items": [
+        { "item": "Sensitivity analysis on key parameters (BSFC, battery Wh/kg, L/D)", "status": "not_started", "evidence": "warnings.json :: no_uncertainty_quantification" },
+        { "item": "Hypervolume convergence plot demonstrating NSGA-II is not terminating early", "status": "done", "evidence": "hypervolume_convergence.png" },
+        { "item": "SoC trajectory showing correct climb-deficit and descent-recovery behaviour", "status": "partial", "evidence": "SoC trajectory exists (soc_trajectory.png) but descent-recovery energy is unquantified -- warnings.json :: descent_regeneration_unquantified" },
+        { "item": "Power-balance plot showing engine + battery + required power across all mission phases", "status": "not_started", "evidence": "Specified in dashboard/charts.json :: power_balance, not yet generated as a standalone report figure" },
+        { "item": "Explicit, quantified treatment of the 250 km/h cruise power gap", "status": "done", "evidence": "report Section 5" }
+      ]
+    },
+    {
+      "id": "priority_fixes_before_finale",
+      "title": "Priority Fix List (ranked, per blueprint \u00a714.5)",
+      "description": "Ranked list of what to fix, in order, before the offline finale.",
+      "items": [
+        { "item": "Resolve cruise power at 250 km/h with actual S, AR, e, CD0", "status": "done", "priority": 1 },
+        { "item": "Implement BSFC as a table, not a constant", "status": "not_started", "priority": 2 },
+        { "item": "Add energy balance check to mission sim", "status": "not_started", "priority": 3 },
+        { "item": "Compute hypervolume convergence curve", "status": "done", "priority": 4 },
+        { "item": "Add terminal bonus to RL reward (fix pathological endurance-shortening incentive)", "status": "not_started", "priority": 5 },
+        { "item": "Run OAT sensitivity sweep", "status": "not_started", "priority": 6 },
+        { "item": "Write ICD (Interface Control Document) for module interfaces", "status": "not_started", "priority": 7 },
+        { "item": "Add 15% weight growth margin, show results with/without", "status": "not_started", "priority": 8 },
+        { "item": "Quantify descent regeneration energy", "status": "not_started", "priority": 9 },
+        { "item": "Write Assumptions Appendix with every number cited", "status": "done", "priority": 10, "evidence": "report Section 11 References and Sourced Assumptions" },
+        { "item": "Resolve L/D=16 vs. drag-polar (CD0/e/AR) inconsistency", "status": "not_started", "priority": 0, "notes": "Not in the blueprint's original ranked list but flagged separately in blueprint Part 14.4 as needing resolution before the mentorship round -- treat as highest priority alongside item 1." },
+        { "item": "Reconcile structural_weight_fraction: codebase (0.35) vs. blueprint appendix (0.29)", "status": "not_started", "priority": 0 }
+      ]
+    },
+    {
+      "id": "dashboard_readiness_nontech1",
+      "title": "Dashboard Lead Readiness (Non-Tech 1)",
+      "source": "Team playbook, 'Final Checklist: Non-Tech Readiness'",
+      "items": [
+        { "item": "Streamlit app deployed to a public URL", "status": "not_started" },
+        { "item": "Dark mode, aerospace color scheme applied", "status": "not_started" },
+        { "item": "6 panels sketched and built with dummy data", "status": "not_started", "notes": "See dashboard/navigation.json for the 6-page structure to build against" },
+        { "item": "Can update charts by changing a JSON file", "status": "not_started", "notes": "dashboard/*.json config files in this repo are designed to support exactly this pattern" },
+        { "item": "Mobile-responsive test passed", "status": "not_started" },
+        { "item": "Backup demo video recorded and uploaded", "status": "not_started" }
+      ]
+    },
+    {
+      "id": "pitch_readiness_nontech2",
+      "title": "Pitch Lead Readiness (Non-Tech 2)",
+      "source": "Team playbook, 'Final Checklist: Non-Tech Readiness'",
+      "items": [
+        { "item": "Pitch deck complete (10 slides max, max 6 bullets each)", "status": "not_started" },
+        { "item": "Demo script written with exact timestamps", "status": "not_started" },
+        { "item": "README complete: Problem, Method, How to Run, Results, Team, References", "status": "not_started" },
+        { "item": "'HAL Impact' talking point memorized (30 seconds)", "status": "not_started" },
+        { "item": "Q&A cheat sheet with 10 anticipated questions", "status": "partial", "notes": "blueprint \u00a71.6 already lists 5 questions judges will ask, in order -- extend to 10" },
+        { "item": "Team rehearsed pitch 3+ times with timer", "status": "not_started" }
+      ]
+    },
+    {
+      "id": "judge_qa_readiness",
+      "title": "Judge Q&A Readiness (5 questions, in order judges are expected to ask)",
+      "source": "blueprint \u00a71.6",
+      "items": [
+        { "item": "\"You claim 7.7 hours endurance. How did you compute that?\" -- answer must reference the numerical mission-sim integration, not the Breguet formula", "status": "ready", "evidence": "mission.py build_mission_profile(), report Section 4.3" },
+        { "item": "\"Your engine is 60 kW. At 250 km/h, what is your cruise power requirement?\" -- must know the answer is tight", "status": "ready", "evidence": "report Section 5" },
+        { "item": "\"Show me your Pareto front. What does each axis represent? Why those objectives?\"", "status": "ready", "evidence": "report Section 6.1, Figure 2" },
+        { "item": "\"How does your RL controller behave during climb when the battery is low?\"", "status": "not_ready", "notes": "Requires an edge-case-specific trajectory plot/answer, not just the nominal benchmark numbers -- not yet prepared" },
+        { "item": "\"If I give you a different mission profile -- say, longer loiter -- can your tool handle it?\" -- this is the 'is it a tool or a demo' question; the answer must be yes, ideally demonstrated live (change a parameter, rerun, show a new Pareto front)", "status": "not_ready", "notes": "Requires the dashboard's 'Run Optimization' button to actually work end-to-end on a live parameter change, not just replay a cached result -- see dashboard/sidebar.json :: run_optimization_button" }
+      ]
+    }
+  ],
+  "source": "GARUN_Engineering_Blueprint.md \u00a71.5, \u00a71.6, \u00a714.5; team mentor playbook 'Final Checklist: Non-Tech Readiness'"
+}

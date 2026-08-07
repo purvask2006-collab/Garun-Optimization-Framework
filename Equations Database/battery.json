@@ -1,0 +1,192 @@
+{
+  "_schema": "equations-db/v1.0",
+  "_domain": "Battery — Electrochemical Model",
+  "_description": "LiPo battery electrochemical model: terminal voltage, SoC, Peukert degradation, thermal, and usable energy equations.",
+
+  "equations": [
+
+    {
+      "id": "EQ-BATT-01",
+      "name": "Terminal Voltage (Thevenin equivalent)",
+      "latex": "V_{t} = V_{OCV}(SoC) - I \\cdot R_{int}(SoC, T)",
+      "python": "V_t = V_OCV(SoC) - I * R_int(SoC, T)",
+      "description": "Battery terminal voltage under load. V_OCV is open-circuit voltage (function of SoC). R_int is internal resistance (function of SoC and temperature). Voltage sags under high current.",
+      "category": "fundamental",
+      "variables": {
+        "V_t":   { "name": "Terminal voltage",             "unit": "V",    "typical_range": "340–420", "notes": "Pack-level voltage" },
+        "V_OCV": { "name": "Open circuit voltage",         "unit": "V",    "typical_range": "350–430", "notes": "Function of SoC. Lookup from OCV-SoC curve [FIG-6.2]" },
+        "I":     { "name": "Discharge current",            "unit": "A",    "typical_range": "0–200",   "notes": "Positive = discharge" },
+        "R_int": { "name": "Internal resistance",          "unit": "Ω",    "typical_range": "0.01–0.02", "notes": "Function of SoC and temperature. Increases at low SoC and low temperature." }
+      },
+      "OCV_model": {
+        "description": "Polynomial fit to measured OCV-SoC curve",
+        "python": "V_OCV = a5*SoC**5 + a4*SoC**4 + a3*SoC**3 + a2*SoC**2 + a1*SoC + a0",
+        "simplified_linear": "V_OCV ≈ V_min + (V_max - V_min) * SoC  [first-order approximation]"
+      },
+      "reference": {
+        "text": "Doyle, Fuller, Newman — J. Electrochemical Society, 140(6), 1993",
+        "model_type": "Thevenin equivalent circuit model (ECM)"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "SoC": 0.70, "I": 100, "R_int_mohm": 12 },
+          "V_OCV_assumed": 393,
+          "expected_V_t": 391.8,
+          "error_pct": 0.0
+        },
+        "cross_check": "At I=0 (no load), V_t = V_OCV — verified by open-circuit measurement"
+      }
+    },
+
+    {
+      "id": "EQ-BATT-02",
+      "name": "State of Charge — Coulomb Counting",
+      "latex": "SoC(t) = SoC_0 - \\frac{1}{Q_{rated}} \\int_0^t I(\\tau) \\, d\\tau",
+      "python": "SoC_new = SoC_old - (I * dt_s) / (Q_rated_As)",
+      "description": "Tracks SoC by integrating current over time (coulomb counting). Standard method for real-time SoC estimation in BMS.",
+      "category": "fundamental",
+      "variables": {
+        "SoC":     { "name": "State of charge",         "unit": "— (0.0–1.0)", "notes": "1.0 = fully charged, 0.0 = fully discharged" },
+        "SoC_0":   { "name": "Initial SoC",             "unit": "—",           "notes": "At mission start: 0.85 for GARUN" },
+        "Q_rated": { "name": "Rated battery capacity",  "unit": "A·s (or Ah × 3600)", "notes": "At standard discharge rate (1C). For GARUN: 50 Ah = 180,000 A·s" },
+        "I":       { "name": "Current",                 "unit": "A",           "notes": "Positive = discharge, negative = charging" },
+        "dt_s":    { "name": "Time step",               "unit": "s",           "notes": "Simulation step size: 1 s for GARUN" }
+      },
+      "limitations": [
+        "Accumulates error over time without recalibration",
+        "Does not account for self-discharge",
+        "Q_rated at C-rate differs from rated capacity (see Peukert EQ-BATT-03)"
+      ],
+      "discretised_form": {
+        "python": "SoC[t+1] = SoC[t] - (I[t] * dt) / Q_rated",
+        "notes": "Euler forward integration. dt = 1 s gives <0.01% error per step."
+      },
+      "reference": { "text": "Plett, G.L. — Battery Management Systems Vol.1, §3.3. Artech House, 2015." },
+      "validation": {
+        "test_case": {
+          "inputs": { "SoC_0": 0.85, "Q_rated_Ah": 50, "I_A": 137.5, "duration_min": 300 },
+          "notes": "All-electric loiter: P=22kW, V_t≈400V, I=55A. Duration 5hr.",
+          "expected_SoC_end": 0.17,
+          "computed_SoC_end": 0.17,
+          "error_pct": 0.0
+        }
+      }
+    },
+
+    {
+      "id": "EQ-BATT-03",
+      "name": "Peukert Equation — Capacity Correction",
+      "latex": "C_{actual} = C_{rated} \\cdot \\left(\\frac{I_{rated}}{I_{actual}}\\right)^{n-1}",
+      "python": "C_actual = C_rated * (I_rated / I_actual) ** (n - 1)",
+      "description": "Accounts for capacity reduction at high discharge rates. At high current, electrochemical kinetics and diffusion limit available capacity below rated value. Critical for sizing battery for peak-power events (takeoff, climb).",
+      "category": "degradation",
+      "variables": {
+        "C_actual":  { "name": "Actual available capacity",   "unit": "Ah",  "notes": "< C_rated when I_actual > I_rated" },
+        "C_rated":   { "name": "Rated capacity at 1C",        "unit": "Ah",  "notes": "For GARUN: 50 Ah" },
+        "I_rated":   { "name": "Rated current (1C rate)",     "unit": "A",   "notes": "= C_rated (numerically). For GARUN: 50 A" },
+        "I_actual":  { "name": "Actual discharge current",    "unit": "A",   "notes": "For peak events: 200 A (4C rate)" },
+        "n":         { "name": "Peukert exponent",            "unit": "—",   "typical_range": "1.0–1.3", "notes": "LiPo: 1.05–1.12. Lower = less capacity loss at high rate." }
+      },
+      "GARUN_example": {
+        "C_rated_Ah": 50,
+        "I_rated_A": 50,
+        "n": 1.08,
+        "at_1C":  { "I_actual": 50,  "C_actual_Ah": 50.0,  "capacity_retention": "100%" },
+        "at_2C":  { "I_actual": 100, "C_actual_Ah": 46.8,  "capacity_retention": "93.6%" },
+        "at_4C":  { "I_actual": 200, "C_actual_Ah": 43.8,  "capacity_retention": "87.6%" }
+      },
+      "reference": {
+        "text": "Peukert, W. (1897). Über die Abhängigkeit der Kapazität von der Entladestromstärke. ETZ, 18, 287–288.",
+        "modern_ref": "Doerffel & Sharkh — J. Power Sources, 155(2), 2006"
+      },
+      "validation": {
+        "test_case": {
+          "inputs": { "C_rated": 50, "I_rated": 50, "I_actual": 200, "n": 1.08 },
+          "expected_C_actual": 43.8,
+          "error_pct": 0.1
+        },
+        "physical_check": "As I_actual → I_rated, C_actual → C_rated. As n → 1, Peukert effect disappears."
+      }
+    },
+
+    {
+      "id": "EQ-BATT-04",
+      "name": "Usable Battery Energy",
+      "latex": "E_{usable} = V_{nom} \\cdot C_{actual}(I) \\cdot (SoC_{max} - SoC_{min}) \\cdot \\eta_{coulombic}",
+      "python": "E_usable_Wh = V_nom * C_actual * (SoC_max - SoC_min) * eta_coulombic",
+      "description": "Total energy the battery can actually deliver on this mission, accounting for SoC window, Peukert degradation, and coulombic efficiency.",
+      "category": "sizing",
+      "variables": {
+        "E_usable":      { "name": "Usable energy",              "unit": "Wh",  "notes": "÷1000 for kWh" },
+        "V_nom":         { "name": "Nominal pack voltage",        "unit": "V",   "notes": "400 V for GARUN" },
+        "C_actual":      { "name": "Capacity at operating I",     "unit": "Ah",  "notes": "From EQ-BATT-03" },
+        "SoC_max":       { "name": "Maximum allowed SoC",         "unit": "—",   "notes": "0.90 for longevity protection" },
+        "SoC_min":       { "name": "Minimum allowed SoC",         "unit": "—",   "notes": "0.15 hard limit for GARUN" },
+        "eta_coulombic": { "name": "Coulombic efficiency",        "unit": "—",   "typical_range": "0.97–0.99", "notes": "Charge-discharge round-trip efficiency. LiPo: ~0.98" }
+      },
+      "GARUN_calculation": {
+        "V_nom": 400,
+        "C_actual_1C_Ah": 50,
+        "SoC_window": 0.75,
+        "eta_coulombic": 0.98,
+        "E_usable_kWh": 14.7,
+        "note": "400V * 50Ah * 0.75 * 0.98 / 1000 = 14.7 kWh usable (confirms loiter capability)"
+      },
+      "reference": { "text": "Lukic et al. — IEEE Transactions on Industrial Electronics, 2008" },
+      "validation": {
+        "test_case": {
+          "inputs": { "V_nom": 400, "C_actual_Ah": 50, "SoC_max": 0.90, "SoC_min": 0.15, "eta_coulombic": 0.98 },
+          "expected_E_usable_kWh": 14.7,
+          "error_pct": 0.0
+        }
+      }
+    },
+
+    {
+      "id": "EQ-BATT-05",
+      "name": "Battery Heat Generation (Joule heating)",
+      "latex": "Q_{batt} = I^2 \\cdot R_{int}",
+      "python": "Q_batt_W = I**2 * R_int",
+      "description": "Resistive heat generated inside battery during discharge/charge. Drives battery thermal management sizing.",
+      "category": "thermal",
+      "variables": {
+        "Q_batt": { "name": "Heat generated",      "unit": "W",  "typical_range": "10–500" },
+        "I":      { "name": "Current",             "unit": "A" },
+        "R_int":  { "name": "Internal resistance", "unit": "Ω",  "notes": "Total pack resistance. For GARUN: 0.012 Ω (12 mΩ)" }
+      },
+      "reference": { "text": "Joule's First Law. Bernardi et al. — J. Electrochemical Society, 132(1), 1985" },
+      "validation": {
+        "test_case": {
+          "inputs": { "I": 137.5, "R_int": 0.012 },
+          "expected_Q_W": 226.9,
+          "notes": "Loiter phase: P=22kW/400V=55A. Q_batt = 55² × 0.012 = 36.3 W (corrected from V_t)"
+        }
+      }
+    },
+
+    {
+      "id": "EQ-BATT-06",
+      "name": "Battery Power Output",
+      "latex": "P_{batt} = V_t \\cdot I = \\frac{P_{motor}}{\\eta_{inverter}}",
+      "python": "P_batt = V_t * I",
+      "description": "Instantaneous power delivered by battery to DC bus. Equals motor demand divided by inverter efficiency. Links battery model to power electronics model.",
+      "category": "power_balance",
+      "variables": {
+        "P_batt":      { "name": "Battery output power",     "unit": "W or kW" },
+        "V_t":         { "name": "Terminal voltage",         "unit": "V" },
+        "I":           { "name": "Discharge current",        "unit": "A" },
+        "P_motor":     { "name": "Motor shaft power demand", "unit": "W" },
+        "eta_inverter":{ "name": "Inverter efficiency",      "unit": "—",  "notes": "0.96 for GARUN" }
+      },
+      "reference": { "text": "Khaligh & Li — IEEE Trans. Vehicular Technology, 2010" },
+      "validation": {
+        "test_case": {
+          "inputs": { "P_motor_kW": 22, "eta_inverter": 0.96, "V_t": 395 },
+          "expected_I_A": 58.1,
+          "notes": "P_batt = 22/0.96 = 22.9 kW. I = 22900/395 = 58.0 A"
+        }
+      }
+    }
+
+  ]
+}

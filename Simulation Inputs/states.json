@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "description": "Defines the simulation state vector (what the simulator tracks at every time step) and the health-status state machine (NOMINAL -> DEGRADED -> EMERGENCY -> ABORT) driven by failures.json and events.json thresholds. Used by mission_simulator.py, rl_balancing.py (as its observation space), and the dashboard.",
+  "compatible_engines": ["mission_simulator.py", "rl_balancing.py", "optimizer_mdo.py"],
+  "state_vector_fields": [
+    {"name": "time_s", "unit": "s", "type": "float", "range": [0, null]},
+    {"name": "phase_index", "unit": "int", "type": "int", "range": [0, null]},
+    {"name": "altitude_m", "unit": "m", "type": "float", "range": [0, 6000]},
+    {"name": "speed_mps", "unit": "m/s", "type": "float", "range": [0, 100]},
+    {"name": "climb_rate_mps", "unit": "m/s", "type": "float", "range": [-15, 15]},
+    {"name": "power_kw_demand", "unit": "kW", "type": "float", "range": [0, 80]},
+    {"name": "power_kw_available", "unit": "kW", "type": "float", "range": [0, 80]},
+    {"name": "soc_pct", "unit": "%", "type": "float", "range": [0, 100]},
+    {"name": "fuel_remaining_kg", "unit": "kg", "type": "float", "range": [0, null]},
+    {"name": "battery_temp_c", "unit": "C", "type": "float", "range": [-20, 100]},
+    {"name": "active_power_source", "unit": "enum", "type": "string", "range": ["engine_primary", "battery_primary", "engine_primary_battery_assist", "battery_primary_engine_charging"]},
+    {"name": "active_failures", "unit": "list", "type": "array_of_string", "range": "failure_modes.id values from failures.json currently in effect"},
+    {"name": "health_status", "unit": "enum", "type": "string", "range": ["NOMINAL", "DEGRADED", "EMERGENCY", "ABORT"]}
+  ],
+  "initial_state": {
+    "time_s": 0,
+    "phase_index": 0,
+    "altitude_m": 0,
+    "speed_mps": 0,
+    "climb_rate_mps": 0,
+    "power_kw_demand": 0,
+    "power_kw_available": 60,
+    "soc_pct": 90,
+    "fuel_remaining_kg": null,
+    "battery_temp_c": 20,
+    "active_power_source": "engine_primary_battery_assist",
+    "active_failures": [],
+    "health_status": "NOMINAL"
+  },
+  "health_states": {
+    "NOMINAL": {
+      "description": "All systems within normal operating envelope.",
+      "transitions_out": [
+        {"to": "DEGRADED", "condition": "soc_pct < reserves.battery_soc_reserve_pct + 5, OR any single non-critical failure_mode active"}
+      ]
+    },
+    "DEGRADED": {
+      "description": "Reduced margin or a non-critical failure is active; mission continues with tightened constraints.",
+      "transitions_out": [
+        {"to": "NOMINAL", "condition": "soc_pct and fuel_remaining_kg both recover above thresholds (e.g. after engine_charging phase) AND active_failures is empty"},
+        {"to": "EMERGENCY", "condition": "soc_pct < reserves.battery_soc_reserve_pct, OR fuel_remaining_kg < reserve floor, OR a critical failure_mode (engine_flameout, generator_fault) is active"}
+      ]
+    },
+    "EMERGENCY": {
+      "description": "A reserve floor has been breached or a critical subsystem has failed. Mission simulator should force a return-to-base or immediate-landing profile.",
+      "transitions_out": [
+        {"to": "ABORT", "condition": "power_kw_available < power_kw_demand for current phase (infeasible), OR fuel_remaining_kg <= 0, OR soc_pct <= 0"}
+      ]
+    },
+    "ABORT": {
+      "description": "Terminal state — simulation run is flagged non-convergent/infeasible and should stop. Used by optimizer_mdo.py to heavily penalize the design in that generation.",
+      "transitions_out": []
+    }
+  },
+  "rl_observation_space_note": "rl_balancing.py should use a subset or normalized version of state_vector_fields as its observation space; active_power_source is the field the RL agent's action most directly controls each time step."
+}

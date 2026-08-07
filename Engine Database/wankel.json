@@ -1,0 +1,169 @@
+{
+  "$schema": "../schemas/engine_schema_v1.json",
+  "engine_id": "WANKEL-UAV-20",
+  "metadata": {
+    "name": "UAV Wankel Rotary — 20kW Class",
+    "type": "wankel_rotary",
+    "variant": "single-rotor naturally aspirated",
+    "manufacturer": "Notional — representative of LiquidPiston X class / UAV Engine AR731",
+    "application": ["fixed-wing MALE UAV", "VTOL transition range extender", "portable generator"],
+    "certification_basis": "DGCA RPAS / STANAG 4703 UAV class",
+    "revision": "D2",
+    "last_updated": "2026-07-01"
+  },
+  "core_parameters": {
+    "rated_power_kw": 20,
+    "rated_power_hp": 26.8,
+    "dry_weight_kg": 5.8,
+    "power_to_weight_ratio": 3.45,
+    "rpm_design": 7500,
+    "rpm_output_shaft": 7500,
+    "displacement_cc_per_rotor": 294,
+    "compression_ratio": 8.5,
+    "rotor_count": 1,
+    "intake_type": "naturally aspirated",
+    "fuel_type": ["Jet-A1", "Jet-A", "91-octane avgas", "heavy fuel (HF)", "diesel"],
+    "fuel_injection": "direct injection (DI) + port injection assist",
+    "ignition": "dual spark plug per rotor face — 12-lead CDI",
+    "cooling": "air-cooled rotor housing + liquid-cooled end plates",
+    "lubrication": "total-loss apex seal + wet-sump main"
+  },
+  "performance_map": {
+    "description": "Shaft power vs RPM at WOT and throttle settings, ISA SL",
+    "rpm_points": [3000, 4000, 5000, 6000, 6500, 7000, 7500, 8000],
+    "wot_power_kw":     [5.5, 9.0, 12.5, 16.0, 17.5, 18.8, 20.0, 19.5],
+    "wot_torque_Nm":    [17.5, 21.5, 23.9, 25.5, 25.7, 25.6, 25.5, 23.3],
+    "bsfc_wot_g_per_kwh": [520, 460, 415, 390, 378, 368, 360, 372],
+    "partial_throttle_map": {
+      "throttle_50_pct": {
+        "rpm":      [4000, 5000, 6000, 7000, 7500],
+        "power_kw": [4.2, 6.1, 8.0, 9.2, 9.8],
+        "bsfc_g_per_kwh": [490, 445, 410, 390, 382]
+      },
+      "throttle_75_pct": {
+        "rpm":      [4000, 5000, 6000, 7000, 7500],
+        "power_kw": [6.5, 9.4, 12.2, 14.1, 15.0],
+        "bsfc_g_per_kwh": [475, 432, 398, 375, 368]
+      }
+    }
+  },
+  "efficiency_curves": {
+    "thermal_efficiency_map": {
+      "rpm":          [3000, 4000, 5000, 6000, 7000, 7500],
+      "eta_thermal_wot": [0.14, 0.16, 0.175, 0.185, 0.196, 0.200]
+    },
+    "volumetric_efficiency_map": {
+      "rpm":              [3000, 4000, 5000, 6000, 7000, 7500],
+      "eta_volumetric":   [0.82, 0.85, 0.87, 0.88, 0.87, 0.84]
+    },
+    "mechanical_efficiency": 0.93,
+    "trapping_efficiency": 0.88,
+    "combustion_efficiency": 0.94,
+    "best_efficiency_rpm": 7000,
+    "best_efficiency_throttle_pct": 80
+  },
+  "fuel_consumption_model": {
+    "model_type": "BSFC_map_with_corrections",
+    "reference_condition": "ISA SL, WOT, 7500 RPM",
+    "bsfc_reference_g_per_kwh": 360,
+    "sfc_reference_kg_per_kwh": 0.360,
+    "altitude_correction": {
+      "description": "Power and SFC change with altitude (NA engine)",
+      "altitude_m":     [0, 500, 1000, 2000, 3000],
+      "power_multiplier": [1.00, 0.945, 0.892, 0.790, 0.694],
+      "sfc_multiplier":   [1.00, 1.02, 1.04, 1.09, 1.14]
+    },
+    "temperature_correction": {
+      "delta_isa_K":    [-20, -10, 0, 10, 20, 30],
+      "power_multiplier": [1.07, 1.04, 1.00, 0.96, 0.92, 0.87],
+      "sfc_multiplier":   [0.96, 0.98, 1.00, 1.03, 1.07, 1.12]
+    },
+    "idle_fuel_flow_kg_per_hr": 0.65,
+    "startup_fuel_kg": 0.02,
+    "best_range_rpm": 6500,
+    "best_endurance_rpm": 5500,
+    "HF_fuel_derate_percent": 3
+  },
+  "thermal_limits": {
+    "rotor_housing_max_C": 280,
+    "end_plate_coolant_max_C": 105,
+    "exhaust_port_max_C": 650,
+    "oil_temp_max_C": 130,
+    "apex_seal_temp_max_C": 400,
+    "CHT_max_C": 260,
+    "cooling_fan_parasitic_kw": 0.4,
+    "thermal_time_constant_s": 12,
+    "overheat_recovery_required": true,
+    "overheat_recovery_idle_minutes": 3
+  },
+  "operating_envelope": {
+    "altitude_max_m": 4000,
+    "altitude_rated_m": 0,
+    "mach_max": 0.25,
+    "ambient_temp_range_C": [-30, 55],
+    "humidity_max_percent": 100,
+    "power_derate": {
+      "altitude_m":       [0, 500, 1000, 2000, 3000, 4000],
+      "available_power_kw": [20.0, 18.9, 17.8, 15.8, 13.9, 12.1]
+    },
+    "start_envelope": {
+      "min_ambient_temp_C": -20,
+      "max_start_RPM_drop_allowed": 200,
+      "preheat_required_below_C": -10
+    }
+  },
+  "bsfc_map_2d": {
+    "description": "BSFC (g/kWh) as function of RPM and throttle percent",
+    "rpm": [4000, 5000, 6000, 7000, 7500],
+    "throttle_percent": [50, 65, 75, 87.5, 100],
+    "bsfc_matrix": [
+      [490, 462, 432, 410, 460],
+      [462, 435, 408, 390, 435],
+      [435, 410, 385, 370, 415],
+      [420, 395, 372, 360, 395],
+      [412, 388, 365, 354, 382]
+    ]
+  },
+  "generator_compatibility": {
+    "pad_type": "direct-drive flange 4-bolt 80PCD",
+    "pto_max_power_kw": 18,
+    "pto_rpm": 7000,
+    "compatible_generators": ["20kW-PMSG-DD-001", "15kW-PMSG-DD-002"],
+    "hybrid_mode": "series — primary powerplant or range extender",
+    "recommended_operating_rpm": 6500,
+    "battery_buffer_recommended": true,
+    "buffer_capacity_kwh_min": 1.0,
+    "noise_notes": "Rotary inherently smoother than piston — vibration isolation mounts recommended"
+  },
+  "sizing_parameters": {
+    "length_mm": 310,
+    "width_mm": 195,
+    "height_mm": 195,
+    "cg_from_front_mm": 120,
+    "intake_dia_mm": 60,
+    "exhaust_dia_mm": 55,
+    "mount_interface": "4-point M6 rubber-isolated",
+    "frontal_area_m2": 0.038,
+    "volume_m3": 0.012,
+    "vibration_signature": "low — single-rotor unbalanced eccentric (requires counterbalance shaft)"
+  },
+  "maintenance": {
+    "TBO_hours": 300,
+    "apex_seal_replace_hours": 150,
+    "spark_plug_interval_hours": 50,
+    "oil_change_hours": 25,
+    "carbon_clean_hours": 100,
+    "mttr_hours": 3,
+    "line_replaceable_units": ["rotor assembly", "apex seals", "spark plugs", "ECU", "fuel injectors"],
+    "known_issues": [
+      "apex seal wear accelerated by cold starts",
+      "carbon buildup on rotor face at low-load prolonged ops",
+      "HF fuel requires injector recalibration"
+    ],
+    "ECU": {
+      "channels": 1,
+      "authority": "full — fuel, ignition timing, cooling fan",
+      "reversion_mode": "fixed map safe-mode"
+    }
+  }
+}

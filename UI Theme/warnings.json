@@ -1,0 +1,103 @@
+{
+  "$schema_note": "Non-fatal WARNINGS -- conditions that don't fail a hard constraint but represent known engineering gaps, unvalidated assumptions, or credibility risks that should be disclosed rather than hidden. Sourced directly from the blueprint's Part 14 (Formal Design Review) concerns and Priority Improvement List, plus findings surfaced during this conversation. Each should render as an amber/warning-level flag in the dashboard, distinct from the red/FAIL constraints in constraints.json.",
+  "warnings": [
+    {
+      "id": "cruise_power_tight_margin",
+      "severity": "high",
+      "label": "Cruise power at PS1's 250 km/h sits within ~2% of the 60 kW engine limit",
+      "detail": "Required cruise power (~59.1 kW via drag-polar model) leaves almost no operating margin under the 60 kW engine rating. Resolve before presenting -- either re-size the propulsion system or clarify whether 250 km/h needs to be sustained cruise.",
+      "status": "open",
+      "source": "report Section 5; blueprint Part 14.1 Concern 1; blueprint \u00a71.6 judge question #2"
+    },
+    {
+      "id": "bsfc_constant_not_map",
+      "severity": "medium",
+      "label": "BSFC modeled as a constant, not a load-dependent map",
+      "detail": "Using a constant SFC (0.28 kg/kWh) is standard for preliminary sizing, but it means the RL power-split controller has no incentive to favor efficient engine operating points -- every throttle setting costs equally per watt in the current model. This undermines any claim that the RL controller 'optimally exploits engine operating points.' Implement a BSFC-vs-throttle map before presenting RL results as meaningful on this dimension.",
+      "status": "open",
+      "source": "blueprint Part 14.1 Concern 3; blueprint \u00a714.5 Priority #2"
+    },
+    {
+      "id": "no_energy_balance_check",
+      "severity": "medium",
+      "label": "Mission simulator has no explicit energy-balance validation check",
+      "detail": "A ~20-line check confirming total energy in (fuel + battery discharge) equals total energy out (propulsive work + losses) across a full mission would validate the simulator's internal correctness. Currently absent.",
+      "status": "open",
+      "source": "blueprint \u00a714.5 Priority #3"
+    },
+    {
+      "id": "rl_reward_pathological_incentive",
+      "severity": "high",
+      "label": "RL reward shaping may incentivize deliberately shortening the mission",
+      "detail": "A pure survival reward (+1/step) plus SoC penalties creates a pathological optimal strategy: deplete the battery during loiter (where survival reward is still earned per step), causing early mission termination rather than completing the full profile. Add a terminal bonus for completing the mission, and/or shape intermediate reward against endurance progress rather than raw step count, before trusting RL benchmark results.",
+      "status": "open",
+      "source": "blueprint Part 14.2 (NASA Systems Engineer review); blueprint \u00a714.5 Priority #5"
+    },
+    {
+      "id": "no_weight_growth_margin",
+      "severity": "medium",
+      "label": "No design-maturation weight growth margin applied to MTOW estimate",
+      "detail": "Standard aerospace practice (Raymer \u00a76.5) adds a ~15% growth margin on empty weight to account for typical design maturation. GARUN's current mass-buildup does not apply this. Recommend presenting results both with and without the margin applied.",
+      "status": "open",
+      "source": "blueprint Part 14.1 Concern 2; blueprint \u00a714.5 Priority #8; validation/limits.json :: weight_growth_margin_recommended"
+    },
+    {
+      "id": "descent_regeneration_unquantified",
+      "severity": "medium",
+      "label": "Battery regeneration during descent is not energetically quantified",
+      "detail": "If the SoC trajectory shows recovery during descent, this requires the propeller to windmill the motor as a generator -- the efficiency of that path (propeller \u2192 motor \u2192 generator \u2192 battery) must be computed. At typical small-UAV descent rates this is usually a modest contribution (a few percent of total energy). Do not present it as a significant SoC-recovery mechanism without the supporting calculation.",
+      "status": "open",
+      "source": "blueprint Part 14.1 Concern 4; blueprint \u00a714.5 Priority #9"
+    },
+    {
+      "id": "no_uncertainty_quantification",
+      "severity": "medium",
+      "label": "Endurance/MTOW/fuel results are point estimates, not confidence intervals",
+      "detail": "Key uncertain parameters (BSFC \u00b115%, battery Wh/kg \u00b110%, L/D \u00b110%) have not been swept via Monte Carlo or Latin Hypercube Sampling. Without this, headline numbers like '13.91 hr endurance' are point estimates, not defensible engineering results with error bars.",
+      "status": "open",
+      "source": "blueprint Part 14.2 (NASA Systems Engineer review); blueprint \u00a714.5 Priority #6"
+    },
+    {
+      "id": "battery_thermal_model_unvalidated",
+      "severity": "low",
+      "label": "Battery thermal-rise model is an explicitly-labeled placeholder",
+      "detail": "physics.battery_temperature() uses a simplified lumped-capacitance model, not a validated thermal simulation. Relevant primarily to the HALE cold-soak reference case (-40\u00b0C), not the PS1 baseline -- low severity unless HALE scalability claims are made.",
+      "status": "open",
+      "source": "physics.py docstring; report Section 8.1"
+    },
+    {
+      "id": "rl_controller_not_trained",
+      "severity": "medium",
+      "label": "RL-adaptive controller is currently a rule-based fallback, not a trained policy",
+      "detail": "rl_balancing.py's training path (gymnasium + stable-baselines3 PPO) has not been exercised end-to-end in this environment. All 'RL-adaptive' results in the current report reflect the transparent rule-based fallback policy, not a genuinely trained RL agent.",
+      "status": "open",
+      "source": "report Table 6 (Honest Status and Limitations)"
+    },
+    {
+      "id": "rl_fallback_soc_violation",
+      "severity": "high",
+      "label": "RL-adaptive fallback policy violates the SoC floor at the current chosen design",
+      "detail": "Minimum SoC of 0.178 reached, below the 0.20 floor. This is a genuine tuning gap in the fallback policy's SoC-taper behavior, not a false alarm from the validation engine.",
+      "status": "open",
+      "source": "report Table 4 / Section 6.3-6.4",
+      "cross_reference_warning": "The dashboard architecture spec (dashboard/charts.json :: power_split_rl_adaptive) originally wanted this SoC dip presented as a FEATURE ('smart aggressive extraction'). Resolve which framing is accurate before building that chart -- see prior conversation note."
+    },
+    {
+      "id": "structural_weight_fraction_inconsistency",
+      "severity": "medium",
+      "label": "Structural weight fraction differs between codebase (0.35) and blueprint appendix (0.29)",
+      "detail": "main.py's mass-buildup uses 0.35 as the structural weight fraction; the blueprint's Assumptions Appendix cites ~0.29 from historical composite UAV data. These need to be reconciled to one sourced value before final submission.",
+      "status": "open",
+      "source": "validation/limits.json :: known_inconsistency"
+    },
+    {
+      "id": "l_over_d_drag_polar_inconsistency",
+      "severity": "high",
+      "label": "L/D = 16 assumption does not compute from the stated drag-polar parameters",
+      "detail": "With C_D0 = 0.025, AR = 8, and e = 0.78-0.8, the maximum L/D that follows from the drag polar works out to approximately 14.0, not 16. Either the drag-polar parameters are wrong, or L/D = 16 implies better aerodynamics than the stated C_D0/e/AR combination supports. This inconsistency must be resolved -- ideally before the mentorship round, and certainly before any publication-track use of this work.",
+      "status": "open",
+      "source": "blueprint Part 14.4 (IIT Professor / AIAA Reviewer review) -- flagged as 'unrealistic assumption to flag'"
+    }
+  ],
+  "source": "GARUN_Engineering_Blueprint.md Part 14 (Formal Design Review) and \u00a714.5 (Priority Improvement List)"
+}
